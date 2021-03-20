@@ -6,6 +6,7 @@ import Wood from "./abis/WoodToken.json";
 import Smit from "./abis/SmitCoin.json";
 import Slick from "./abis/Token.json";
 import Ham from "./abis/HAM.json";
+import NavBar from "./components/navBar";
 
 class App extends Component {
   async componentWillMount() {
@@ -109,7 +110,8 @@ class App extends Component {
 
   render() {
     return (
-      <div>
+      <>
+        <NavBar account={this.state.account} />
         <button onClick={this.borrow.bind(this)}>BORROW</button>
         <button onClick={this.sendAmount.bind(this)}>RETURN</button>
         <button onClick={this.balance.bind(this)}>GET BALANCE</button>
@@ -121,7 +123,7 @@ class App extends Component {
         <button onClick={this.changeToken.bind(this, Slick)}>
           Slick Token
         </button>
-      </div>
+      </>
     );
   }
 }
