@@ -4,6 +4,8 @@ import Web3 from "web3";
 import CHC from "./abis/CHCToken.json";
 import Wood from "./abis/WoodToken.json";
 import Smit from "./abis/SmitCoin.json";
+import Slick from "./abis/Token.json";
+import Ham from "./abis/HAM.json";
 
 class App extends Component {
   async componentWillMount() {
@@ -115,6 +117,10 @@ class App extends Component {
         <button onClick={this.changeToken.bind(this, Wood)}>Wood Token</button>
         <button onClick={this.changeToken.bind(this, Smit)}>Smit Token</button>
         <button onClick={this.changeToken.bind(this, CHC)}>CHC Token</button>
+        <button onClick={this.changeToken.bind(this, Ham)}>Ham Token</button>
+        <button onClick={this.changeToken.bind(this, Slick)}>
+          Slick Token
+        </button>
       </div>
     );
   }
