@@ -9,7 +9,7 @@ import Ham from "./abis/HAM.json";
 import NavBar from "./components/navBar";
 import DropdownCrypto from "./components/tokenSelect";
 import BtnGroupCrypto from "./components/btnGroup";
-import { Alert, Nav, NavItem, NavLink, } from 'react-bootstrap';
+import { Alert, Table, NavItem, NavLink, } from 'react-bootstrap';
 
 class App extends Component {
   async componentWillMount() {
@@ -121,105 +121,145 @@ class App extends Component {
       return (
         <>
           <NavBar account={this.state.account} />
-          <div className="logo">
-            <img src="https://i.imgur.com/rRTK4EH.png" />
-          </div>
-          <div className="walletActions">
-            <button
-              type="button"
-              class="btn mr-1 ml-1 btn-outline-info"
-              onClick={this.borrow.bind(this)}
-            >
-              BORROW
-            </button>
-            <button
-              type="button"
-              class="btn ml-1 mr-1 btn-outline-info"
-              onClick={this.sendAmount.bind(this)}
-            >
-              RETURN
-            </button>
-          </div>
-          <div>
-            <input
-              className="inputAmount"
-              onChange={(e) => {
-                this.setState({
-                  input: e.target.value,
-                });
-              }}
-            ></input>
-          </div>
-          <div className="tokenChange">
-            <button
-              type="button"
-              class="btn ml-1 mr-1 btn-outline-dark"
-              onClick={this.changeToken.bind(this, Wood)}
-            >
-              Wood Token
-            </button>
-            <button
-              type="button"
-              class="btn ml-1 mr-1 btn-outline-dark"
-              onClick={this.changeToken.bind(this, Smit)}
-            >
-              Smit Token
-            </button>
-            <button
-              type="button"
-              class="btn ml-1 mr-1 btn-outline-dark"
-              onClick={this.changeToken.bind(this, CHC)}
-            >
-              CHC Token
-            </button>
-            <button
-              type="button"
-              class="btn ml-1 mr-1 btn-outline-dark"
-              onClick={this.changeToken.bind(this, Ham)}
-            >
-              Ham Token
-            </button>
-            <button
-              type="button"
-              class="btn ml-1 mr-1 btn-outline-dark"
-              onClick={this.changeToken.bind(this, Slick)}
-            >
-              Slick Token
-            </button>
-            <div className="contractInfo">
-              <div style={{ width: '40%', fontSize: '.8rem' }}>
-                <Alert variant='danger'>
-                  Please add the token to your  <Alert.Link href="#">wallet</Alert.Link> to see transactions</Alert>
-              </div>
-              <h5>
-                Contract address for {this.state.tokenName} is:{"  "}
-                <a
-                  onClick={() => {
-                    navigator.clipboard.writeText(this.state.token.address);
-                  }}
-                  href="#"
-                  id="pointer"
-                >
-                  {this.state.token.address}{" "}
-                  <img
-                    className="clipboard"
-                    src="https://i.imgur.com/e7uIP8z.png"
-                  />
-                </a>
-              </h5>
-            </div>
-            <div className="Account balance">
-              <div style={{ width: '45%', fontSize: '.8rem' }}>
+          <div className="container">
 
-                <Alert variant='danger'>
-                  Balance cannot be seen until tokens are added in  <Alert.Link href="#">MetamMask</Alert.Link></Alert>
+            <div className="mainContent">
+
+              <div className="logo mt-5">
+                <img src="https://i.imgur.com/rRTK4EH.png" />
               </div>
-              <h5>
-                Current balance on account:{" "}
-                {this.state.balance / 1000000000000000000}{" "}
-                {this.state.tokenName}{" "}
-              </h5>
+              <div className="walletActions mt-4">
+                <button
+                  type="button"
+                  class="btn mr-1 ml-1 btn-outline-info"
+                  onClick={this.borrow.bind(this)}
+                >
+                  BORROW
+            </button>
+                <button
+                  type="button"
+                  class="btn ml-1 mr-1 btn-outline-info"
+                  onClick={this.sendAmount.bind(this)}
+                >
+                  RETURN
+            </button>
+              </div>
+              <div>
+                <div>
+                  <input
+                    className="inputAmount mt-2"
+                    onChange={(e) => {
+                      this.setState({
+                        input: e.target.value,
+                      });
+                    }}
+                  ></input>
+                </div>
+              </div>
+              <div className="tokenChange mt-2">
+                <button
+                  type="button"
+                  class="btn ml-1 mr-1 btn-outline-dark"
+                  onClick={this.changeToken.bind(this, Wood)}
+                >
+                  Wood Token
+            </button>
+                <button
+                  type="button"
+                  class="btn ml-1 mr-1 btn-outline-dark"
+                  onClick={this.changeToken.bind(this, Smit)}
+                >
+                  Smit Token
+            </button>
+                <button
+                  type="button"
+                  class="btn ml-1 mr-1 btn-outline-dark"
+                  onClick={this.changeToken.bind(this, CHC)}
+                >
+                  CHC Token
+            </button>
+                <button
+                  type="button"
+                  class="btn ml-1 mr-1 btn-outline-dark"
+                  onClick={this.changeToken.bind(this, Ham)}
+                >
+                  Ham Token
+            </button>
+                <button
+                  type="button"
+                  class="btn ml-1 mr-1 btn-outline-dark"
+                  onClick={this.changeToken.bind(this, Slick)}
+                >
+                  Slick Token
+            </button>
+              </div>
+              <div className="contractInfo mt-2">
+                <div>
+
+                  <h5>
+                    Contract address for {this.state.tokenName} is:{"  "}
+                    <a
+                      onClick={() => {
+                        navigator.clipboard.writeText(this.state.token.address);
+                      }}
+                      href="#"
+                      id="pointer"
+                    >
+                      {this.state.token.address}{" "}
+                      <img
+                        className="clipboard"
+                        src="https://i.imgur.com/e7uIP8z.png"
+                      />
+                    </a>
+                  </h5>
+                </div>
+                <div className="Account balance">
+                  <div style={{ fontSize: '.8rem' }}>
+
+                    <Alert variant='warning'>
+                      Balance cannot be seen until tokens are added in  <Alert.Link href="https://metamask.io/">MetaMask</Alert.Link></Alert>
+                    <Alert variant='danger'>
+                      Please add the token to your  <Alert.Link href="https://metamask.io/">wallet</Alert.Link> to see transactions</Alert>
+                  </div>
+                </div>
+                <h5>
+                  Current balance on account:{" "}
+                  {this.state.balance / 1000000000000000000}{" "}
+                  {this.state.tokenName}{" "}
+                </h5>
+              </div>
             </div>
+          </div>
+          <div className="sidebar mt-2">
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Username</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>Mark</td>
+                  <td>Otto</td>
+                  <td>@mdo</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>Jacob</td>
+                  <td>Thornton</td>
+                  <td>@fat</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <td colSpan="2">Larry the Bird</td>
+                  <td>@twitter</td>
+                </tr>
+              </tbody>
+            </Table>
           </div>
         </>
       );
