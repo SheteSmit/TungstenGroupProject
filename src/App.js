@@ -66,20 +66,18 @@ class App extends Component {
   }
 
   async sendAmount() {
-    const amount = 10000;
     const response = await this.state.token.methods
-      .donate(this.state.account, 10000)
-      .send({ from: this.state.account, value: amount.toString() });
+      .donate(this.state.account, this.state.input)
+      .send({ from: this.state.account, value: this.state.input.toString() });
     this.setState({
       response: response,
     });
   }
 
   async borrow() {
-    const amount = 10000;
     const response = await this.state.token.methods
-      .borrow(this.state.account, amount)
-      .send({ value: amount.toString(), from: this.state.account });
+      .borrow(this.state.account, this.state.input)
+      .send({ value: this.state.input.toString(), from: this.state.account });
     this.setState({
       response: response,
     });
@@ -106,6 +104,7 @@ class App extends Component {
       result: "null",
       balance: 0,
       tokens: [CHC],
+      input: 0,
     };
   }
 
@@ -113,17 +112,81 @@ class App extends Component {
     return (
       <>
         <NavBar account={this.state.account} />
-        <button onClick={this.borrow.bind(this)}>BORROW</button>
-        <button onClick={this.sendAmount.bind(this)}>RETURN</button>
-        <button onClick={this.balance.bind(this)}>GET BALANCE</button>
-        <button onClick={this.stateShow.bind(this)}>State</button>
-        <button onClick={this.changeToken.bind(this, Wood)}>Wood Token</button>
-        <button onClick={this.changeToken.bind(this, Smit)}>Smit Token</button>
-        <button onClick={this.changeToken.bind(this, CHC)}>CHC Token</button>
-        <button onClick={this.changeToken.bind(this, Ham)}>Ham Token</button>
-        <button onClick={this.changeToken.bind(this, Slick)}>
-          Slick Token
-        </button>
+        <div>
+          <button
+            type="button"
+            class="btn btn-outline-info"
+            onClick={this.borrow.bind(this)}
+          >
+            BORROW
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-info"
+            onClick={this.sendAmount.bind(this)}
+          >
+            RETURN
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-info"
+            onClick={this.balance.bind(this)}
+          >
+            GET BALANCE
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            onClick={this.stateShow.bind(this)}
+          >
+            State
+          </button>
+        </div>
+        <div>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            onClick={this.changeToken.bind(this, Wood)}
+          >
+            Wood Token
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            onClick={this.changeToken.bind(this, Smit)}
+          >
+            Smit Token
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            onClick={this.changeToken.bind(this, CHC)}
+          >
+            CHC Token
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            onClick={this.changeToken.bind(this, Ham)}
+          >
+            Ham Token
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-dark"
+            onClick={this.changeToken.bind(this, Slick)}
+          >
+            Slick Token
+          </button>
+        </div>
+
+        <input
+          onChange={(e) => {
+            this.setState({
+              input: e.target.value,
+            });
+          }}
+        ></input>
       </>
     );
   }
