@@ -112,6 +112,9 @@ class App extends Component {
     return (
       <>
         <NavBar account={this.state.account} />
+        <div className="logo">
+          <img src="https://i.imgur.com/rRTK4EH.png" />
+        </div>
         <div className="walletActions">
           <button
             type="button"
