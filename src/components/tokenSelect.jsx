@@ -1,6 +1,17 @@
 import React from 'react';
-import { DropdownButton, Dropdown } from 'react-bootstrap';
+import { DropdownButton, Dropdown, Tabs } from 'react-bootstrap';
 
+const Navigation = (props) => {
+
+    return(
+        <div>
+            <nav className = "navbar fixed-bottom nvabar light" role="navigation">
+           <Nav className= "w-100">
+               <div className ="d-flex flex-row justify-content-around w-100">
+                   {
+                       Tabs.map((tab, index) => (
+                           <NavItem key={'tab -${index}'}></NavItem>
+                       ),   
 export default function DropdownCrypto(props) {
     return (
         <section>
@@ -14,4 +25,9 @@ export default function DropdownCrypto(props) {
             </DropdownButton>
         </section>
     )
+            </div>
+        </Nav>  
+    </nav>
+</div>)
+}
 }
