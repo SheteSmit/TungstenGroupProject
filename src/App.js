@@ -204,7 +204,8 @@ class App extends Component {
             </div>
             <div className="Account balance">
               <p>
-                Current balance on account: {this.state.balance}{" "}
+                Current balance on account:{" "}
+                {this.state.balance / 1000000000000000000}{" "}
                 {this.state.tokenName}{" "}
               </p>
             </div>
