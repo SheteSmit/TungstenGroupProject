@@ -7,6 +7,7 @@ import Smit from "./abis/SmitCoin.json";
 import Slick from "./abis/Token.json";
 import Ham from "./abis/HAM.json";
 import NavBar from "./components/navBar";
+import DropdownCrypto from "./components/tokenSelect";
 
 class App extends Component {
   async componentWillMount() {
@@ -112,6 +113,9 @@ class App extends Component {
     return (
       <>
         <NavBar account={this.state.account} />
+        <DropdownCrypto borrow={this.borrow} sendAmount={this.sendAmount}
+          balance={this.balance} state={this.stateShow} changeToken={this.changeToken}
+          Wood={Wood} CHC={CHC} Slick={Slick} Smit={Smit} Ham={Ham} />
         <button onClick={this.borrow.bind(this)}>BORROW</button>
         <button onClick={this.sendAmount.bind(this)}>RETURN</button>
         <button onClick={this.balance.bind(this)}>GET BALANCE</button>
