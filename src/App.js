@@ -7,6 +7,7 @@ import Smit from "./abis/SmitCoin.json";
 import Slick from "./abis/Token.json";
 import Ham from "./abis/HAM.json";
 import NavBar from "./components/navBar";
+import DropdownCrypto from "./components/tokenSelect";
 
 class App extends Component {
   async componentWillMount() {
