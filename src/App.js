@@ -64,6 +64,16 @@ class App extends Component {
       token: token,
       coinAddress: coinAddress,
     });
+
+    await this.state.token.methods
+      .balanceOf(this.state.account)
+      .call({ from: this.state.account })
+      .then((result) => {
+        console.log(result.toString());
+        this.setState({
+          balance: result.toString(),
+        });
+      });
   }
 
   async sendAmount() {
@@ -84,16 +94,8 @@ class App extends Component {
     });
   }
 
-  async balance() {
-    await this.state.token.methods
-      .balanceOf(this.state.account)
-      .call({ from: this.state.account }, function (error, result) {
-        console.log(result.toString());
-      });
-  }
-
   test() {
-    console.log(this.state.tokenName);
+    console.log(this.state.balance.toString());
   }
 
   constructor(props) {
@@ -133,13 +135,6 @@ class App extends Component {
               onClick={this.sendAmount.bind(this)}
             >
               RETURN
-            </button>
-            <button
-              type="button"
-              class="btn ml-1 mr-1 btn-outline-info"
-              onClick={this.balance.bind(this)}
-            >
-              GET BALANCE
             </button>
           </div>
           <div>
@@ -188,18 +183,14 @@ class App extends Component {
             >
               Slick Token
             </button>
-            <button
-              type="button"
-              class="btn ml-1 mr-1 btn-outline-dark"
-              onClick={this.test.bind(this, Slick)}
-            >
-              Test
-            </button>
             <div className="contractInfo">
               <p>
                 Contract address for {this.state.tokenName} is:{"  "}
                 {this.state.token.address}
               </p>
+            </div>
+            <div className="Account balance">
+              <p>Current balance on account: {this.state.balance}</p>
             </div>
           </div>
         </>
