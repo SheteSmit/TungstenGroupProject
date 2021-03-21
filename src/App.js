@@ -115,21 +115,21 @@ class App extends Component {
         <div className="walletActions">
           <button
             type="button"
-            class="btn btn-outline-info"
+            class="btn mr-1 ml-1 btn-outline-info"
             onClick={this.borrow.bind(this)}
           >
             BORROW
           </button>
           <button
             type="button"
-            class="btn btn-outline-info"
+            class="btn ml-1 mr-1 btn-outline-info"
             onClick={this.sendAmount.bind(this)}
           >
             RETURN
           </button>
           <button
             type="button"
-            class="btn btn-outline-info"
+            class="btn ml-1 mr-1 btn-outline-info"
             onClick={this.balance.bind(this)}
           >
             GET BALANCE
@@ -148,35 +148,35 @@ class App extends Component {
         <div className="tokenChange">
           <button
             type="button"
-            class="btn btn-outline-dark"
+            class="btn ml-1 mr-1 btn-outline-dark"
             onClick={this.changeToken.bind(this, Wood)}
           >
             Wood Token
           </button>
           <button
             type="button"
-            class="btn btn-outline-dark"
+            class="btn ml-1 mr-1 btn-outline-dark"
             onClick={this.changeToken.bind(this, Smit)}
           >
             Smit Token
           </button>
           <button
             type="button"
-            class="btn btn-outline-dark"
+            class="btn ml-1 mr-1 btn-outline-dark"
             onClick={this.changeToken.bind(this, CHC)}
           >
             CHC Token
           </button>
           <button
             type="button"
-            class="btn btn-outline-dark"
+            class="btn ml-1 mr-1 btn-outline-dark"
             onClick={this.changeToken.bind(this, Ham)}
           >
             Ham Token
           </button>
           <button
             type="button"
-            class="btn btn-outline-dark"
+            class="btn ml-1 mr-1 btn-outline-dark"
             onClick={this.changeToken.bind(this, Slick)}
           >
             Slick Token
