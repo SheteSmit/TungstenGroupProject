@@ -9,7 +9,7 @@ import Ham from "./abis/HAM.json";
 import NavBar from "./components/navBar";
 import DropdownCrypto from "./components/tokenSelect";
 import BtnGroupCrypto from "./components/btnGroup";
-import { ButtonGroup } from 'react-bootstrap';
+import { Nav, NavItem, NavLink, } from 'react-bootstrap';
 
 class App extends Component {
   async componentWillMount() {
@@ -124,80 +124,91 @@ class App extends Component {
         </ButtonGroup> */}
 
         <div>
-          <button
-            type="button"
-            class="btn btn-outline-info"
-            onClick={this.borrow.bind(this)}
-          >
-            BORROW
+          <div className="walletActions">
+            <button
+              type="button"
+              class="btn btn-outline-info"
+              onClick={this.borrow.bind(this)}
+            >
+              BORROW
           </button>
-          <button
-            type="button"
-            class="btn btn-outline-info"
-            onClick={this.sendAmount.bind(this)}
-          >
-            RETURN
+            <button
+              type="button"
+              class="btn btn-outline-info"
+              onClick={this.sendAmount.bind(this)}
+            >
+              RETURN
           </button>
-          <button
-            type="button"
-            class="btn btn-outline-info"
-            onClick={this.balance.bind(this)}
-          >
-            GET BALANCE
+            <button
+              type="button"
+              class="btn btn-outline-info"
+              onClick={this.balance.bind(this)}
+            >
+              GET BALANCE
           </button>
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            onClick={this.stateShow.bind(this)}
-          >
-            State
+          </div>
+          <div>
+            <input
+              className="inputAmount"
+              onChange={(e) => {
+                this.setState({
+                  input: e.target.value,
+                });
+              }}
+            ></input>
+          </div>
+          <div className="tokenChange">
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              onClick={this.changeToken.bind(this, Wood)}
+            >
+              Wood Token
           </button>
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              onClick={this.changeToken.bind(this, Smit)}
+            >
+              Smit Token
+          </button>
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              onClick={this.changeToken.bind(this, CHC)}
+            >
+              CHC Token
+          </button>
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              onClick={this.changeToken.bind(this, Ham)}
+            >
+              Ham Token
+          </button>
+            <button
+              type="button"
+              class="btn btn-outline-dark"
+              onClick={this.changeToken.bind(this, Slick)}
+            >
+              Slick Token
+          </button>
+          </div>
         </div>
-        <div>
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            onClick={this.changeToken.bind(this, Wood)}
-          >
-            Wood Token
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            onClick={this.changeToken.bind(this, Smit)}
-          >
-            Smit Token
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            onClick={this.changeToken.bind(this, CHC)}
-          >
-            CHC Token
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            onClick={this.changeToken.bind(this, Ham)}
-          >
-            Ham Token
-          </button>
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            onClick={this.changeToken.bind(this, Slick)}
-          >
-            Slick Token
-          </button>
-        </div>
+        <nav className="navbar fixed-bottom navbar-light" role="navigation">
+          <Nav className="w-100">
+            <div className=" d-flex flex-row justify-content-around w-100">
 
-        <input
-          onChange={(e) => {
-            this.setState({
-              input: e.target.value,
-            });
-          }}
-        ></input>
+              <NavItem >
+                <NavLink className="nav-link" activeClassName="active">
+                  <div className="row d-flex flex-column justify-content-center align-items-center">
+                    <div>Nav</div>
+                  </div>
+                </NavLink>
+              </NavItem>
+            </div>
+          </Nav>
+        </nav>
       </>
     );
   }
