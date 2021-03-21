@@ -1,5 +1,6 @@
 import React from 'react';
-import { DropdownButton, Dropdown } from 'react-bootstrap';
+import { DropdownButton, Dropdown, Tabs } from 'react-bootstrap';
+
 
 export default function DropdownCrypto(props) {
     return (
@@ -15,4 +16,5 @@ export default function DropdownCrypto(props) {
             </DropdownButton>
         </section>
     )
+
 }

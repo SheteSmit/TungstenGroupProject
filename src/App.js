@@ -62,14 +62,26 @@ class App extends Component {
     );
     const coinAddress = Token.networks[netId].address;
     this.setState({
+      tokenName: Token.contractName,
       token: token,
       coinAddress: coinAddress,
     });
+
+    await this.state.token.methods
+      .balanceOf(this.state.account)
+      .call({ from: this.state.account })
+      .then((result) => {
+        console.log(result.toString());
+        this.setState({
+          balance: result.toString(),
+        });
+      });
   }
 
   async sendAmount() {
+    const amount = this.state.input * 1000000000000000000;
     const response = await this.state.token.methods
-      .donate(this.state.account, this.state.input)
+      .donate(this.state.account, amount.toString())
       .send({ from: this.state.account, value: this.state.input.toString() });
     this.setState({
       response: response,
@@ -77,24 +89,16 @@ class App extends Component {
   }
 
   async borrow() {
+    const amount = this.state.input * 1000000000000000000;
     const response = await this.state.token.methods
-      .borrow(this.state.account, this.state.input)
-      .send({ value: this.state.input.toString(), from: this.state.account });
+      .borrow(this.state.account, amount.toString())
+      .send({
+        value: this.state.input,
+        from: this.state.account,
+      });
     this.setState({
       response: response,
     });
-  }
-
-  async balance() {
-    await this.state.token.methods
-      .balanceOf(this.state.account)
-      .call({ from: this.state.account }, function (error, result) {
-        console.log(result.toString());
-      });
-  }
-
-  stateShow() {
-    console.log(this.state.token.options.address);
   }
 
   constructor(props) {
@@ -105,12 +109,13 @@ class App extends Component {
       token: null,
       result: "null",
       balance: 0,
-      tokens: [CHC],
       input: 0,
+      tokenName: "CHC",
     };
   }
 
   render() {
+<<<<<<< HEAD
     return (
       <>
         <NavBar account={this.state.account} />
@@ -146,6 +151,32 @@ class App extends Component {
             >
               GET BALANCE
           </button>
+=======
+    if (this.state.token == null) {
+      return <p>loading</p>;
+    } else {
+      return (
+        <>
+          <NavBar account={this.state.account} />
+          <div className="logo">
+            <img src="https://i.imgur.com/rRTK4EH.png" />
+          </div>
+          <div className="walletActions">
+            <button
+              type="button"
+              class="btn mr-1 ml-1 btn-outline-info"
+              onClick={this.borrow.bind(this)}
+            >
+              BORROW
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-info"
+              onClick={this.sendAmount.bind(this)}
+            >
+              RETURN
+            </button>
+>>>>>>> b8a5efa32c1d1829d1d0d7c65dd92902075b1146
           </div>
           <div>
             <input
@@ -160,6 +191,7 @@ class App extends Component {
           <div className="tokenChange">
             <button
               type="button"
+<<<<<<< HEAD
               class="btn btn-outline-dark"
               onClick={this.changeToken.bind(this, Wood)}
             >
@@ -211,6 +243,70 @@ class App extends Component {
         </nav>
       </>
     );
+=======
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, Wood)}
+            >
+              Wood Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, Smit)}
+            >
+              Smit Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, CHC)}
+            >
+              CHC Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, Ham)}
+            >
+              Ham Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, Slick)}
+            >
+              Slick Token
+            </button>
+            <div className="contractInfo">
+              <p>
+                Contract address for {this.state.tokenName} is:{"  "}
+                <a
+                  onClick={() => {
+                    navigator.clipboard.writeText(this.state.token.address);
+                  }}
+                  href="#"
+                  id="pointer"
+                >
+                  {this.state.token.address}{" "}
+                  <img
+                    className="clipboard"
+                    src="https://i.imgur.com/e7uIP8z.png"
+                  />
+                </a>
+              </p>
+            </div>
+            <div className="Account balance">
+              <p>
+                Current balance on account:{" "}
+                {this.state.balance / 1000000000000000000}{" "}
+                {this.state.tokenName}{" "}
+              </p>
+            </div>
+          </div>
+        </>
+      );
+    }
+>>>>>>> b8a5efa32c1d1829d1d0d7c65dd92902075b1146
   }
 }
 
