@@ -186,11 +186,26 @@ class App extends Component {
             <div className="contractInfo">
               <p>
                 Contract address for {this.state.tokenName} is:{"  "}
-                {this.state.token.address}
+                <a
+                  onClick={() => {
+                    navigator.clipboard.writeText(this.state.token.address);
+                  }}
+                  href="#"
+                  id="pointer"
+                >
+                  {this.state.token.address}{" "}
+                  <img
+                    className="clipboard"
+                    src="https://i.imgur.com/e7uIP8z.png"
+                  />
+                </a>
               </p>
             </div>
             <div className="Account balance">
-              <p>Current balance on account: {this.state.balance}</p>
+              <p>
+                Current balance on account: {this.state.balance}{" "}
+                {this.state.tokenName}{" "}
+              </p>
             </div>
           </div>
         </>
