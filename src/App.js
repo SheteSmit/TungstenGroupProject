@@ -60,6 +60,7 @@ class App extends Component {
     );
     const coinAddress = Token.networks[netId].address;
     this.setState({
+      tokenName: Token.contractName,
       token: token,
       coinAddress: coinAddress,
     });
@@ -91,8 +92,8 @@ class App extends Component {
       });
   }
 
-  stateShow() {
-    console.log(this.state.token.options.address);
+  test() {
+    console.log(this.state.tokenName);
   }
 
   constructor(props) {
@@ -103,90 +104,107 @@ class App extends Component {
       token: null,
       result: "null",
       balance: 0,
-      tokens: [CHC],
       input: 0,
+      tokenName: "CHC",
     };
   }
 
   render() {
-    return (
-      <>
-        <NavBar account={this.state.account} />
-        <div className="logo">
-          <img src="https://i.imgur.com/rRTK4EH.png" />
-        </div>
-        <div className="walletActions">
-          <button
-            type="button"
-            class="btn mr-1 ml-1 btn-outline-info"
-            onClick={this.borrow.bind(this)}
-          >
-            BORROW
-          </button>
-          <button
-            type="button"
-            class="btn ml-1 mr-1 btn-outline-info"
-            onClick={this.sendAmount.bind(this)}
-          >
-            RETURN
-          </button>
-          <button
-            type="button"
-            class="btn ml-1 mr-1 btn-outline-info"
-            onClick={this.balance.bind(this)}
-          >
-            GET BALANCE
-          </button>
-        </div>
-        <div>
-          <input
-            className="inputAmount"
-            onChange={(e) => {
-              this.setState({
-                input: e.target.value,
-              });
-            }}
-          ></input>
-        </div>
-        <div className="tokenChange">
-          <button
-            type="button"
-            class="btn ml-1 mr-1 btn-outline-dark"
-            onClick={this.changeToken.bind(this, Wood)}
-          >
-            Wood Token
-          </button>
-          <button
-            type="button"
-            class="btn ml-1 mr-1 btn-outline-dark"
-            onClick={this.changeToken.bind(this, Smit)}
-          >
-            Smit Token
-          </button>
-          <button
-            type="button"
-            class="btn ml-1 mr-1 btn-outline-dark"
-            onClick={this.changeToken.bind(this, CHC)}
-          >
-            CHC Token
-          </button>
-          <button
-            type="button"
-            class="btn ml-1 mr-1 btn-outline-dark"
-            onClick={this.changeToken.bind(this, Ham)}
-          >
-            Ham Token
-          </button>
-          <button
-            type="button"
-            class="btn ml-1 mr-1 btn-outline-dark"
-            onClick={this.changeToken.bind(this, Slick)}
-          >
-            Slick Token
-          </button>
-        </div>
-      </>
-    );
+    if (this.state.token == null) {
+      return <p>loading</p>;
+    } else {
+      return (
+        <>
+          <NavBar account={this.state.account} />
+          <div className="logo">
+            <img src="https://i.imgur.com/rRTK4EH.png" />
+          </div>
+          <div className="walletActions">
+            <button
+              type="button"
+              class="btn mr-1 ml-1 btn-outline-info"
+              onClick={this.borrow.bind(this)}
+            >
+              BORROW
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-info"
+              onClick={this.sendAmount.bind(this)}
+            >
+              RETURN
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-info"
+              onClick={this.balance.bind(this)}
+            >
+              GET BALANCE
+            </button>
+          </div>
+          <div>
+            <input
+              className="inputAmount"
+              onChange={(e) => {
+                this.setState({
+                  input: e.target.value,
+                });
+              }}
+            ></input>
+          </div>
+          <div className="tokenChange">
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, Wood)}
+            >
+              Wood Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, Smit)}
+            >
+              Smit Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, CHC)}
+            >
+              CHC Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, Ham)}
+            >
+              Ham Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.changeToken.bind(this, Slick)}
+            >
+              Slick Token
+            </button>
+            <button
+              type="button"
+              class="btn ml-1 mr-1 btn-outline-dark"
+              onClick={this.test.bind(this, Slick)}
+            >
+              Test
+            </button>
+            <div className="contractInfo">
+              <p>
+                Contract address for {this.state.tokenName} is:{"  "}
+                {this.state.token.address}
+              </p>
+            </div>
+          </div>
+        </>
+      );
+    }
   }
 }
 
