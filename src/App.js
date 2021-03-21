@@ -112,7 +112,7 @@ class App extends Component {
     return (
       <>
         <NavBar account={this.state.account} />
-        <div>
+        <div className="walletActions">
           <button
             type="button"
             class="btn btn-outline-info"
@@ -134,15 +134,18 @@ class App extends Component {
           >
             GET BALANCE
           </button>
-          <button
-            type="button"
-            class="btn btn-outline-dark"
-            onClick={this.stateShow.bind(this)}
-          >
-            State
-          </button>
         </div>
         <div>
+          <input
+            className="inputAmount"
+            onChange={(e) => {
+              this.setState({
+                input: e.target.value,
+              });
+            }}
+          ></input>
+        </div>
+        <div className="tokenChange">
           <button
             type="button"
             class="btn btn-outline-dark"
@@ -179,14 +182,6 @@ class App extends Component {
             Slick Token
           </button>
         </div>
-
-        <input
-          onChange={(e) => {
-            this.setState({
-              input: e.target.value,
-            });
-          }}
-        ></input>
       </>
     );
   }
