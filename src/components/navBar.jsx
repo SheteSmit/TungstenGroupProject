@@ -1,18 +1,16 @@
-import React from 'react';
-import { Navbar, NavItem, Container } from 'react-bootstrap';
+import React from "react";
+import { Navbar, NavItem, Container } from "react-bootstrap";
 
 export default function NavBar(props) {
-    return (
-        <header>
-            <Navbar expand="lg" variant="light" bg="light">
-                <Container>
-                    <Navbar.Brand href="#">Token Faucet</Navbar.Brand>
-                    <NavItem>
-                        Account: {props.account}
-                    </NavItem>
-                </Container>
-            </Navbar>
-
-        </header>
-    )
+  return (
+    <header>
+      <Navbar expand="lg" variant="light" bg="light">
+        <img className="logo" src="https://i.imgur.com/rRTK4EH.png" />
+        <Container>
+          <Navbar.Brand href="#">Token Faucet</Navbar.Brand>
+          <NavItem>Account: {props.account}</NavItem>
+        </Container>
+      </Navbar>
+    </header>
+  );
 }
