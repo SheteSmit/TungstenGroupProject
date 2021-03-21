@@ -9,7 +9,7 @@ import Ham from "./abis/HAM.json";
 import NavBar from "./components/navBar";
 import DropdownCrypto from "./components/tokenSelect";
 import BtnGroupCrypto from "./components/btnGroup";
-import { Nav, NavItem, NavLink, } from 'react-bootstrap';
+import { Alert, Nav, NavItem, NavLink, } from 'react-bootstrap';
 
 class App extends Component {
   async componentWillMount() {
@@ -115,43 +115,6 @@ class App extends Component {
   }
 
   render() {
-<<<<<<< HEAD
-    return (
-      <>
-        <NavBar account={this.state.account} />
-        {/* <ButtonGroup aria-label="Basic example">
-
-          <BtnGroupCrypto borrow={this.borrow} sendAmount={this.sendAmount}
-            balance={this.balance} state={this.stateShow} />
-          <DropdownCrypto borrow={this.borrow} sendAmount={this.sendAmount}
-            balance={this.balance} state={this.stateShow} changeToken={this.changeToken}
-            Wood={Wood} CHC={CHC} Slick={Slick} Smit={Smit} Ham={Ham} />
-        </ButtonGroup> */}
-
-        <div>
-          <div className="walletActions">
-            <button
-              type="button"
-              class="btn btn-outline-info"
-              onClick={this.borrow.bind(this)}
-            >
-              BORROW
-          </button>
-            <button
-              type="button"
-              class="btn btn-outline-info"
-              onClick={this.sendAmount.bind(this)}
-            >
-              RETURN
-          </button>
-            <button
-              type="button"
-              class="btn btn-outline-info"
-              onClick={this.balance.bind(this)}
-            >
-              GET BALANCE
-          </button>
-=======
     if (this.state.token == null) {
       return <p>loading</p>;
     } else {
@@ -176,7 +139,6 @@ class App extends Component {
             >
               RETURN
             </button>
->>>>>>> b8a5efa32c1d1829d1d0d7c65dd92902075b1146
           </div>
           <div>
             <input
@@ -191,59 +153,6 @@ class App extends Component {
           <div className="tokenChange">
             <button
               type="button"
-<<<<<<< HEAD
-              class="btn btn-outline-dark"
-              onClick={this.changeToken.bind(this, Wood)}
-            >
-              Wood Token
-          </button>
-            <button
-              type="button"
-              class="btn btn-outline-dark"
-              onClick={this.changeToken.bind(this, Smit)}
-            >
-              Smit Token
-          </button>
-            <button
-              type="button"
-              class="btn btn-outline-dark"
-              onClick={this.changeToken.bind(this, CHC)}
-            >
-              CHC Token
-          </button>
-            <button
-              type="button"
-              class="btn btn-outline-dark"
-              onClick={this.changeToken.bind(this, Ham)}
-            >
-              Ham Token
-          </button>
-            <button
-              type="button"
-              class="btn btn-outline-dark"
-              onClick={this.changeToken.bind(this, Slick)}
-            >
-              Slick Token
-          </button>
-          </div>
-        </div>
-        <nav className="navbar fixed-bottom navbar-light" role="navigation">
-          <Nav className="w-100">
-            <div className=" d-flex flex-row justify-content-around w-100">
-
-              <NavItem >
-                <NavLink className="nav-link" activeClassName="active">
-                  <div className="row d-flex flex-column justify-content-center align-items-center">
-                    <div>Nav</div>
-                  </div>
-                </NavLink>
-              </NavItem>
-            </div>
-          </Nav>
-        </nav>
-      </>
-    );
-=======
               class="btn ml-1 mr-1 btn-outline-dark"
               onClick={this.changeToken.bind(this, Wood)}
             >
@@ -278,7 +187,11 @@ class App extends Component {
               Slick Token
             </button>
             <div className="contractInfo">
-              <p>
+              <div style={{ width: '40%', fontSize: '.8rem' }}>
+                <Alert variant='danger'>
+                  Please add the token to your  <Alert.Link href="#">wallet</Alert.Link> to see transactions</Alert>
+              </div>
+              <h5>
                 Contract address for {this.state.tokenName} is:{"  "}
                 <a
                   onClick={() => {
@@ -293,20 +206,24 @@ class App extends Component {
                     src="https://i.imgur.com/e7uIP8z.png"
                   />
                 </a>
-              </p>
+              </h5>
             </div>
             <div className="Account balance">
-              <p>
+              <div style={{ width: '45%', fontSize: '.8rem' }}>
+
+                <Alert variant='danger'>
+                  Balance cannot be seen until tokens are added in  <Alert.Link href="#">MetamMask</Alert.Link></Alert>
+              </div>
+              <h5>
                 Current balance on account:{" "}
                 {this.state.balance / 1000000000000000000}{" "}
                 {this.state.tokenName}{" "}
-              </p>
+              </h5>
             </div>
           </div>
         </>
       );
     }
->>>>>>> b8a5efa32c1d1829d1d0d7c65dd92902075b1146
   }
 }
 

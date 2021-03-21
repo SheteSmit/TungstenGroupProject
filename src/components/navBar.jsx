@@ -7,7 +7,7 @@ export default function NavBar(props) {
       <Navbar expand="lg" variant="light" bg="light">
         <Container>
           <Navbar.Brand href="#">Token Faucet</Navbar.Brand>
-          <NavItem>Account: {props.account}</NavItem>
+          <NavItem>Meta Mask Account: {props.account}</NavItem>
         </Container>
       </Navbar>
     </header>
