@@ -77,8 +77,9 @@ class App extends Component {
   }
 
   async sendAmount() {
+    const amount = this.state.input * 1000000000000000000;
     const response = await this.state.token.methods
-      .donate(this.state.account, this.state.input)
+      .donate(this.state.account, amount.toString())
       .send({ from: this.state.account, value: this.state.input.toString() });
     this.setState({
       response: response,
@@ -86,16 +87,16 @@ class App extends Component {
   }
 
   async borrow() {
+    const amount = this.state.input * 1000000000000000000;
     const response = await this.state.token.methods
-      .borrow(this.state.account, this.state.input)
-      .send({ value: this.state.input.toString(), from: this.state.account });
+      .borrow(this.state.account, amount.toString())
+      .send({
+        value: this.state.input,
+        from: this.state.account,
+      });
     this.setState({
       response: response,
     });
-  }
-
-  test() {
-    console.log(this.state.balance.toString());
   }
 
   constructor(props) {
