@@ -15,9 +15,5 @@ export default function DropdownCrypto(props) {
             </DropdownButton>
         </section>
     )
-            </div>
-        </Nav>  
-    </nav>
-</div>)
-}
+
 }
