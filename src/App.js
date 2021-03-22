@@ -41,6 +41,16 @@ class App extends Component {
           token: token,
           coinAddress: coinAddress,
         });
+
+        const abiArr = [CHC, Wood, Slick, Ham, Smit];
+        for (let i = 0; i < abiArr.length; i++) {
+          this.state.allContracts.push(
+            new web3.eth.Contract(
+              abiArr[i].abi,
+              abiArr[i].networks[netId].address
+            )
+          );
+        }
       } catch (e) {
         console.log("Error", e);
         window.alert("Contracts not deployed to the current network");
@@ -55,6 +65,7 @@ class App extends Component {
     const web3 = new Web3(window.ethereum);
     await window.ethereum.enable();
     const netId = await web3.eth.net.getId();
+    console.log(this.state);
 
     const token = new web3.eth.Contract(
       Token.abi,
@@ -79,9 +90,8 @@ class App extends Component {
   }
 
   async sendAmount() {
-    const amount = this.state.input * 100000000000000008;
     const response = await this.state.token.methods
-      .donate(this.state.account, amount.toString())
+      .donate(this.state.account, this.state.input)
       .send({ from: this.state.account, value: this.state.input.toString() });
     this.setState({
       response: response,
@@ -89,32 +99,20 @@ class App extends Component {
   }
 
   async borrow() {
-    const amount = this.state.input * 100000000000000008;
-    const response = await this.state.token.methods
-      .borrow(this.state.account, amount.toString())
-      .send({
-        value: this.state.input,
-        from: this.state.account,
-      });
-    this.setState({
-      response: response,
-    });
-  }
-
-  async allContracts() {
-    const web3 = new Web3(window.ethereum);
-    const netId = await web3.eth.net.getId();
-
-    const abiArr = [CHC, Wood, Slick, Ham, Smit];
-    let allContracts = [];
-
-    for (let i = 0; i < abiArr.length; i++) {
-      allContracts.push(
-        await new web3.eth.Contract(
-          abiArr[i].abi,
-          abiArr[i].networks[netId].address
-        )
-      );
+    if (this.state.tokek != "undefined") {
+      try {
+        const response = await this.state.token.methods
+          .borrow(this.state.account, this.state.input)
+          .send({
+            value: this.state.input.toString(),
+            from: this.state.account,
+          });
+        this.setState({
+          response: response,
+        });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
     }
   }
 
@@ -134,8 +132,6 @@ class App extends Component {
   }
 
   render() {
-    const coins = this.state;
-
     if (this.state.token == null) {
       return <p>loading</p>;
     } else {
@@ -150,7 +146,7 @@ class App extends Component {
               <div className="walletActions mt-4">
                 <button
                   type="button"
-                  class="btn mr-1 ml-1 btn-outline-info"
+                  className="btn mr-1 ml-1 btn-outline-info"
                   onClick={this.borrow.bind(this)}
                 >
                   BORROW
@@ -218,7 +214,7 @@ class App extends Component {
                     The current Token Selected is {this.state.tokenName}.
                     Address of token:
                     {"  "}
-                    <a
+                    <p
                       onClick={() => {
                         navigator.clipboard.writeText(this.state.token.address);
                       }}
@@ -230,7 +226,7 @@ class App extends Component {
                         className="clipboard"
                         src="https://i.imgur.com/e7uIP8z.png"
                       />
-                    </a>
+                    </p>
                   </h5>
                   <h5>
                     Current balance on account:{" "}
