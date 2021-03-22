@@ -134,6 +134,8 @@ class App extends Component {
   }
 
   render() {
+    const coins = this.state
+
     if (this.state.token == null) {
       return <p>loading</p>;
     } else {
@@ -156,7 +158,7 @@ class App extends Component {
                 </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-info"
+                  className="btn ml-1 mr-1 btn-outline-info"
                   onClick={this.sendAmount.bind(this)}
                 >
                   RETURN
@@ -177,35 +179,35 @@ class App extends Component {
               <div className="tokenChange mt-2">
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, Wood)}
                 >
                   Wood Token
                 </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, Smit)}
                 >
                   Smit Token
                 </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, CHC)}
                 >
                   CHC Token
                 </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, Ham)}
                 >
                   Ham Token
                 </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, Slick)}
                 >
                   Slick Token
@@ -231,6 +233,11 @@ class App extends Component {
                       />
                     </a>
                   </h5>
+                  <h5>
+                    Current balance on account:{" "}
+                    {this.state.balance / 1000000000000000000}{" "}
+                    {this.state.tokenName}{" "}
+                  </h5>
                 </div>
                 <div className="Account balance">
                   <div style={{ fontSize: ".8rem" }}>
@@ -249,45 +256,10 @@ class App extends Component {
                     </Alert>
                   </div>
                 </div>
-                <h5>
-                  Current balance on account:{" "}
-                  {this.state.balance / 1000000000000000000}{" "}
-                  {this.state.tokenName}{" "}
-                </h5>
               </div>
             </div>
           </div>
-          <div className="sidebar mt-2">
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Username</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td colSpan="2">Larry the Bird</td>
-                  <td>@twitter</td>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
+
         </>
       );
     }
