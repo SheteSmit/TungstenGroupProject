@@ -79,7 +79,7 @@ class App extends Component {
   }
 
   async sendAmount() {
-    const amount = this.state.input * 1000000000000000000;
+    const amount = this.state.input * 100000000000000008;
     const response = await this.state.token.methods
       .donate(this.state.account, amount.toString())
       .send({ from: this.state.account, value: this.state.input.toString() });
@@ -89,7 +89,7 @@ class App extends Component {
   }
 
   async borrow() {
-    const amount = this.state.input * 1000000000000000000;
+    const amount = this.state.input * 100000000000000008;
     const response = await this.state.token.methods
       .borrow(this.state.account, amount.toString())
       .send({
@@ -134,6 +134,8 @@ class App extends Component {
   }
 
   render() {
+    const coins = this.state;
+
     if (this.state.token == null) {
       return <p>loading</p>;
     } else {
