@@ -9,7 +9,7 @@ import Ham from "./abis/HAM.json";
 import NavBar from "./components/navBar";
 import DropdownCrypto from "./components/tokenSelect";
 import BtnGroupCrypto from "./components/btnGroup";
-import { Alert, Nav, NavItem, NavLink, } from 'react-bootstrap';
+import { Alert, Nav, NavItem, NavLink } from "react-bootstrap";
 
 class App extends Component {
   async componentWillMount() {
@@ -101,6 +101,8 @@ class App extends Component {
     });
   }
 
+  tokenTotalSuppliess() {}
+
   constructor(props) {
     super(props);
     this.state = {
@@ -111,6 +113,7 @@ class App extends Component {
       balance: 0,
       input: 0,
       tokenName: "CHC",
+      tokeksLoaded: false,
     };
   }
 
@@ -187,9 +190,11 @@ class App extends Component {
               Slick Token
             </button>
             <div className="contractInfo">
-              <div style={{ width: '40%', fontSize: '.8rem' }}>
-                <Alert variant='danger'>
-                  Please add the token to your  <Alert.Link href="#">wallet</Alert.Link> to see transactions</Alert>
+              <div style={{ width: "40%", fontSize: ".8rem" }}>
+                <Alert variant="danger">
+                  Please add the token to your{" "}
+                  <Alert.Link href="#">wallet</Alert.Link> to see transactions
+                </Alert>
               </div>
               <h5>
                 Contract address for {this.state.tokenName} is:{"  "}
@@ -209,10 +214,11 @@ class App extends Component {
               </h5>
             </div>
             <div className="Account balance">
-              <div style={{ width: '45%', fontSize: '.8rem' }}>
-
-                <Alert variant='danger'>
-                  Balance cannot be seen until tokens are added in  <Alert.Link href="#">MetamMask</Alert.Link></Alert>
+              <div style={{ width: "45%", fontSize: ".8rem" }}>
+                <Alert variant="danger">
+                  Balance cannot be seen until tokens are added in{" "}
+                  <Alert.Link href="#">MetamMask</Alert.Link>
+                </Alert>
               </div>
               <h5>
                 Current balance on account:{" "}
