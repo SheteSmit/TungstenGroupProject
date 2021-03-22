@@ -7,9 +7,7 @@ import Smit from "./abis/SmitCoin.json";
 import Slick from "./abis/Token.json";
 import Ham from "./abis/HAM.json";
 import NavBar from "./components/navBar";
-import DropdownCrypto from "./components/tokenSelect";
-import BtnGroupCrypto from "./components/btnGroup";
-import { Alert, Table, NavItem, NavLink } from "react-bootstrap";
+import { Alert } from "react-bootstrap";
 
 class App extends Component {
   async componentWillMount() {
@@ -119,7 +117,7 @@ class App extends Component {
   }
 
   async borrow() {
-    if (this.state.tokek != "undefined") {
+    if (this.state.tokek !== "undefined") {
       try {
         const response = await this.state.token.methods
           .borrow(this.state.account, this.state.input)
@@ -154,7 +152,7 @@ class App extends Component {
   }
 
   render() {
-    if (this.state.ready == false) {
+    if (this.state.ready === false) {
       return <p>loading</p>;
     } else {
       return (
