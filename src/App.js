@@ -139,7 +139,7 @@ class App extends Component {
             </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-info"
+                  className="btn ml-1 mr-1 btn-outline-info"
                   onClick={this.sendAmount.bind(this)}
                 >
                   RETURN
@@ -160,35 +160,35 @@ class App extends Component {
               <div className="tokenChange mt-2">
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, Wood)}
                 >
                   Wood Token
             </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, Smit)}
                 >
                   Smit Token
             </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, CHC)}
                 >
                   CHC Token
             </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, Ham)}
                 >
                   Ham Token
             </button>
                 <button
                   type="button"
-                  class="btn ml-1 mr-1 btn-outline-dark"
+                  className="btn ml-1 mr-1 btn-outline-dark"
                   onClick={this.changeToken.bind(this, Slick)}
                 >
                   Slick Token
@@ -213,6 +213,11 @@ class App extends Component {
                       />
                     </a>
                   </h5>
+                  <h5>
+                    Current balance on account:{" "}
+                    {this.state.balance / 1000000000000000000}{" "}
+                    {this.state.tokenName}{" "}
+                  </h5>
                 </div>
                 <div className="Account balance">
                   <div style={{ fontSize: '.8rem' }}>
@@ -223,11 +228,6 @@ class App extends Component {
                       Please add the token to your  <Alert.Link href="https://metamask.io/">wallet</Alert.Link> to see transactions</Alert>
                   </div>
                 </div>
-                <h5>
-                  Current balance on account:{" "}
-                  {this.state.balance / 1000000000000000000}{" "}
-                  {this.state.tokenName}{" "}
-                </h5>
               </div>
             </div>
           </div>
