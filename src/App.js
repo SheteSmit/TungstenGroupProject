@@ -14,6 +14,7 @@ import { Alert, Table, NavItem, NavLink } from "react-bootstrap";
 class App extends Component {
   async componentWillMount() {
     await this.loadBlockchainData();
+    await this.getAllBalances();
   }
 
   async loadBlockchainData(dispatch) {
@@ -42,12 +43,11 @@ class App extends Component {
           coinAddress: coinAddress,
         });
 
-        const abiArr = [CHC, Wood, Slick, Ham, Smit];
-        for (let i = 0; i < abiArr.length; i++) {
+        for (let i = 0; i < this.state.abiArr.length; i++) {
           this.state.allContracts.push(
             new web3.eth.Contract(
-              abiArr[i].abi,
-              abiArr[i].networks[netId].address
+              this.state.abiArr[i].abi,
+              this.state.abiArr[i].networks[netId].address
             )
           );
         }
@@ -58,20 +58,22 @@ class App extends Component {
     } else {
       window.alert("Please install MetaMask");
     }
-    console.log(this.state);
   }
 
   async changeToken(Token) {
+    // creates a new web3 service
     const web3 = new Web3(window.ethereum);
-    await window.ethereum.enable();
+    // gets networkId
     const netId = await web3.eth.net.getId();
+    // testing
     console.log(this.state);
-
+    // creates contract
     const token = new web3.eth.Contract(
       Token.abi,
       Token.networks[netId].address
     );
     const coinAddress = Token.networks[netId].address;
+    // all data is saved inside state to use for later
     this.setState({
       tokenName: Token.contractName,
       token: token,
@@ -87,6 +89,24 @@ class App extends Component {
           balance: result.toString(),
         });
       });
+  }
+
+  async getAllBalances() {
+    for (let i = 0; i < this.state.allContracts.length; i++) {
+      await this.state.allContracts[i].methods
+        .balanceOf(this.state.account)
+        .call({ from: this.state.account })
+        .then((result) => {
+          console.log(result.toString());
+          this.state.balances.push([
+            this.state.abiArr[i].contractName,
+            result.toString(),
+          ]);
+        });
+    }
+    await this.setState({
+      ready: true,
+    });
   }
 
   async sendAmount() {
@@ -124,15 +144,17 @@ class App extends Component {
       token: null,
       result: "null",
       balance: 0,
+      balances: [],
       input: 0,
       tokenName: "CHC",
-      tokeksLoaded: false,
+      abiArr: [CHC, Wood, Slick, Ham, Smit],
       allContracts: [],
+      ready: false,
     };
   }
 
   render() {
-    if (this.state.token == null) {
+    if (this.state.ready == false) {
       return <p>loading</p>;
     } else {
       return (
@@ -234,6 +256,7 @@ class App extends Component {
                     {this.state.tokenName}{" "}
                   </h5>
                 </div>
+                <div></div>
                 <div className="accountBalance">
                   <div style={{ fontSize: ".8rem" }}>
                     <Alert variant="warning">
