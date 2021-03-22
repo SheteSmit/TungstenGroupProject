@@ -134,14 +134,13 @@ class App extends Component {
   }
 
   render() {
-    const coins = this.state
+    const coins = this.state;
 
     if (this.state.token == null) {
       return <p>loading</p>;
     } else {
       return (
         <>
-          <button onClick={this.tokenTotalSupplies}></button>
           <NavBar account={this.state.account} />
           <div className="container">
             <div className="mainContent">
@@ -216,8 +215,8 @@ class App extends Component {
               <div className="contractInfo mt-2">
                 <div>
                   <h5>
-                    The current Token Selected is{" "}
-                    <a href="#">{this.state.tokenName}</a>. Address of token:
+                    The current Token Selected is {this.state.tokenName}.
+                    Address of token:
                     {"  "}
                     <a
                       onClick={() => {
@@ -259,7 +258,6 @@ class App extends Component {
               </div>
             </div>
           </div>
-
         </>
       );
     }
