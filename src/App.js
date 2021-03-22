@@ -134,8 +134,6 @@ class App extends Component {
   }
 
   render() {
-    const coins = this.state;
-
     if (this.state.token == null) {
       return <p>loading</p>;
     } else {
@@ -213,7 +211,7 @@ class App extends Component {
                 </button>
               </div>
               <div className="contractInfo mt-2">
-                <div>
+                <div className="bottomBar">
                   <h5>
                     The current Token Selected is {this.state.tokenName}.
                     Address of token:
@@ -238,7 +236,7 @@ class App extends Component {
                     {this.state.tokenName}{" "}
                   </h5>
                 </div>
-                <div className="Account balance">
+                <div className="accountBalance">
                   <div style={{ fontSize: ".8rem" }}>
                     <Alert variant="warning">
                       Balance cannot be seen until tokens are added in{" "}
