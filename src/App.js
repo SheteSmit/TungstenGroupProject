@@ -108,12 +108,21 @@ class App extends Component {
   }
 
   async sendAmount() {
-    const response = await this.state.token.methods
-      .donate(this.state.account, this.state.input)
-      .send({ from: this.state.account, value: this.state.input.toString() });
-    this.setState({
-      response: response,
-    });
+    if (this.state.tokek !== "undefined") {
+      try {
+        const response = await this.state.token.methods
+          .donate(this.state.account, this.state.input)
+          .send({
+            from: this.state.account,
+            value: this.state.input.toString(),
+          });
+        this.setState({
+          response: response,
+        });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
+    }
   }
 
   async borrow() {
