@@ -1,55 +1,73 @@
-# greenbook-app
-Code base for the android, ios, and responseive web apps for [spicygreenbook.org](https://spicygreenbook.org) which is a directory of local black-owned businesses that users can find to support
+# Tungsten Group Project
+Code base for the responseive web apps for [Cobalt-Lend.io](https://cobaltlend.io/) which is a a protocol on the blockchain that allows for community approved lending at minimal fees and low over head, with both the borrower and the community benefiting.
 
 # HOW TO CONTRIBUTE
-Find an [issue](https://github.com/spicygreenbook/greenbook-app/issues) and comment that you are going to handle it so we don't get duplicate effort on the same issue. If you are unable to solve the issue, let us know in the comments so someone else can take it.
+Find an [issue](https://github.com/CobaltTeamN/TungstenGroupProject/issues) and comment that you are going to handle it so we don't get duplicate effort on the same issue. If you are unable to solve the issue, let us know in the comments so someone else can take it.
 
-Join [our slack](https://spicy-green-book.slack.com) and let us know what you can do and we'll let you know how you can help!
+Communicate through telegram communicating how your progress is going or if you need assistance on the part of the project you picked up. 
 
 # PULL REQUEST
-If you clone this repo and realize you do not have permission to push directly to this repo [check out this article](https://jarv.is/notes/how-to-pull-request-fork-github/) to learn how to fork and make a pull request
+If you clone this repo and realize you do not have permission to push directly to this repo [read more here](https://github.com/CobaltTeamN/TungstenGroupProject/issues/1) to learn how to fork and make a pull request
 
 ## Want to report a bug or issue with the website?
-Use the [issues](https://github.com/spicygreenbook/greenbook-app/issues) section on this page to let us know!
+Use the [issues](https://github.com/CobaltTeamN/TungstenGroupProject/issues) section on this page to let us know.
 
 ## How To Contribute Code
-The app is built with [Expo](https://expo.io/) + [NextJS](https://nextjs.org/) and is hosted/deployed on [Vercel](https://www.vercel.com) (formerly now.sh)
+The app is built with solidity programming language , Truffle framework , and Node.js. The teams prefence for this project will be using the IDE VScode often know as Visual Studio Code.
+
+Solidity Resources:
+Description:Solidity is a contract-oriented, high-level language for implementing smart contracts.
+
+How to use Master Solidity:
+
+Part 1) https://www.youtube.com/watch?v=pqxNmdwEHio
+
+Part 2)https://www.youtube.com/watch?v=HxlxNwgoN8w
+
+Part 3) https://www.youtube.com/watch?v=7Pm9HB-mJQg
+
+Part 4) https://www.youtube.com/watch?v=wJnXuCFVGFA
+
+Node.js Resources:
+Description: Node. js is a runtime environment that allows software developers to launch 
+both the frontend and backend of web apps using JavaScript. Although JS underpins all the
+processes for app assembly, as a backend development environment.
+
+How to install Node.js in VScode:https://www.youtube.com/watch?v=sJ7nDNNpOMA
+
+
+Truffle Resources : 
+Description:Truffle is a development environment, testing framework, and asset pipeline all rolled into one. 
+It is based on Ethereum Blockchain and is designed to facilitate the smooth and seamless development of DApps 
+
+What is Truffle Features : https://www.trufflesuite.com/truffle
+
+How to use truffle: https://www.youtube.com/watch?v=k5uZdUU3mLM
+
+How to build first Contract: https://www.youtube.com/watch?v=CgXQC4dbGUE
+
 
 ## What do I need to know to contribute code?
-**Absolutely Critical**: JavaScript
+**Absolutely Critical**: JavaScript and Solidity
 
-**Helps a lot**: Git/GitHub, Expo.io, React/React Native, NextJS, CSS, HTML, Understanding fetching JSON data from an API
+**Helps a lot**: Git/GitHub, React/React Native
 
 ## How to get started coding on this app
 ```sh
     # clone the repo
-    git clone git@github.com:spicygreenbook/greenbook-app.git
+    https://github.com/CobaltTeamN/TungstenGroupProject.git
 
-    # change your directory into the greenbook repo
-    cd greenbook-app
+    # change your directory into the FRONTEND repo
+    cd FRONT-END
 
     # install node modules
     npm install
 
-    # install expo
-    npm install expo-cli --global
-
-    # run expo.io
-    expo start
-
-    # run nextjs (for web)
+    # run react-app
     # this should make http://localhost:3000 available in your web browser
-    npx next dev
-
+    npm start
 ```
 
-## Workflow
-  Use the expo.io app that opens on your localhost as well as an android and ios device to test everything you develop on both android and ios so that you do not get too far into development without properly supporting each device.
 
-  Use your web browser and check both mobile and desktop sized views to ensure the responsive web app works on all device sizes.
-
-  When necessary, is the isWeb flag to determine when to use web compatible components and methods or mobile device options.
-
-
-## Slack
-Our slack is at [spicy-green-book.slack.com](https://spicy-green-book.slack.com) if you want to be part of the community. We have a channel specifically for the coders to collaborate on.
+## Telegram
+Our telegram has links to training, information on Cobalt, and industry updates speak to Michael if you are not a part of the community. We have several different groups specifically for each part of the development process.
