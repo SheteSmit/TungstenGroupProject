@@ -13,6 +13,8 @@ class App extends Component {
   async componentWillMount() {
     await this.loadBlockchainData();
     await this.getAllBalances();
+    console.log(this.state.allContracts)
+
   }
 
   async loadBlockchainData(dispatch) {

@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# greenbook-app
+Code base for the android, ios, and responseive web apps for [spicygreenbook.org](https://spicygreenbook.org) which is a directory of local black-owned businesses that users can find to support
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# HOW TO CONTRIBUTE
+Find an [issue](https://github.com/spicygreenbook/greenbook-app/issues) and comment that you are going to handle it so we don't get duplicate effort on the same issue. If you are unable to solve the issue, let us know in the comments so someone else can take it.
 
-## Available Scripts
+Join [our slack](https://spicy-green-book.slack.com) and let us know what you can do and we'll let you know how you can help!
 
-In the project directory, you can run:
+# PULL REQUEST
+If you clone this repo and realize you do not have permission to push directly to this repo [check out this article](https://jarv.is/notes/how-to-pull-request-fork-github/) to learn how to fork and make a pull request
 
-### `yarn start`
+## Want to report a bug or issue with the website?
+Use the [issues](https://github.com/spicygreenbook/greenbook-app/issues) section on this page to let us know!
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## How To Contribute Code
+The app is built with [Expo](https://expo.io/) + [NextJS](https://nextjs.org/) and is hosted/deployed on [Vercel](https://www.vercel.com) (formerly now.sh)
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## What do I need to know to contribute code?
+**Absolutely Critical**: JavaScript
 
-### `yarn test`
+**Helps a lot**: Git/GitHub, Expo.io, React/React Native, NextJS, CSS, HTML, Understanding fetching JSON data from an API
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## How to get started coding on this app
+```sh
+    # clone the repo
+    git clone git@github.com:spicygreenbook/greenbook-app.git
 
-### `yarn build`
+    # change your directory into the greenbook repo
+    cd greenbook-app
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+    # install node modules
+    npm install
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    # install expo
+    npm install expo-cli --global
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    # run expo.io
+    expo start
 
-### `yarn eject`
+    # run nextjs (for web)
+    # this should make http://localhost:3000 available in your web browser
+    npx next dev
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Workflow
+  Use the expo.io app that opens on your localhost as well as an android and ios device to test everything you develop on both android and ios so that you do not get too far into development without properly supporting each device.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+  Use your web browser and check both mobile and desktop sized views to ensure the responsive web app works on all device sizes.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+  When necessary, is the isWeb flag to determine when to use web compatible components and methods or mobile device options.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Slack
+Our slack is at [spicy-green-book.slack.com](https://spicy-green-book.slack.com) if you want to be part of the community. We have a channel specifically for the coders to collaborate on.
