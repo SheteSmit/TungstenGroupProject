@@ -4,22 +4,20 @@ contract HAM {
     string public name = "HAMToken";
     string public symbol = "HAM";
     uint8 public decimals = 18;
-
     uint256 public _totalSupply;
+
     mapping(address => uint256) balances;
     mapping(address => mapping(address => uint256)) allowed;
     mapping(address => uint256) timestamp; // timestamp of last borrowed time
 
-    // an event that is triggered whenever a transaction is approved
+    // Events
+    event Borrowed(address borrower, uint256 amount, uint256 timestamp);
+    event Transfer(address indexed _from, address indexed _to, uint256 _amount);
     event Approval(
         address indexed _tokenOwner,
         address indexed _spender,
         uint256 _amount
     );
-    event Borrowed(address borrower, uint256 amount, uint256 timestamp);
-
-    // an event that is triggered whenever a transaction is transferred
-    event Transfer(address indexed _from, address indexed _to, uint256 _amount);
 
     constructor() public {
         _totalSupply = 10000000000000;
@@ -33,7 +31,7 @@ contract HAM {
 
     // will return the number of tokens the msg sender has left
     function balanceOf(address _tokenOwner) public view returns (uint256) {
-        return balances[msg.sender];
+        return balances[_tokenOwner];
     }
 
     // sets allowance

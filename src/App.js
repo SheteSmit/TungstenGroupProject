@@ -13,8 +13,7 @@ class App extends Component {
   async componentWillMount() {
     await this.loadBlockchainData();
     await this.getAllBalances();
-    console.log(this.state.allContracts)
-
+    console.log(this.state.allContracts);
   }
 
   async loadBlockchainData(dispatch) {
@@ -247,12 +246,12 @@ class App extends Component {
                     {"  "}
                     <p
                       onClick={() => {
-                        navigator.clipboard.writeText(this.state.token.address);
+                        navigator.clipboard.writeText(this.state.coinAddress);
                       }}
                       href="#"
                       id="pointer"
                     >
-                      {this.state.token.address}{" "}
+                      {this.state.coinAddress}{" "}
                       <img
                         className="clipboard"
                         src="https://i.imgur.com/e7uIP8z.png"
