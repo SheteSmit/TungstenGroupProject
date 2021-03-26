@@ -3,6 +3,7 @@ const WoodToken = artifacts.require("WoodToken");
 const Smit = artifacts.require("SmitCoin");
 const Slick = artifacts.require("Token");
 const Ham = artifacts.require("HAM");
+const Bank = artifacts.require('Bank');
 
 module.exports = async function (deployer) {
   // deploy my contracts
@@ -11,4 +12,5 @@ module.exports = async function (deployer) {
   await deployer.deploy(Smit);
   await deployer.deploy(Slick);
   await deployer.deploy(Ham);
+  await deployer.deploy(Bank);
 };
