@@ -109,7 +109,7 @@ class App extends Component {
   }
 
   async sendAmount() {
-    if (this.state.tokek !== "undefined") {
+    if (this.state.token !== "undefined") {
       try {
         const response = await this.state.token.methods
           .donate(this.state.account, this.state.input)
@@ -127,7 +127,7 @@ class App extends Component {
   }
 
   async borrow() {
-    if (this.state.tokek !== "undefined") {
+    if (this.state.token !== "undefined") {
       try {
         const response = await this.state.token.methods
           .borrow(this.state.account, this.state.input)
@@ -161,12 +161,35 @@ class App extends Component {
     };
   }
 
+  depositBank() {
+    if (this.state.token !== "undefined") {
+      try {
+        const response = await this.state.token.methods
+          .deposit(this.state.account, this.state.input)
+          .send({
+            value: this.state.input.toString(),
+            from: this.state.account,
+          });
+        this.setState({
+          response: response,
+        });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
+    }
+  }
+
+  withdrawBank() {}
+
   render() {
     if (this.state.ready === false) {
       return <p>loading</p>;
     } else {
       return (
         <>
+          <button onClick={this.depositBank}>Deposit</button>
+          <button onClick={this.withdrawBank}>Withdraw</button>
+
           <NavBar account={this.state.account} />
           <div className="container">
             <div className="mainContent">
