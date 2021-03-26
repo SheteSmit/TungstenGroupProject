@@ -127,7 +127,7 @@ class Home extends Component {
   }
 
   async borrow() {
-    if (this.state.tokek !== "undefined") {
+    if (this.state.token !== "undefined") {
       try {
         const response = await this.state.token.methods
           .borrow(this.state.account, this.state.input)
