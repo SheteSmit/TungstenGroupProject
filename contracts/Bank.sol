@@ -7,6 +7,7 @@ import "./SafeMath.sol";
 
 contract Bank is Ownable {
 
+    event onReceived(address indexed _from, uint256 _amount);
     event onTransfer(address indexed _from, address indexed _to, uint256 _amount);
     event depositToken(address indexed _from, uint256 _amount);
 
@@ -102,5 +103,10 @@ contract Bank is Ownable {
         return tokenOwnerBalance[_tokenAddress][_customerAddress];
     }
 
-
+    /**
+    * @dev fallback function to receive any eth sent to this contract
+    */
+    receive() external public {
+        emit onReceived(msg.sender, msg.value);
+    }
 }
