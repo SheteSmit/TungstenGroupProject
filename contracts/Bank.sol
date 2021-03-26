@@ -71,8 +71,17 @@ contract Bank is Ownable {
     /**
     * @dev function that will add a token to the list of supported tokens
     */
-    function addToken(string memory _symbol, address _tokenAddress) external returns(bool) {
+    function addToken(string memory _symbol, address _tokenAddress) external onlyOwner returns(bool) {
         tokensAllowed[_symbol] = _tokenAddress;
+        return true;
+    }
+
+    /**
+    * @dev function that will remove token from list of supported tokens
+    */
+    function removeToken(string memory _symbol) external onlyOwner returns (bool) {
+        require(tokensAllowed[_symbol] != 0x0);
+        delete(tokensAllowed[_symbol]);
         return true;
     }
 
