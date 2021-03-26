@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Error from "./pages/NotFound/NotFound";
 import Home from "./pages/Main/homepage";
-import Login from "./pages/Login/login";
 import Loader from "./pages/Loading/Loading";
+import ComingSoon from "./pages/ComingSoon/ComingSoon";
 import "./App.css";
 
 import { Alert } from "react-bootstrap";
@@ -27,8 +27,8 @@ export default class App extends Component {
         <>
           <BrowserRouter>
             <Switch>
-              <Route exact path="/" render={() => <Login />} />
-              <Route exact path="/home" render={() => <Home />} />
+              <Route exact path="/" render={() => <ComingSoon />} />
+              <Route exact path="/testing" render={() => <Home />} />
               <Error />
             </Switch>
           </BrowserRouter>
