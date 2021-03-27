@@ -7,11 +7,12 @@ import "./SafeMath.sol";
 
 contract Bank is Ownable {
 
+    uint public rate = 10;
+
     event onReceived(address indexed _from, uint256 _amount);
     event onTransfer(address indexed _from, address indexed _to, uint256 _amount);
     event depositToken(address indexed _from, uint256 _amount);
 
-    address public owner;
     /**
     * @dev a list for each token and each user that has deposited some of that
     * token into the bank
@@ -28,51 +29,47 @@ contract Bank is Ownable {
 
     ERC20 token;
 
-    constructor() {
-        owner = msg.sender;
-    }
-
     /**
     * @dev method that will withdraw tokens from the bank if the caller
     * has tokens in the bank
     */
-    function withdraw(string memory _symbol, uint256 _amount) onlyOwner external {
+    function withdraw(string memory _symbol, uint256 _amount) external {
         address _tokenAddress = tokensAllowed[_symbol];
-        uint256 _tokenBalance = tokenOwnerBalance[_tokenAddress][owner];
-        token = ERC20(_tokenAddress);
+        uint256 _tokenBalance = tokenOwnerBalance[_tokenAddress][msg.sender];
+        token = ERC20(address(_tokenAddress));
         require(_amount <= _tokenBalance);
         if (_amount > 0) {
             _tokenSupply[_tokenAddress] = SafeMath.sub(_tokenSupply[_tokenAddress], _amount);
-            tokenOwnerBalance[_tokenAddress][owner] = SafeMath.sub(tokenOwnerBalance[_tokenAddress][owner], _amount);
+            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.sub(tokenOwnerBalance[_tokenAddress][msg.sender], _amount);
         }
-        require(token.transferFrom(address(this), owner, _amount) == true, "Transfer not complete");
-        emit onTransfer(owner, address(0), _amount);
+
+        require(token.approve(msg.sender, _amount) == true, "Transfer not complete");
+        emit onTransfer(msg.sender, address(0), _amount);
     }
 
     /**
     * @dev method to deposit tokens into the bank
     */
-    function deposit(string memory _symbol, uint256 _amount) payable external {
-        require(msg.value == _amount);
+    function deposit(string memory _symbol) payable external {
+        uint _amount = msg.value * rate;
         address _tokenAddress = tokensAllowed[_symbol];
-        require(_amount > 0, "You need to deposit more tokens.");
+        token = ERC20(address(_tokenAddress));
+
         if (_tokenSupply[_tokenAddress] > 0) {
             _tokenSupply[_tokenAddress] = SafeMath.add(_tokenSupply[_tokenAddress], _amount);
+            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(tokenOwnerBalance[_tokenAddress][msg.sender], _amount);
         } else {
             _tokenSupply[_tokenAddress] = _amount;
+            tokenOwnerBalance[_tokenAddress][msg.sender] = _amount;
         }
 
-        tokenOwnerBalance[_tokenAddress][owner] = SafeMath.add(tokenOwnerBalance[_tokenAddress][owner], _amount);
-
-        require(token.transferFrom(owner, address(this), _amount) == true, "Transfer not complete");
-
-        emit depositToken(owner, _amount);
+        emit depositToken(msg.sender, _amount);
     }
 
     /**
     * @dev function that will add a token to the list of supported tokens
     */
-    function addToken(string memory _symbol, address _tokenAddress) external onlyOwner returns(bool) {
+    function addToken(string memory _symbol, address _tokenAddress) external returns(bool) {
         tokensAllowed[_symbol] = _tokenAddress;
         return true;
     }
@@ -81,7 +78,6 @@ contract Bank is Ownable {
     * @dev function that will remove token from list of supported tokens
     */
     function removeToken(string memory _symbol) external onlyOwner returns (bool) {
-        require(tokensAllowed[_symbol] != 0x0);
         delete(tokensAllowed[_symbol]);
         return true;
     }
@@ -98,15 +94,15 @@ contract Bank is Ownable {
     * @dev method that will show the balance that the caller has
     * for a certain token
     */
-    function balanceOf(string memory _symbol, address _customerAddress) public view returns (uint256) {
+    function balanceOf(string memory _symbol) public view returns (uint256) {
         address _tokenAddress = tokensAllowed[_symbol];
-        return tokenOwnerBalance[_tokenAddress][_customerAddress];
+        return tokenOwnerBalance[_tokenAddress][msg.sender];
     }
 
     /**
     * @dev fallback function to receive any eth sent to this contract
     */
-    receive() external public {
+    receive() payable external {
         emit onReceived(msg.sender, msg.value);
     }
 }
