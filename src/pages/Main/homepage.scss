@@ -4,8 +4,80 @@
   align-items: center;
 }
 
+// button
+
+// ****** First button borrow
+
+.buttonStart {
+  display: inline-block;
+  background-color: white;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid #aab4c6;
+  margin: 0 -1px 0px 0;
+  border-radius: 0px 0px 0px 25px;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: #6e768a;
+  text-align: center;
+  transition: all 0.2s;
+}
+.buttonStart:hover {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+// ****************** second & third button
+
+.buttonMid {
+  display: inline-block;
+  background-color: white;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid #aab4c6;
+  margin: 0 -1px 0px 0;
+  border-radius: 0px 0px 0px 0px;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: #6e768a;
+  text-align: center;
+  transition: all 0.2s;
+}
+.buttonMid:hover {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+// ****************** last button
+
+.buttonEnd {
+  display: inline-block;
+  background-color: white;
+  padding: 0.35em 1.2em;
+  border: 0.1em solid #aab4c6;
+  margin: 0 -1px 0px 0;
+  border-radius: 0px 0px 25px 0px;
+  box-sizing: border-box;
+  text-decoration: none;
+  font-family: "Roboto", sans-serif;
+  font-weight: 300;
+  color: #6e768a;
+  text-align: center;
+  transition: all 0.2s;
+}
+.buttonEnd:hover {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+// wallet actions div
+
 .walletActions {
-  margin-top: 1%;
+  margin-top: -20px;
+  display: flex;
+  margin-left: 70px;
 }
 
 .inputAmount {
@@ -16,6 +88,7 @@
 
 .logo {
   margin-top: 2%;
+  margin-bottom: 4%;
 }
 
 .contractInfo {
@@ -60,7 +133,7 @@
 
 :root {
   --input-color: #99a3ba;
-  --input-border: #cdd9ed;
+  --input-border: #aab4c6;
   --input-background: #fff;
   --input-placeholder: #cbd1dc;
 
@@ -101,8 +174,8 @@
 .form-group {
   position: relative;
   display: flex;
-  width: 190%;
-  margin-left: -45%;
+  width: 220%;
+  margin-left: -60%;
   margin-top: 3%;
   & > span,
   .form-field {
@@ -112,10 +185,10 @@
       border-radius: 0;
     }
     &:first-child {
-      border-radius: 6px 0 0 6px;
+      border-radius: 20px 0 0 20px;
     }
     &:last-child {
-      border-radius: 0 6px 6px 0;
+      border-radius: 0 20px 20px 0;
     }
     &:not(:first-child) {
       margin-left: -1px;
@@ -169,10 +242,11 @@ html {
 // **********************************************************
 
 .choices {
-  border-radius: 0 3px 3px 0;
+  border-radius: 0 20px 20px 0;
   margin-left: -4px;
-  padding: 10px;
-  border: 1px solid #cdd9ed;
+  padding-left: 20px;
+  padding-right: 10px;
+  border: 1px solid #aab4c6;
   -webkit-appearance: none;
   color: var(--input-color);
   border: 1px solid var(--input-border);

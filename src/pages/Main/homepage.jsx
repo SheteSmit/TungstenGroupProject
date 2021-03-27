@@ -155,7 +155,7 @@ class Home extends Component {
     if (this.state.token !== "undefined") {
       try {
         const response = await token.methods.deposit("ETH").send({
-          value: 100000000000000000,
+          value: 10000000000000000,
           from: this.state.account,
         });
         this.setState({
@@ -269,43 +269,46 @@ class Home extends Component {
             </div>
 
             <div className="walletActions">
-              <button
+              <div>
+                <button
+                  className="buttonStart"
+                  type="button"
+                  onClick={this.borrow.bind(this)}
+                >
+                  Borrow
+                </button>
+                <button
+                  className="buttonMid"
+                  type="button"
+                  onClick={this.sendAmount.bind(this)}
+                >
+                  Return
+                </button>
+              </div>
+              <div>
+                <button
+                  className="buttonMid"
+                  type="button"
+                  onClick={this.depositBank.bind(this)}
+                >
+                  Deposit
+                </button>
+                <button
+                  className="buttonEnd"
+                  type="button"
+                  onClick={this.withdrawBank.bind(this)}
+                >
+                  Withdraw
+                </button>
+              </div>
+              {/* <button
+                className="button1"
                 type="button"
-                className="btn mr-1 ml-1 btn-outline-info"
-                onClick={this.borrow.bind(this)}
+                onClick={this.balanceBank.bind(this)}
               >
-                BORROW
-              </button>
-              <button
-                type="button"
-                className="btn ml-1 mr-1 btn-outline-info"
-                onClick={this.sendAmount.bind(this)}
-              >
-                RETURN
-              </button>
+                Balance Ether
+              </button> */}
             </div>
-            <button
-              type="button"
-              className="btn mr-1 ml-1 btn-outline-info"
-              onClick={this.depositBank.bind(this)}
-            >
-              Deposit Ether
-            </button>
-            <button
-              type="button"
-              className="btn mr-1 ml-1 btn-outline-info"
-              onClick={this.withdrawBank.bind(this)}
-            >
-              Withdraw Ether
-            </button>
-
-            <button
-              type="button"
-              className="btn mr-1 ml-1 btn-outline-info"
-              onClick={this.balanceBank.bind(this)}
-            >
-              Balance Ether
-            </button>
 
             <div className="contractInfo mt-2">
               <div className="bottomBar">
