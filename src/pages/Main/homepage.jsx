@@ -60,7 +60,9 @@ class Home extends Component {
     }
   }
 
-  async changeToken(Token) {
+  async changeToken(event) {
+    const Token = this.state.abiArr[event.target.value];
+    console.log(Token);
     // creates a new web3 service
     const web3 = new Web3(window.ethereum);
     // gets networkId
@@ -196,7 +198,35 @@ class Home extends Component {
             <div className="logo mt-5">
               <img src="https://i.imgur.com/rRTK4EH.png" />
             </div>
-            <div className="walletActions mt-4">
+            <div>
+              <div className="form-group">
+                <input
+                  className="form-field"
+                  type="email"
+                  placeholder="Amount"
+                  onChange={(e) => {
+                    this.setState({
+                      input: e.target.value,
+                    });
+                  }}
+                ></input>
+                {/* <span className="coinInputText">{this.state.tokenName}</span> */}
+                <select
+                  className="choices"
+                  type="select"
+                  onChange={this.changeToken.bind(this)}
+                  id="cusSelectbox"
+                >
+                  <option value="0">CHC</option>
+                  <option value="1">Wood</option>
+                  <option value="2">Slick</option>
+                  <option value="3">HAM</option>
+                  <option value="4">Smit</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="walletActions">
               <button
                 type="button"
                 className="btn mr-1 ml-1 btn-outline-info"
@@ -212,64 +242,10 @@ class Home extends Component {
                 RETURN
               </button>
             </div>
-            <div>
-              <div className="form-group">
-                <input
-                  className="form-field"
-                  type="email"
-                  placeholder="Amount"
-                  onChange={(e) => {
-                    this.setState({
-                      input: e.target.value,
-                    });
-                  }}
-                ></input>
-                <span className="coinInputText">{this.state.tokenName}</span>
-              </div>
-            </div>
-            <div className="tokenChange mt-2">
-              <button
-                type="button"
-                className="btn ml-1 mr-1 btn-outline-dark"
-                onClick={this.changeToken.bind(this, Wood)}
-              >
-                Wood Token
-              </button>
-              <button
-                type="button"
-                className="btn ml-1 mr-1 btn-outline-dark"
-                onClick={this.changeToken.bind(this, Smit)}
-              >
-                Smit Token
-              </button>
-              <button
-                type="button"
-                className="btn ml-1 mr-1 btn-outline-dark"
-                onClick={this.changeToken.bind(this, CHC)}
-              >
-                CHC Token
-              </button>
-              <button
-                type="button"
-                className="btn ml-1 mr-1 btn-outline-dark"
-                onClick={this.changeToken.bind(this, Ham)}
-              >
-                Ham Token
-              </button>
-              <button
-                type="button"
-                className="btn ml-1 mr-1 btn-outline-dark"
-                onClick={this.changeToken.bind(this, Slick)}
-              >
-                Slick Token
-              </button>
-            </div>
+
             <div className="contractInfo mt-2">
               <div className="bottomBar">
                 <h5>
-                  The current Token Selected is {this.state.tokenName}. Address
-                  of token:
-                  {"  "}
                   <p
                     onClick={() => {
                       navigator.clipboard.writeText(this.state.coinAddress);

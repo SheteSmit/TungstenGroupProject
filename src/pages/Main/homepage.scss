@@ -5,7 +5,7 @@
 }
 
 .walletActions {
-  margin-top: 3%;
+  margin-top: 1%;
 }
 
 .inputAmount {
@@ -164,4 +164,25 @@ html {
 
 .coinInputText {
   width: 5%;
+}
+
+// **********************************************************
+
+.choices {
+  border-radius: 0 3px 3px 0;
+  margin-left: -4px;
+  padding: 10px;
+  border: 1px solid #cdd9ed;
+  -webkit-appearance: none;
+  color: var(--input-color);
+  border: 1px solid var(--input-border);
+  background: var(--input-background);
+  transition: border 0.3s ease;
+  &::placeholder {
+    color: var(--input-placeholder);
+  }
+  &:focus {
+    outline: none;
+    border-color: var(--input-border-focus);
+  }
 }
