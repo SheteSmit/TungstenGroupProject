@@ -5,6 +5,7 @@ import Home from "./pages/Main/homepage";
 import Loader from "./pages/Loading/Loading";
 import ComingSoon from "./pages/ComingSoon/ComingSoon";
 import "./App.css";
+import { DataProvider } from './GlobalState';
 
 import { Alert } from "react-bootstrap";
 
@@ -24,7 +25,7 @@ export default class App extends Component {
       return <Loader />;
     } else {
       return (
-        <>
+        <DataProvider>
           <BrowserRouter>
             <Switch>
               <Route exact path="/" render={() => <ComingSoon />} />
@@ -32,7 +33,7 @@ export default class App extends Component {
               <Error />
             </Switch>
           </BrowserRouter>
-        </>
+        </DataProvider>
       );
     }
   }
