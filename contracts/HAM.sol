@@ -46,13 +46,19 @@ contract HAM {
 
     // transfers tokens from one user to another
     function transfer(address _to, uint256 _amount) public returns (bool) {
-        _transfer(msg.sender, _to, _amount);
+        uint256 senderBalance = balances[msg.sender];
+        require(senderBalance >= _amount, "You don't have enough tokens");
+        balances[msg.sender] = senderBalance - _amount;
+        balances[_to] += _amount;
+
+        emit Transfer(msg.sender, _to, _amount);
         return true;
     }
 
     // approves the transaction
     function approve(address _spender, uint256 _amount) public returns (bool) {
-        _approve(msg.sender, _spender, _amount);
+        allowed[msg.sender][_spender] = _amount;
+        emit Approval(msg.sender, _spender, _amount);
         return true;
     }
 
@@ -62,11 +68,18 @@ contract HAM {
         address _to,
         uint256 _amount
     ) public returns (bool) {
-        _transfer(_from, _to, _amount);
+        // make sure the sender has enough tokens
+        uint256 senderBalance = balances[_from];
+        require(senderBalance >= _amount, "You don't have enough tokens");
+        balances[_from] = senderBalance - _amount;
+        balances[_to] += _amount;
 
-        uint256 currentAllowance = allowed[_from][msg.sender];
+        emit Transfer(_from, _to, _amount);
+
+        uint256 currentAllowance = allowed[_from][_to];
         require(currentAllowance >= _amount, "You don't have enough tokens");
-        _approve(_from, msg.sender, currentAllowance - _amount);
+        allowed[_from][_to] = _amount;
+        emit Approval(_from, _to, _amount);
 
         return true;
     }
@@ -83,39 +96,5 @@ contract HAM {
     function donate(address _donator, uint256 _amount) public payable {
         require(balances[_donator] >= _amount * 1000000000000000000);
         balances[_donator] = balances[_donator] - _amount * 1000000000000000000;
-    }
-
-    // requirements for the transfer function
-    function _transfer(
-        address _sender,
-        address _to,
-        uint256 _amount
-    ) internal virtual {
-        // make sure that the sender isn't using the token's address
-        require(_sender != address(0), "You cant transfer from this contract");
-        require(_to != address(0), "You can send tokens to this contract");
-
-        // make sure the sender has enough tokens
-
-        uint256 senderBalance = balances[_sender];
-        require(senderBalance >= _amount, "You don't have enough tokens");
-        balances[_sender] = senderBalance - _amount;
-        balances[_to] += _amount;
-
-        emit Transfer(_sender, _to, _amount);
-    }
-
-    // approves the transactions
-    function _approve(
-        address _owner,
-        address _to,
-        uint256 _amount
-    ) internal virtual {
-        // make sure you arent sending from or to token contract
-        require(_owner != address(0), "Can't use token contract");
-        require(_to != address(0), "Can't use token contract");
-
-        allowed[_owner][_to] = _amount;
-        emit Approval(_owner, _to, _amount);
     }
 }
