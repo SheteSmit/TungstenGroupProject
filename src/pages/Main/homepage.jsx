@@ -6,6 +6,7 @@ import Wood from "../../abis/WoodToken.json";
 import Smit from "../../abis/SmitCoin.json";
 import Slick from "../../abis/Token.json";
 import Ham from "../../abis/HAM.json";
+import Bank from "../../abis/Bank.json";
 import NavBar from "../../components/navBar";
 import { Alert } from "react-bootstrap";
 
@@ -144,6 +145,30 @@ class Home extends Component {
     }
   }
 
+  async depositBank() {
+    const web3 = new Web3(window.ethereum);
+    const netId = await web3.eth.net.getId();
+
+    const token = new web3.eth.Contract(Bank.abi, Bank.networks[netId].address);
+    console.log(token);
+
+    if (this.state.token !== "undefined") {
+      try {
+        const response = await token.methods
+          .deposit("ETH", "0x2170ed0880ac9a755fd29b2688956bd959f933f8")
+          .send({
+            value: 0.1,
+            from: this.state.account,
+          });
+        this.setState({
+          response: response,
+        });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
+    }
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -164,6 +189,7 @@ class Home extends Component {
   render() {
     return (
       <>
+        <button onClick={this.depositBank.bind(this)}>Deposit</button>
         <NavBar account={this.state.account} />
         <div className="container">
           <div className="mainContent">
