@@ -29,15 +29,11 @@ contract Bank is Ownable {
 
     ERC20 token;
 
-    constructor() {
-
-    }
-
     /**
     * @dev method that will withdraw tokens from the bank if the caller
     * has tokens in the bank
     */
-    function withdraw(string memory _symbol, uint256 _amount) external {
+    function withdrawTokens(string memory _symbol, uint256 _amount) external {
         address _tokenAddress = tokensAllowed[_symbol];
         uint256 _tokenBalance = tokenOwnerBalance[_tokenAddress][msg.sender];
         token = ERC20(address(_tokenAddress));
@@ -47,27 +43,66 @@ contract Bank is Ownable {
             tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.sub(tokenOwnerBalance[_tokenAddress][msg.sender], _amount);
         }
 
-        require(token.approve(msg.sender, _amount) == true, "Transfer not complete");
+        require(token.transfer(msg.sender, _amount) == true, "Transfer not complete");
+        emit onTransfer(msg.sender, address(0), _amount);
+    }
+
+    /**
+    * @dev method to withdraw eth from account
+    */
+    function withdraw(string memory _symbol, uint256 _amount) external {
+        address _tokenAddress = tokensAllowed[_symbol];
+        uint256 _tokenBalance = tokenOwnerBalance[_tokenAddress][msg.sender];
+        require(_amount <= _tokenBalance);
+        if (_amount > 0) {
+            _tokenSupply[_tokenAddress] = SafeMath.sub(_tokenSupply[_tokenAddress], _amount);
+            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.sub(tokenOwnerBalance[_tokenAddress][msg.sender], _amount);
+        }
+
+        msg.sender.transfer(_amount);
+
         emit onTransfer(msg.sender, address(0), _amount);
     }
 
     /**
     * @dev method to deposit tokens into the bank
     */
-    function deposit(string memory _symbol) payable external {
-        uint _amount = msg.value * rate;
+    function depositTokens(string memory _symbol, uint256 _tokenAmount) payable external {
+
         address _tokenAddress = tokensAllowed[_symbol];
         token = ERC20(address(_tokenAddress));
 
         if (_tokenSupply[_tokenAddress] > 0) {
-            _tokenSupply[_tokenAddress] = SafeMath.add(_tokenSupply[_tokenAddress], _amount);
-            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(tokenOwnerBalance[_tokenAddress][msg.sender], _amount);
+            _tokenSupply[_tokenAddress] = SafeMath.add(_tokenSupply[_tokenAddress], _tokenAmount);
+            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(tokenOwnerBalance[_tokenAddress][msg.sender], _tokenAmount);
         } else {
-            _tokenSupply[_tokenAddress] = _amount;
-            tokenOwnerBalance[_tokenAddress][msg.sender] = _amount;
+            _tokenSupply[_tokenAddress] = _tokenAmount;
+            tokenOwnerBalance[_tokenAddress][msg.sender] = _tokenAmount;
         }
 
-        emit depositToken(msg.sender, _amount);
+        require(token.transferFrom(msg.sender, address(this), _tokenAmount) == true, "Transfer not complete");
+
+        emit depositToken(msg.sender, _tokenAmount);
+    }
+
+
+    /**
+    * @dev method to deposit eth into the bank
+    */
+    function deposit(string memory _symbol) payable external {
+
+        address _tokenAddress = tokensAllowed[_symbol];
+        token = ERC20(address(_tokenAddress));
+
+        if (_tokenSupply[_tokenAddress] > 0) {
+            _tokenSupply[_tokenAddress] = SafeMath.add(_tokenSupply[_tokenAddress], msg.value);
+            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(tokenOwnerBalance[_tokenAddress][msg.sender], msg.value);
+        } else {
+            _tokenSupply[_tokenAddress] = msg.value;
+            tokenOwnerBalance[_tokenAddress][msg.sender] = msg.value;
+        }
+
+        emit depositToken(msg.sender, msg.value);
     }
 
     /**
