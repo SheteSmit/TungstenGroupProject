@@ -118,7 +118,6 @@ class Home extends Component {
           .donate(this.state.account, this.state.input)
           .send({
             from: this.state.account,
-            value: this.state.input.toString(),
           });
         this.setState({
           response: response,
@@ -135,7 +134,6 @@ class Home extends Component {
         const response = await this.state.token.methods
           .borrow(this.state.account, this.state.input)
           .send({
-            value: this.state.input.toString(),
             from: this.state.account,
           });
         this.setState({
@@ -156,8 +154,30 @@ class Home extends Component {
 
     if (this.state.token !== "undefined") {
       try {
+        const response = await token.methods.deposit("ETH").send({
+          value: 100000000000000000,
+          from: this.state.account,
+        });
+        this.setState({
+          response: response,
+        });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
+    }
+  }
+
+  async withdrawBank() {
+    const web3 = new Web3(window.ethereum);
+    const netId = await web3.eth.net.getId();
+
+    const token = new web3.eth.Contract(Bank.abi, Bank.networks[netId].address);
+    console.log(token);
+
+    if (this.state.token !== "undefined") {
+      try {
         const response = await token.methods
-          .deposit("ETH", "0x2170ed0880ac9a755fd29b2688956bd959f933f8")
+          .withdrawBank("ETH", "0x2170ed0880ac9a755fd29b2688956bd959f933f8")
           .send({
             value: 0.1,
             from: this.state.account,
@@ -165,6 +185,29 @@ class Home extends Component {
         this.setState({
           response: response,
         });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
+    }
+  }
+
+  async balanceBank() {
+    const web3 = new Web3(window.ethereum);
+    const netId = await web3.eth.net.getId();
+
+    const token = new web3.eth.Contract(Bank.abi, Bank.networks[netId].address);
+    console.log(token);
+
+    if (this.state.token !== "undefined") {
+      try {
+        const response = await token.methods
+          .balanceOf("ETH")
+          .call({
+            from: this.state.account,
+          })
+          .then((result) => {
+            console.log(result);
+          });
       } catch (e) {
         console.log("Error, deposit: ", e);
       }
@@ -191,7 +234,6 @@ class Home extends Component {
   render() {
     return (
       <>
-        {/* <button onClick={this.depositBank.bind(this)}>Deposit</button> */}
         <NavBar account={this.state.account} />
         <div className="container">
           <div className="mainContent">
@@ -242,6 +284,28 @@ class Home extends Component {
                 RETURN
               </button>
             </div>
+            <button
+              type="button"
+              className="btn mr-1 ml-1 btn-outline-info"
+              onClick={this.depositBank.bind(this)}
+            >
+              Deposit Ether
+            </button>
+            <button
+              type="button"
+              className="btn mr-1 ml-1 btn-outline-info"
+              onClick={this.withdrawBank.bind(this)}
+            >
+              Withdraw Ether
+            </button>
+
+            <button
+              type="button"
+              className="btn mr-1 ml-1 btn-outline-info"
+              onClick={this.balanceBank.bind(this)}
+            >
+              Balance Ether
+            </button>
 
             <div className="contractInfo mt-2">
               <div className="bottomBar">
