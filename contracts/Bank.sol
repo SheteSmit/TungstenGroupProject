@@ -29,6 +29,10 @@ contract Bank is Ownable {
 
     ERC20 token;
 
+    constructor() {
+
+    }
+
     /**
     * @dev method that will withdraw tokens from the bank if the caller
     * has tokens in the bank
