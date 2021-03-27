@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./homepage.css";
+import "./homepage.scss";
 import Web3 from "web3";
 import CHC from "../../abis/CHCToken.json";
 import Wood from "../../abis/WoodToken.json";
@@ -189,7 +189,7 @@ class Home extends Component {
   render() {
     return (
       <>
-        <button onClick={this.depositBank.bind(this)}>Deposit</button>
+        {/* <button onClick={this.depositBank.bind(this)}>Deposit</button> */}
         <NavBar account={this.state.account} />
         <div className="container">
           <div className="mainContent">
@@ -213,15 +213,18 @@ class Home extends Component {
               </button>
             </div>
             <div>
-              <div>
+              <div className="form-group">
                 <input
-                  className="inputAmount mt-2"
+                  className="form-field"
+                  type="email"
+                  placeholder="Amount"
                   onChange={(e) => {
                     this.setState({
                       input: e.target.value,
                     });
                   }}
                 ></input>
+                <span className="coinInputText">{this.state.tokenName}</span>
               </div>
             </div>
             <div className="tokenChange mt-2">
