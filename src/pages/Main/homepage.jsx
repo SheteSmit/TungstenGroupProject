@@ -377,8 +377,15 @@ class Home extends Component {
                     className="refreshLogo"
                   ></img>
                 </span>
-                <span className="choices" id="Contract">
-                  <p className="balanceText">Contract</p>
+                <span className="choices" id="contract">
+                  <p className="balanceText">Contract </p>
+                  <img
+                    onClick={() => {
+                      navigator.clipboard.writeText(this.state.coinAddress);
+                    }}
+                    className="clipboard"
+                    src="https://i.imgur.com/e7uIP8z.png"
+                  />
                 </span>
                 <input
                   className="form-field"
@@ -391,7 +398,8 @@ class Home extends Component {
                   onClick={this.refreshBalance.bind(this)}
                 >
                   <img
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Refresh_icon.svg/1024px-Refresh_icon.svg.png"
+                    onClick={this.addToken.bind(this)}
+                    src="https://cdn.iconscout.com/icon/free/png-512/metamask-2728406-2261817.png"
                     className="refreshLogo"
                   ></img>
                 </span>
