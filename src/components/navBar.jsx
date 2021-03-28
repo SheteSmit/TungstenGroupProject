@@ -6,7 +6,7 @@ export default function NavBar(props) {
     <header>
       <Navbar expand="lg" variant="light" bg="light">
         <Container>
-          <Navbar.Brand href="#">Cobalt Lend Treasury</Navbar.Brand>
+          <Navbar.Brand href="">Cobalt Lend Treasury</Navbar.Brand>
           <NavItem>Meta Mask Account: {props.account}</NavItem>
         </Container>
       </Navbar>

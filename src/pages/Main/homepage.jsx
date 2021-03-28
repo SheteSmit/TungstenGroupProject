@@ -34,8 +34,8 @@ class Home extends Component {
       //load contracts
       try {
         const token = new web3.eth.Contract(
-          CHC.abi,
-          CHC.networks[netId].address
+          Bank.abi,
+          Bank.networks[netId].address
         );
         const coinAddress = CHC.networks[netId].address;
         this.setState({
@@ -62,49 +62,93 @@ class Home extends Component {
 
   async changeToken(event) {
     const Token = this.state.abiArr[event.target.value];
-    console.log(Token);
     // creates a new web3 service
     const web3 = new Web3(window.ethereum);
     // gets networkId
     const netId = await web3.eth.net.getId();
-    // testing
-    console.log(this.state);
     // creates contract
-    const token = new web3.eth.Contract(
+    const token = await new web3.eth.Contract(
       Token.abi,
       Token.networks[netId].address
     );
+
+    if (this.state.abiArr[event.target.value].contractName != "Bank") {
+      await token.methods
+        .symbol()
+        .call()
+        .then((result) => {
+          this.setState({
+            symbol: result,
+          });
+        });
+    } else {
+      this.setState({
+        symbol: "ETH",
+      });
+    }
+
     const coinAddress = Token.networks[netId].address;
     // all data is saved inside state to use for later
     this.setState({
       tokenName: Token.contractName,
+      tokenSymbol: Token.tokenSymbol,
       token: token,
       coinAddress: coinAddress,
     });
 
-    await this.state.token.methods
-      .balanceOf(this.state.account)
-      .call({ from: this.state.account })
-      .then((result) => {
-        console.log(result.toString());
-        this.setState({
-          balance: result.toString(),
-        });
-      });
-  }
+    console.log(this.state);
 
-  async getAllBalances() {
-    for (let i = 0; i < this.state.allContracts.length; i++) {
-      await this.state.allContracts[i].methods
+    if (this.state.tokenName == Bank) {
+      await this.state.token.methods
+        .balanceOf("ETH")
+        .call({ from: this.state.account })
+        .then((result) => {
+          console.log(result.toString());
+          this.setState({
+            balance: result.toString(),
+          });
+        });
+    } else {
+      await this.state.token.methods
         .balanceOf(this.state.account)
         .call({ from: this.state.account })
         .then((result) => {
           console.log(result.toString());
-          this.state.balances.push([
-            this.state.abiArr[i].contractName,
-            result.toString(),
-          ]);
+          this.setState({
+            balance: result.toString(),
+          });
         });
+    }
+  }
+
+  async getAllBalances() {
+    for (let i = 0; i < this.state.allContracts.length; i++) {
+      if (i == 0) {
+        await this.state.allContracts[i].methods
+          .balanceOf("ETH")
+          .call({ from: this.state.account })
+          .then((result) => {
+            console.log(result.toString());
+            this.setState({
+              balance: result,
+            });
+            this.state.balances.push([
+              this.state.abiArr[i].contractName,
+              result.toString(),
+            ]);
+          });
+      } else {
+        await this.state.allContracts[i].methods
+          .balanceOf(this.state.account)
+          .call({ from: this.state.account })
+          .then((result) => {
+            console.log(result.toString());
+            this.state.balances.push([
+              this.state.abiArr[i].contractName,
+              result.toString(),
+            ]);
+          });
+      }
     }
     await this.setState({
       ready: true,
@@ -112,7 +156,9 @@ class Home extends Component {
   }
 
   async sendAmount() {
-    if (this.state.tokek !== "undefined") {
+    if (this.state.token === Bank) {
+    }
+    if (this.state.token !== "undefined") {
       try {
         const response = await this.state.token.methods
           .donate(this.state.account, this.state.input)
@@ -148,14 +194,13 @@ class Home extends Component {
   async depositBank() {
     const web3 = new Web3(window.ethereum);
     const netId = await web3.eth.net.getId();
-
     const token = new web3.eth.Contract(Bank.abi, Bank.networks[netId].address);
-    console.log(token);
+    const amount = this.state.input * 1000000000000000000;
 
     if (this.state.token !== "undefined") {
       try {
         const response = await token.methods.deposit("ETH").send({
-          value: 10000000000000000,
+          value: amount,
           from: this.state.account,
         });
         this.setState({
@@ -170,16 +215,15 @@ class Home extends Component {
   async withdrawBank() {
     const web3 = new Web3(window.ethereum);
     const netId = await web3.eth.net.getId();
-
+    const amount = this.state.input * 1000000000000000000;
     const token = new web3.eth.Contract(Bank.abi, Bank.networks[netId].address);
     console.log(token);
 
     if (this.state.token !== "undefined") {
       try {
         const response = await token.methods
-          .withdrawBank("ETH", "0x2170ed0880ac9a755fd29b2688956bd959f933f8")
+          .withdraw("ETH", amount.toString())
           .send({
-            value: 0.1,
             from: this.state.account,
           });
         this.setState({
@@ -214,6 +258,37 @@ class Home extends Component {
     }
   }
 
+  async addToken() {
+    const tokenAddress = this.state.coinAddress;
+    const tokenSymbol = this.state.symbol;
+    const tokenDecimals = 18;
+    const tokenImage = "https://i.imgur.com/rRTK4EH.png";
+
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      const wasAdded = await window.ethereum.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20", // Initially only supports ERC20, but eventually more!
+          options: {
+            address: tokenAddress, // The address that the token is at.
+            symbol: tokenSymbol, // A ticker symbol or shorthand, up to 5 chars.
+            decimals: tokenDecimals, // The number of decimals in the token
+            image: tokenImage, // A string url of the token logo
+          },
+        },
+      });
+
+      if (wasAdded) {
+        console.log("Thanks for your interest!");
+      } else {
+        console.log("Your loss!");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -224,8 +299,9 @@ class Home extends Component {
       balance: 0,
       balances: [],
       input: 0,
-      tokenName: "CHC",
-      abiArr: [CHC, Wood, Slick, Ham, Smit],
+      symbol: "Bank",
+      tokenName: "Bank",
+      abiArr: [Bank, CHC, Wood, Slick, Ham, Smit],
       allContracts: [],
       ready: false,
     };
@@ -259,11 +335,12 @@ class Home extends Component {
                   onChange={this.changeToken.bind(this)}
                   id="cusSelectbox"
                 >
-                  <option value="0">CHC</option>
-                  <option value="1">Wood</option>
-                  <option value="2">Slick</option>
-                  <option value="3">HAM</option>
-                  <option value="4">Smit</option>
+                  <option value="0">ETH</option>
+                  <option value="1">CHC</option>
+                  <option value="2">Wood</option>
+                  <option value="3">Slick</option>
+                  <option value="4">HAM</option>
+                  <option value="5">Smit</option>
                 </select>
               </div>
             </div>
@@ -274,6 +351,7 @@ class Home extends Component {
                   className="buttonStart"
                   type="button"
                   onClick={this.borrow.bind(this)}
+                  disabled={this.state.tokenName == "Bank"}
                 >
                   Borrow
                 </button>
@@ -281,6 +359,7 @@ class Home extends Component {
                   className="buttonMid"
                   type="button"
                   onClick={this.sendAmount.bind(this)}
+                  disabled={this.state.tokenName == "Bank"}
                 >
                   Return
                 </button>
@@ -301,37 +380,39 @@ class Home extends Component {
                   Withdraw
                 </button>
               </div>
-              {/* <button
-                className="button1"
-                type="button"
-                onClick={this.balanceBank.bind(this)}
-              >
-                Balance Ether
-              </button> */}
             </div>
-
             <div className="contractInfo mt-2">
               <div className="bottomBar">
-                <h5>
-                  <p
-                    onClick={() => {
-                      navigator.clipboard.writeText(this.state.coinAddress);
-                    }}
-                    href="#"
-                    id="pointer"
-                  >
-                    {this.state.coinAddress}{" "}
-                    <img
-                      className="clipboard"
-                      src="https://i.imgur.com/e7uIP8z.png"
-                    />
-                  </p>
-                </h5>
-                <h5>
-                  Current balance on account:{" "}
-                  {this.state.balance / 1000000000000000000}{" "}
-                  {this.state.tokenName}{" "}
-                </h5>
+                <span className="choices" id="balance">
+                  <p className="balanceText">Balance</p>
+                </span>
+                <span className="form-field" id="balanceNumber">
+                  {(this.state.balance / 1000000000000000000).toString() +
+                    " " +
+                    this.state.symbol}
+                </span>
+                <span className="choices" id="refresh">
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Refresh_icon.svg/1024px-Refresh_icon.svg.png"
+                    className="refreshLogo"
+                  ></img>
+                </span>
+                {/* <p
+                  onClick={() => {
+                    navigator.clipboard.writeText(this.state.coinAddress);
+                  }}
+                  href="#"
+                  id="pointer"
+                >
+                  {this.state.coinAddress}{" "}
+                  <button onClick={this.addToken.bind(this)}>
+                    MetaMask Token
+                  </button>
+                  <img
+                    className="clipboard"
+                    src="https://i.imgur.com/e7uIP8z.png"
+                  />
+                </p> */}
               </div>
               <div></div>
               <div className="accountBalance">
