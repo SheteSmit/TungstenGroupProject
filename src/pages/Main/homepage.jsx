@@ -13,7 +13,6 @@ import { Alert } from "react-bootstrap";
 class Home extends Component {
   async componentWillMount() {
     await this.loadBlockchainData();
-    await this.getAllBalances();
     console.log(this.state.allContracts);
   }
 
@@ -26,7 +25,7 @@ class Home extends Component {
 
       if (typeof accounts[0] !== "undefined") {
         const balance = await web3.eth.getBalance(accounts[0]);
-        this.setState({ account: accounts[0], balance: balance, web3: web3 });
+        this.setState({ account: accounts[0], web3: web3 });
       } else {
         window.alert("Please login with MetaMask");
       }
@@ -42,6 +41,16 @@ class Home extends Component {
           token: token,
           coinAddress: coinAddress,
         });
+
+        await this.state.token.methods
+          .balanceOf(this.state.account)
+          .call({ from: this.state.account })
+          .then((result) => {
+            console.log(result.toString());
+            this.setState({
+              balance: result.toString(),
+            });
+          });
 
         for (let i = 0; i < this.state.abiArr.length; i++) {
           this.state.allContracts.push(
@@ -119,40 +128,6 @@ class Home extends Component {
           });
         });
     }
-  }
-
-  async getAllBalances() {
-    for (let i = 0; i < this.state.allContracts.length; i++) {
-      if (i == 0) {
-        await this.state.allContracts[i].methods
-          .balanceOf("ETH")
-          .call({ from: this.state.account })
-          .then((result) => {
-            console.log(result.toString());
-            this.setState({
-              balance: result,
-            });
-            this.state.balances.push([
-              this.state.abiArr[i].contractName,
-              result.toString(),
-            ]);
-          });
-      } else {
-        await this.state.allContracts[i].methods
-          .balanceOf(this.state.account)
-          .call({ from: this.state.account })
-          .then((result) => {
-            console.log(result.toString());
-            this.state.balances.push([
-              this.state.abiArr[i].contractName,
-              result.toString(),
-            ]);
-          });
-      }
-    }
-    await this.setState({
-      ready: true,
-    });
   }
 
   async sendAmount() {
@@ -235,26 +210,27 @@ class Home extends Component {
     }
   }
 
-  async balanceBank() {
-    const web3 = new Web3(window.ethereum);
-    const netId = await web3.eth.net.getId();
-
-    const token = new web3.eth.Contract(Bank.abi, Bank.networks[netId].address);
-    console.log(token);
-
-    if (this.state.token !== "undefined") {
-      try {
-        const response = await token.methods
-          .balanceOf("ETH")
-          .call({
-            from: this.state.account,
-          })
-          .then((result) => {
-            console.log(result);
+  async refreshBalance() {
+    if (this.state.tokenName == Bank) {
+      await this.state.token.methods
+        .balanceOf("ETH")
+        .call({ from: this.state.account })
+        .then((result) => {
+          console.log(result.toString());
+          this.setState({
+            balance: result.toString(),
           });
-      } catch (e) {
-        console.log("Error, deposit: ", e);
-      }
+        });
+    } else {
+      await this.state.token.methods
+        .balanceOf(this.state.account)
+        .call({ from: this.state.account })
+        .then((result) => {
+          console.log(result.toString());
+          this.setState({
+            balance: result.toString(),
+          });
+        });
     }
   }
 
@@ -299,7 +275,7 @@ class Home extends Component {
       balance: 0,
       balances: [],
       input: 0,
-      symbol: "Bank",
+      symbol: "ETH",
       tokenName: "Bank",
       abiArr: [Bank, CHC, Wood, Slick, Ham, Smit],
       allContracts: [],
@@ -391,7 +367,29 @@ class Home extends Component {
                     " " +
                     this.state.symbol}
                 </span>
-                <span className="choices" id="refresh">
+                <span
+                  className="choices"
+                  id="refresh"
+                  onClick={this.refreshBalance.bind(this)}
+                >
+                  <img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Refresh_icon.svg/1024px-Refresh_icon.svg.png"
+                    className="refreshLogo"
+                  ></img>
+                </span>
+                <span className="choices" id="Contract">
+                  <p className="balanceText">Contract</p>
+                </span>
+                <input
+                  className="form-field"
+                  id="contractAddress"
+                  value={this.state.coinAddress}
+                ></input>
+                <span
+                  className="choices"
+                  id="refresh"
+                  onClick={this.refreshBalance.bind(this)}
+                >
                   <img
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Refresh_icon.svg/1024px-Refresh_icon.svg.png"
                     className="refreshLogo"
