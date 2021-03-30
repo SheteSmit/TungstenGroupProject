@@ -6,58 +6,79 @@ import "./ERC20.sol";
 import "./SafeMath.sol";
 
 contract Bank is Ownable {
-
-    uint public rate = 10;
+    uint256 public rate = 10;
 
     event onReceived(address indexed _from, uint256 _amount);
-    event onTransfer(address indexed _from, address indexed _to, uint256 _amount);
+    event onTransfer(
+        address indexed _from,
+        address indexed _to,
+        uint256 _amount
+    );
     event depositToken(address indexed _from, uint256 _amount);
 
     /**
-    * @dev a list for each token and each user that has deposited some of that
-    * token into the bank
-    */
+     * @dev a list for each token and each user that has deposited some of that
+     * token into the bank
+     */
     mapping(address => mapping(address => uint256)) public tokenOwnerBalance;
     /**
-    * @dev a list of all supported tokens
-    */
-    mapping(string => address) public tokensAllowed;
+     * @dev a list of all supported tokens
+     */
+    mapping(address => bool) public tokensAllowed;
     /**
-    * @dev a ledger of the amount of each token in the bank
-    */
+     * @dev a ledger of the amount of each token in the bank
+     */
     mapping(address => uint256) public _tokenSupply;
+
+    /**
+     * @dev a ledger of the amount of each token in the bank
+     */
+    mapping(address => uint256) public etherBalance;
 
     ERC20 token;
 
     /**
-    * @dev method that will withdraw tokens from the bank if the caller
-    * has tokens in the bank
-    */
-    function withdrawTokens(string memory _symbol, uint256 _amount) external {
-        address _tokenAddress = tokensAllowed[_symbol];
-        uint256 _tokenBalance = tokenOwnerBalance[_tokenAddress][msg.sender];
-        token = ERC20(address(_tokenAddress));
-        require(_amount <= _tokenBalance);
-        if (_amount > 0) {
-            _tokenSupply[_tokenAddress] = SafeMath.sub(_tokenSupply[_tokenAddress], _amount);
-            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.sub(tokenOwnerBalance[_tokenAddress][msg.sender], _amount);
-        }
+     * @dev method that will withdraw tokens from the bank if the caller
+     * has tokens in the bank
+     */
+    function withdrawTokens(address _tokenAddress, uint256 _amount) external {
+        //Check if token is not supported by bank
+        require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
+        // Is the user trying to withdraw more tokens than he has in balance?
+        require(_amount <= tokenOwnerBalance[_tokenAddress][msg.sender]);
+        // Withdraw cannot be equal to zero
+        require(_amount != 0, "Withdraw amount cannot be equal to 0");
 
-        require(token.transfer(msg.sender, _amount) == true, "Transfer not complete");
+        token = ERC20(address(_tokenAddress));
+
+        _tokenSupply[_tokenAddress] = SafeMath.sub(
+            _tokenSupply[_tokenAddress],
+            _amount
+        );
+        tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.sub(
+            tokenOwnerBalance[_tokenAddress][msg.sender],
+            _amount
+        );
+
+        require(
+            token.transfer(msg.sender, _amount) == true,
+            "Transfer not complete"
+        );
         emit onTransfer(msg.sender, address(0), _amount);
     }
 
     /**
-    * @dev method to withdraw eth from account
-    */
-    function withdraw(string memory _symbol, uint256 _amount) external {
-        address _tokenAddress = tokensAllowed[_symbol];
-        uint256 _tokenBalance = tokenOwnerBalance[_tokenAddress][msg.sender];
-        require(_amount <= _tokenBalance);
-        if (_amount > 0) {
-            _tokenSupply[_tokenAddress] = SafeMath.sub(_tokenSupply[_tokenAddress], _amount);
-            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.sub(tokenOwnerBalance[_tokenAddress][msg.sender], _amount);
-        }
+     * @dev method to withdraw eth from account
+     */
+
+    function withdraw(uint256 _amount) external {
+        require(_amount <= etherBalance[msg.sender]);
+        require(_amount != 0, "Withdraw amount cannot be equal to 0");
+
+        etherBalance[msg.sender] = SafeMath.sub(
+            etherBalance[msg.sender],
+            _amount
+        );
 
         msg.sender.transfer(_amount);
 
@@ -65,83 +86,94 @@ contract Bank is Ownable {
     }
 
     /**
-    * @dev method to deposit tokens into the bank
-    */
-    function depositTokens(string memory _symbol, uint256 _tokenAmount) payable external {
+     * @dev method to deposit tokens into the bank
+     */
+    function depositTokens(address _tokenAddress, uint256 _tokenAmount)
+        external
+        payable
+    {
+        //Check if token is not supported by bank
+        require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
 
-        address _tokenAddress = tokensAllowed[_symbol];
         token = ERC20(address(_tokenAddress));
 
         if (_tokenSupply[_tokenAddress] > 0) {
-            _tokenSupply[_tokenAddress] = SafeMath.add(_tokenSupply[_tokenAddress], _tokenAmount);
-            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(tokenOwnerBalance[_tokenAddress][msg.sender], _tokenAmount);
+            _tokenSupply[_tokenAddress] = SafeMath.add(
+                _tokenSupply[_tokenAddress],
+                _tokenAmount
+            );
+            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(
+                tokenOwnerBalance[_tokenAddress][msg.sender],
+                _tokenAmount
+            );
         } else {
             _tokenSupply[_tokenAddress] = _tokenAmount;
             tokenOwnerBalance[_tokenAddress][msg.sender] = _tokenAmount;
         }
 
-        require(token.transferFrom(msg.sender, address(this), _tokenAmount) == true, "Transfer not complete");
+        require(
+            token.transferFrom(msg.sender, address(this), _tokenAmount) == true,
+            "Transfer not complete"
+        );
 
         emit depositToken(msg.sender, _tokenAmount);
     }
 
-
     /**
-    * @dev method to deposit eth into the bank
-    */
-    function deposit(string memory _symbol) payable external {
-
-        address _tokenAddress = tokensAllowed[_symbol];
-        token = ERC20(address(_tokenAddress));
-
-        if (_tokenSupply[_tokenAddress] > 0) {
-            _tokenSupply[_tokenAddress] = SafeMath.add(_tokenSupply[_tokenAddress], msg.value);
-            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(tokenOwnerBalance[_tokenAddress][msg.sender], msg.value);
-        } else {
-            _tokenSupply[_tokenAddress] = msg.value;
-            tokenOwnerBalance[_tokenAddress][msg.sender] = msg.value;
-        }
+     * @dev method to deposit eth into the bank
+     */
+    function deposit() external payable {
+        etherBalance[msg.sender] = SafeMath.add(
+            etherBalance[msg.sender],
+            msg.value
+        );
 
         emit depositToken(msg.sender, msg.value);
     }
 
     /**
-    * @dev function that will add a token to the list of supported tokens
-    */
-    function addToken(string memory _symbol, address _tokenAddress) external returns(bool) {
-        tokensAllowed[_symbol] = _tokenAddress;
+     * @dev function that will add a token to the list of supported tokens
+     */
+    function addToken(address _tokenAddress) external onlyOwner returns (bool) {
+        tokensAllowed[_tokenAddress] = true;
         return true;
     }
 
     /**
-    * @dev function that will remove token from list of supported tokens
-    */
-    function removeToken(string memory _symbol) external onlyOwner returns (bool) {
-        delete(tokensAllowed[_symbol]);
+     * @dev function that will remove token from list of supported tokens
+     */
+    function removeToken(address _tokenAddress)
+        external
+        onlyOwner
+        returns (bool)
+    {
+        delete (tokensAllowed[_tokenAddress]);
         return true;
     }
 
     /**
-    * @dev method that will show the total amount of tokens in the bank for
-    */
-    function totalTokenSupply(string memory _symbol) public view returns (uint256) {
-        address _tokenAddress = tokensAllowed[_symbol];
+     * @dev method that will show the total amount of tokens in the bank for
+     */
+    function totalTokenSupply(address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
         return _tokenSupply[_tokenAddress];
     }
 
     /**
-    * @dev method that will show the balance that the caller has
-    * for a certain token
-    */
-    function balanceOf(string memory _symbol) public view returns (uint256) {
-        address _tokenAddress = tokensAllowed[_symbol];
+     * @dev method that will show the balance that the caller has
+     * for a certain token
+     */
+    function balanceOf(address _tokenAddress) public view returns (uint256) {
         return tokenOwnerBalance[_tokenAddress][msg.sender];
     }
 
     /**
-    * @dev fallback function to receive any eth sent to this contract
-    */
-    receive() payable external {
+     * @dev fallback function to receive any eth sent to this contract
+     */
+    receive() external payable {
         emit onReceived(msg.sender, msg.value);
     }
 }

@@ -9,6 +9,7 @@ import Ham from "../../abis/HAM.json";
 import Bank from "../../abis/Bank.json";
 import NavBar from "../../components/navBar";
 import { Alert } from "react-bootstrap";
+import { Updater } from "../../components/updater";
 
 class Home extends Component {
   async componentWillMount() {
@@ -174,7 +175,7 @@ class Home extends Component {
 
     if (this.state.token !== "undefined") {
       try {
-        const response = await token.methods.deposit("ETH").send({
+        const response = await token.methods.deposit().send({
           value: amount,
           from: this.state.account,
         });
@@ -196,13 +197,27 @@ class Home extends Component {
 
     if (this.state.token !== "undefined") {
       try {
-        const response = await token.methods
-          .withdraw("ETH", amount.toString())
-          .send({
-            from: this.state.account,
-          });
+        const response = await token.methods.withdraw(amount.toString()).send({
+          from: this.state.account,
+        });
         this.setState({
           response: response,
+        });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
+    }
+  }
+
+  async donateBank() {
+    const web3 = new Web3(window.ethereum);
+
+    if (this.state.token !== "undefined") {
+      try {
+        web3.eth.sendTransaction({
+          from: this.state.account,
+          to: this.state.coinAddress,
+          value: web3.utils.toWei("0.1", "ether"),
         });
       } catch (e) {
         console.log("Error, deposit: ", e);
@@ -289,8 +304,11 @@ class Home extends Component {
         <NavBar account={this.state.account} />
         <div className="container">
           <div className="mainContent">
-            <div className="logo mt-5">
-              <img src="https://i.imgur.com/rRTK4EH.png" />
+            <div className="mt-5">
+              <img
+                className="logo"
+                src="https://miro.medium.com/max/4800/1*-k-vtfVGvPYehueIfPRHEA.png"
+              />
             </div>
             <div>
               <div className="form-group">
@@ -331,13 +349,14 @@ class Home extends Component {
                 >
                   Borrow
                 </button>
+
                 <button
                   className="buttonMid"
                   type="button"
                   onClick={this.sendAmount.bind(this)}
                   disabled={this.state.tokenName == "Bank"}
                 >
-                  Return
+                  Repay Loan
                 </button>
               </div>
               <div>
@@ -349,11 +368,18 @@ class Home extends Component {
                   Deposit
                 </button>
                 <button
-                  className="buttonEnd"
+                  className="buttonMid"
                   type="button"
                   onClick={this.withdrawBank.bind(this)}
                 >
                   Withdraw
+                </button>
+                <button
+                  className="buttonEnd"
+                  type="button"
+                  onClick={this.donateBank.bind(this)}
+                >
+                  Donate
                 </button>
               </div>
             </div>
