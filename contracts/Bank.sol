@@ -41,6 +41,9 @@ contract Bank is Ownable {
      * @dev method that will withdraw tokens from the bank if the caller
      * has tokens in the bank
      */
+
+    constructor(address[] _arrayAddress) public {}
+
     function withdrawTokens(address _tokenAddress, uint256 _amount) external {
         //Check if token is not supported by bank
         require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
@@ -94,22 +97,16 @@ contract Bank is Ownable {
     {
         //Check if token is not supported by bank
         require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
-
         token = ERC20(address(_tokenAddress));
 
-        if (_tokenSupply[_tokenAddress] > 0) {
-            _tokenSupply[_tokenAddress] = SafeMath.add(
-                _tokenSupply[_tokenAddress],
-                _tokenAmount
-            );
-            tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(
-                tokenOwnerBalance[_tokenAddress][msg.sender],
-                _tokenAmount
-            );
-        } else {
-            _tokenSupply[_tokenAddress] = _tokenAmount;
-            tokenOwnerBalance[_tokenAddress][msg.sender] = _tokenAmount;
-        }
+        _tokenSupply[_tokenAddress] = SafeMath.add(
+            _tokenSupply[_tokenAddress],
+            _tokenAmount
+        );
+        tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(
+            tokenOwnerBalance[_tokenAddress][msg.sender],
+            _tokenAmount
+        );
 
         require(
             token.transferFrom(msg.sender, address(this), _tokenAmount) == true,
@@ -167,12 +164,17 @@ contract Bank is Ownable {
      * for a certain token
      */
     function balanceOf(address _tokenAddress) public view returns (uint256) {
-        return tokenOwnerBalance[_tokenAddress][msg.sender];
+        if (_tokenAddress == 0x0) {
+            return etherBalance[msg.sender];
+        } else {
+            return tokenOwnerBalance[_tokenAddress][msg.sender];
+        }
     }
 
     /**
      * @dev fallback function to receive any eth sent to this contract
      */
+
     receive() external payable {
         emit onReceived(msg.sender, msg.value);
     }
