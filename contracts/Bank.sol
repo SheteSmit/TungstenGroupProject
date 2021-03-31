@@ -8,6 +8,12 @@ import "./SafeMath.sol";
 contract Bank is Ownable {
     uint256 public rate = 10;
 
+    constructor(address[] memory addresses) public {
+        for (uint256 i = 0; i < addresses.length; i++) {
+            tokensAllowed[addresses[i]] = true;
+        }
+    }
+
     event onReceived(address indexed _from, uint256 _amount);
     event onTransfer(
         address indexed _from,

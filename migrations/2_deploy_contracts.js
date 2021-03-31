@@ -22,5 +22,11 @@ module.exports = async function (deployer) {
   await deployer.deploy(Ham);
   const hamToken = await Smit.deployed();
 
-  await deployer.deploy(Bank);
+  await deployer.deploy(Bank, [
+    CHCtoken.address,
+    woodToken.address,
+    smitToken.address,
+    slickToken.address,
+    hamToken.address,
+  ]);
 };
