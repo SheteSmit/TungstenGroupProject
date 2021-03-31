@@ -44,7 +44,7 @@ class Home extends Component {
         });
 
         await this.state.token.methods
-          .balanceOf(this.state.account)
+          .balanceOf()
           .call({ from: this.state.account })
           .then((result) => {
             console.log(result.toString());
@@ -108,9 +108,9 @@ class Home extends Component {
 
     console.log(this.state);
 
-    if (this.state.tokenName == Bank) {
+    if (this.state.tokenName == "Bank") {
       await this.state.token.methods
-        .balanceOf("ETH")
+        .balanceOf()
         .call({ from: this.state.account })
         .then((result) => {
           console.log(result.toString());
@@ -228,7 +228,7 @@ class Home extends Component {
   async refreshBalance() {
     if (this.state.tokenName == Bank) {
       await this.state.token.methods
-        .balanceOf("ETH")
+        .balanceOf()
         .call({ from: this.state.account })
         .then((result) => {
           console.log(result.toString());

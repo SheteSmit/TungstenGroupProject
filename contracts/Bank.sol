@@ -42,8 +42,6 @@ contract Bank is Ownable {
      * has tokens in the bank
      */
 
-    constructor(address[] _arrayAddress) public {}
-
     function withdrawTokens(address _tokenAddress, uint256 _amount) external {
         //Check if token is not supported by bank
         require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
@@ -163,12 +161,16 @@ contract Bank is Ownable {
      * @dev method that will show the balance that the caller has
      * for a certain token
      */
-    function balanceOf(address _tokenAddress) public view returns (uint256) {
-        if (_tokenAddress == 0x0) {
-            return etherBalance[msg.sender];
-        } else {
-            return tokenOwnerBalance[_tokenAddress][msg.sender];
-        }
+    function balanceOf() public view returns (uint256) {
+        return etherBalance[msg.sender];
+    }
+
+    function balanceOfToken(address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return tokenOwnerBalance[_tokenAddress][msg.sender];
     }
 
     /**
