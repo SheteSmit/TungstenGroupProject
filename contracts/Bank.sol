@@ -25,17 +25,7 @@ contract PeriodicLoan{
     IERC20Token token;
     uint256 collateralPerPayment;
 
-    constructor(
-        address _lender,
-        address _borrower,
-        uint256 interestRateNumerator,
-        uint256 interestRateDenominator,
-        uint256 _paymentPeriod,
-        uint256 _minimumPayment,
-        uint256 principal,
-        IERC20Token _token,
-        uint256 units
-    )
+   
         public
     {
         lender = _lender;
@@ -134,6 +124,19 @@ contract PeriodicLoan{
 
 contract Bank is Ownable {
     uint256 public rate = 10;
+    ERC20 token;
+
+    address _lender,
+    address _borrower,
+    uint256 interestRateNumerator,
+    uint256 interestRateDenominator,
+    uint256 _paymentPeriod,
+    uint256 _minimumPayment,
+    uint256 principal,
+    uint256 units
+
+
+
 
     event onReceived(address indexed _from, uint256 _amount);
     event onTransfer(
@@ -162,7 +165,7 @@ contract Bank is Ownable {
      */
     mapping(address => uint256) public etherBalance;
 
-    ERC20 token;
+    
 
     /**
      * @dev method that will withdraw tokens from the bank if the caller
