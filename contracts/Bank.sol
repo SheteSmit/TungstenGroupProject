@@ -5,6 +5,16 @@ import "./Ownable.sol";
 import "./ERC20.sol";
 import "./SafeMath.sol";
 
+contract PeriodicLoan{
+    struct Rational{
+        uint256 numerator;
+        uint256 denominator;
+    }
+}
+
+
+
+
 contract Bank is Ownable {
     uint256 public rate = 10;
 
