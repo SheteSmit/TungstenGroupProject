@@ -11,37 +11,11 @@ contract PeriodicLoan{
         uint256 denominator;
     }
 
-    address lender;
-    address borrower;
-
-    Rational public interestRate;
-
-    uint256 public dueDate;
-    uint256 paymentPeriod;
-
-    uint256 public remainingBalance;
-    uint256 minimumPayment;
-
-    IERC20Token token;
-    uint256 collateralPerPayment;
-
-   
         public
     {
-        lender = _lender;
-        borrower = _borrower;
-        interestRate = Rational(interestRateNumerator, interestRateDenominator);
-        paymentPeriod = _paymentPeriod;
-        minimumPayment = _minimumPayment;
-        remainingBalance = principal;
-        token = _token;
-        collateralPerPayment = units;
+       
 
-        uint256 x = minimumPayment * collateralPerPayment;
-        require(x / collateralPerPayment == minimumPayment,
-            "minimumPayment * collateralPerPayment overflows");
-
-        dueDate = now + paymentPeriod;
+        
     }
 
     function multiply(uint256 x, Rational r) internal pure returns (uint256) {
@@ -124,19 +98,23 @@ contract PeriodicLoan{
 
 contract Bank is Ownable {
     uint256 public rate = 10;
-    ERC20 token;
 
-    address _lender,
-    address _borrower,
-    uint256 interestRateNumerator,
-    uint256 interestRateDenominator,
-    uint256 _paymentPeriod,
-    uint256 _minimumPayment,
-    uint256 principal,
-    uint256 units
+    
+    address lender;
+    address borrower;
 
+    Rational public interestRate;
 
+    uint256 public dueDate;
+    uint256 paymentPeriod;
 
+    uint256 public remainingBalance;
+    uint256 minimumPayment;
+
+    IERC20Token token;
+    uint256 collateralPerPayment;
+
+   
 
     event onReceived(address indexed _from, uint256 _amount);
     event onTransfer(
@@ -172,7 +150,34 @@ contract Bank is Ownable {
      * has tokens in the bank
      */
 
-    constructor(address[] _arrayAddress) public {}
+    constructor(address[] _arrayAddress ERC20 token;
+
+    address _lender,
+    address _borrower,
+    uint256 interestRateNumerator,
+    uint256 interestRateDenominator,
+    uint256 _paymentPeriod,
+    uint256 _minimumPayment,
+    uint256 principal,
+    uint256 units) 
+    public {  
+    lender = _lender;
+    borrower = _borrower;
+    interestRate = Rational(interestRateNumerator, interestRateDenominator);
+    paymentPeriod = _paymentPeriod;
+    minimumPayment = _minimumPayment;
+    remainingBalance = principal;
+    token = _token;
+    collateralPerPayment = units;
+    
+    uint256 x = minimumPayment * collateralPerPayment;
+        require(x / collateralPerPayment == minimumPayment,
+            "minimumPayment * collateralPerPayment overflows");
+
+        dueDate = now + paymentPeriod;
+
+    
+    }
 
     function withdrawTokens(address _tokenAddress, uint256 _amount) external {
         //Check if token is not supported by bank
