@@ -105,7 +105,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -124,7 +125,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -143,7 +145,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -156,7 +159,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -169,7 +173,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -193,7 +198,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -212,7 +218,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -229,7 +236,8 @@
     },
     {
       "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "payable": true
     },
     {
       "inputs": [
@@ -278,14 +286,16 @@
       "name": "depositTokens",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [],
       "name": "deposit",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -342,7 +352,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -355,7 +366,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -374,7 +386,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address[]\",\"name\":\"addresses\",\"type\":\"address[]\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"depositToken\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"onReceived\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"onTransfer\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"_owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"_tokenSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"}],\"name\":\"addToken\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"}],\"name\":\"balanceOfToken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"deposit\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_tokenAmount\",\"type\":\"uint256\"}],\"name\":\"depositTokens\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"etherBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"rate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"}],\"name\":\"removeToken\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"tokenOwnerBalance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"tokensAllowed\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"}],\"name\":\"totalTokenSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"withdraw\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"withdrawTokens\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"addToken(address)\":{\"details\":\"function that will add a token to the list of supported tokens\"},\"balanceOf()\":{\"details\":\"method that will show the balance that the caller has for a certain token\"},\"deposit()\":{\"details\":\"method to deposit eth into the bank\"},\"depositTokens(address,uint256)\":{\"details\":\"method to deposit tokens into the bank\"},\"removeToken(address)\":{\"details\":\"function that will remove token from list of supported tokens\"},\"totalTokenSupply(address)\":{\"details\":\"method that will show the total amount of tokens in the bank for\"},\"withdraw(uint256)\":{\"details\":\"method to withdraw eth from account\"},\"withdrawTokens(address,uint256)\":{\"details\":\"method that will withdraw tokens from the bank if the caller has tokens in the bank\"}},\"stateVariables\":{\"_tokenSupply\":{\"details\":\"a ledger of the amount of each token in the bank\"},\"etherBalance\":{\"details\":\"a ledger of the amount of each token in the bank\"},\"tokenOwnerBalance\":{\"details\":\"a list for each token and each user that has deposited some of that token into the bank\"},\"tokensAllowed\":{\"details\":\"a list of all supported tokens\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/christianroque/Desktop/solidity-playground/contracts/Bank.sol\":\"Bank\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/christianroque/Desktop/solidity-playground/contracts/Bank.sol\":{\"keccak256\":\"0x9577607b4fe54ce5e6aca77b89b0dad9bd9222c11398c37269a1ba3d0192bdea\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a8bfbe5aa7f3752b6b862c9cf400a0e2b16110ea94be5272dd5a5bffaba6b2f3\",\"dweb:/ipfs/QmYGSMEDn2JhaRTk3qCF6iSpnkobrRyTgtDY4gKSZSJETW\"]},\"/Users/christianroque/Desktop/solidity-playground/contracts/ERC20.sol\":{\"keccak256\":\"0x511b568fbf2abb9a7544c290c124238aa344a51ab39fb8cfc55b075b86d29506\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cf2ba94a1fe72b6e7f67cd0cad9ac79cfb4be321527e762868447adcbc52faed\",\"dweb:/ipfs/QmNkPzt2N8PL5BW4HiRq2XamCzwmRHFr3Dq1qPzYohonCf\"]},\"/Users/christianroque/Desktop/solidity-playground/contracts/Ownable.sol\":{\"keccak256\":\"0x5086bbbeff67771c169d3bb3133c9e8d52a2569e88f0cf813a67aa420f15f7eb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fe1c2576dd591e776f735aa0b91f7828dcf12d5e543cdaf218cc8c52ea06a3f5\",\"dweb:/ipfs/QmZ5a2sJahH4G5K2u75fv1KVwZbBubAqj76zTNZ5sVjDR9\"]},\"/Users/christianroque/Desktop/solidity-playground/contracts/SafeMath.sol\":{\"keccak256\":\"0x6d6e549d33582188305d5765b73e751c3b4b8e4e4f4077a95a8128956bb11bc2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e27f2d78adf498df7e4dbb8dac3eb2ff20f20b928990e169035cbdc7292cd565\",\"dweb:/ipfs/QmSisQwxc5cPghXmTApg7inoQThCbPZCAxpg4CbtQdPb6g\"]}},\"version\":1}",
@@ -383,8 +396,8 @@
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "138:5131:0:-:0;;;191:2;169:24;;200:169;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;304:10:3;295:6;;:19;;;;;;;;;;;;;;;;;;262:9:0;257:106;281:9;:16;277:1;:20;257:106;;;348:4;318:13;:27;332:9;342:1;332:12;;;;;;;;;;;;;;318:27;;;;;;;;;;;;;;;;:34;;;;;;;;;;;;;;;;;;299:3;;;;;;;257:106;;;;200:169;138:5131;;;;;;",
-  "deployedSourceMap": "138:5131:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5238:10;5227:33;;;5250:9;5227:33;;;;;;;;;;;;;;;;;;138:5131;;;;;1326:989;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;4540:158;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;169:24;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;2386:393;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;1003:47;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;4260:181;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;2852:783;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;4813:99;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;738:72;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;426:92:3;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;158:21;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;4918:173:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1134:47;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;3705:214;;;:::i;:::-;;4016:148;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;875:45;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;524:166:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;1326:989:0;1499:4;1467:36;;:13;:28;1481:13;1467:28;;;;;;;;;;;;;;;;;;;;;;;;;:36;;;1459:71;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1637:17;:32;1655:13;1637:32;;;;;;;;;;;;;;;:44;1670:10;1637:44;;;;;;;;;;;;;;;;1626:7;:55;;1618:64;;;;;;1755:1;1744:7;:12;;1736:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1830:13;1808:5;;:37;;;;;;;;;;;;;;;;;;1886:84;1912:12;:27;1925:13;1912:27;;;;;;;;;;;;;;;;1953:7;1886:12;:84::i;:::-;1856:12;:27;1869:13;1856:27;;;;;;;;;;;;;;;:114;;;;2027:101;2053:17;:32;2071:13;2053:32;;;;;;;;;;;;;;;:44;2086:10;2053:44;;;;;;;;;;;;;;;;2111:7;2027:12;:101::i;:::-;1980:17;:32;1998:13;1980:32;;;;;;;;;;;;;;;:44;2013:10;1980:44;;;;;;;;;;;;;;;:148;;;;2199:4;2160:43;;:5;;;;;;;;;;;:14;;;2175:10;2187:7;2160:35;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:43;;;2139:111;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2296:1;2265:43;;2276:10;2265:43;;;2300:7;2265:43;;;;;;;;;;;;;;;;;;1326:989;;:::o;4540:158::-;4634:7;4664:12;:27;4677:13;4664:27;;;;;;;;;;;;;;;;4657:34;;4540:158;;;:::o;169:24::-;;;;:::o;2386:393::-;2459:12;:24;2472:10;2459:24;;;;;;;;;;;;;;;;2448:7;:35;;2440:44;;;;;;2513:1;2502:7;:12;;2494:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2593:81;2619:12;:24;2632:10;2619:24;;;;;;;;;;;;;;;;2657:7;2593:12;:81::i;:::-;2566:12;:24;2579:10;2566:24;;;;;;;;;;;;;;;:108;;;;2685:10;:19;;:28;2705:7;2685:28;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2760:1;2729:43;;2740:10;2729:43;;;2764:7;2729:43;;;;;;;;;;;;;;;;;;2386:393;:::o;1003:47::-;;;;;;;;;;;;;;;;;:::o;4260:181::-;4356:4;366:9:3;:7;:9::i;:::-;358:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4384:13:0::1;:28;4398:13;4384:28;;;;;;;;;;;;;;;;4376:37;;;;;;;;;;;4430:4;4423:11;;4260:181:::0;;;:::o;2852:783::-;3057:4;3025:36;;:13;:28;3039:13;3025:28;;;;;;;;;;;;;;;;;;;;;;;;;:36;;;3017:71;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3120:13;3098:5;;:37;;;;;;;;;;;;;;;;;;3176:89;3202:12;:27;3215:13;3202:27;;;;;;;;;;;;;;;;3243:12;3176;:89::i;:::-;3146:12;:27;3159:13;3146:27;;;;;;;;;;;;;;;:119;;;;3322:106;3348:17;:32;3366:13;3348:32;;;;;;;;;;;;;;;:44;3381:10;3348:44;;;;;;;;;;;;;;;;3406:12;3322;:106::i;:::-;3275:17;:32;3293:13;3275:32;;;;;;;;;;;;;;;:44;3308:10;3275:44;;;;;;;;;;;;;;;:153;;;;3523:4;3460:67;;:5;;;;;;;;;;;:18;;;3479:10;3499:4;3506:12;3460:59;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:67;;;3439:135;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3603:10;3590:38;;;3615:12;3590:38;;;;;;;;;;;;;;;;;;2852:783;;:::o;4813:99::-;4855:7;4881:12;:24;4894:10;4881:24;;;;;;;;;;;;;;;;4874:31;;4813:99;:::o;738:72::-;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;426:92:3:-;466:4;504:6;;;;;;;;;;;490:20;;:10;:20;;;482:29;;426:92;:::o;158:21::-;;;;;;;;;;;;:::o;4918:173:0:-;5010:7;5040:17;:32;5058:13;5040:32;;;;;;;;;;;;;;;:44;5073:10;5040:44;;;;;;;;;;;;;;;;5033:51;;4918:173;;;:::o;1134:47::-;;;;;;;;;;;;;;;;;:::o;3705:214::-;3778:83;3804:12;:24;3817:10;3804:24;;;;;;;;;;;;;;;;3842:9;3778:12;:83::i;:::-;3751:12;:24;3764:10;3751:24;;;;;;;;;;;;;;;:110;;;;3890:10;3877:35;;;3902:9;3877:35;;;;;;;;;;;;;;;;;;3705:214::o;4016:148::-;4085:4;366:9:3;:7;:9::i;:::-;358:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4132:4:0::1;4101:13;:28;4115:13;4101:28;;;;;;;;;;;;;;;;:35;;;;;;;;;;;;;;;;;;4153:4;4146:11;;4016:148:::0;;;:::o;875:45::-;;;;;;;;;;;;;;;;;;;;;;:::o;524:166:3:-;366:9;:7;:9::i;:::-;358:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;626:1:::1;605:23;;:9;:23;;;;597:32;;;::::0;::::1;;673:9;644:39;;;665:6;::::0;::::1;;;;;;;;644:39;;;;;;;;;;;;;;;;;;;;524:166:::0;:::o;463:120:4:-;521:7;552:1;547;:6;;540:14;;;;575:1;571;:5;564:12;;463:120;;;;:::o;589:143::-;647:7;666:9;682:1;678;:5;666:17;;705:1;700;:6;;693:14;;;;724:1;717:8;;;589:143;;;;:::o",
+  "sourceMap": "138:5131:0:-:0;;;191:2;169:24;;200:169;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;304:10:6;295:6;;:19;;;;;;;;;;;;;;;;;;262:9:0;257:106;281:9;:16;277:1;:20;257:106;;;348:4;318:13;:27;332:9;342:1;332:12;;;;;;;;;;;;;;318:27;;;;;;;;;;;;;;;;:34;;;;;;;;;;;;;;;;;;299:3;;;;;;;257:106;;;;200:169;138:5131;;;;;;",
+  "deployedSourceMap": "138:5131:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;5238:10;5227:33;;;5250:9;5227:33;;;;;;;;;;;;;;;;;;138:5131;;;;;1326:989;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;4540:158;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;169:24;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;2386:393;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;1003:47;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;4260:181;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;2852:783;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;4813:99;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;738:72;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;426:92:6;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;158:21;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;4918:173:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;1134:47;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;3705:214;;;:::i;:::-;;4016:148;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;875:45;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;524:166:6;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;1326:989:0;1499:4;1467:36;;:13;:28;1481:13;1467:28;;;;;;;;;;;;;;;;;;;;;;;;;:36;;;1459:71;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1637:17;:32;1655:13;1637:32;;;;;;;;;;;;;;;:44;1670:10;1637:44;;;;;;;;;;;;;;;;1626:7;:55;;1618:64;;;;;;1755:1;1744:7;:12;;1736:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;1830:13;1808:5;;:37;;;;;;;;;;;;;;;;;;1886:84;1912:12;:27;1925:13;1912:27;;;;;;;;;;;;;;;;1953:7;1886:12;:84::i;:::-;1856:12;:27;1869:13;1856:27;;;;;;;;;;;;;;;:114;;;;2027:101;2053:17;:32;2071:13;2053:32;;;;;;;;;;;;;;;:44;2086:10;2053:44;;;;;;;;;;;;;;;;2111:7;2027:12;:101::i;:::-;1980:17;:32;1998:13;1980:32;;;;;;;;;;;;;;;:44;2013:10;1980:44;;;;;;;;;;;;;;;:148;;;;2199:4;2160:43;;:5;;;;;;;;;;;:14;;;2175:10;2187:7;2160:35;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:43;;;2139:111;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2296:1;2265:43;;2276:10;2265:43;;;2300:7;2265:43;;;;;;;;;;;;;;;;;;1326:989;;:::o;4540:158::-;4634:7;4664:12;:27;4677:13;4664:27;;;;;;;;;;;;;;;;4657:34;;4540:158;;;:::o;169:24::-;;;;:::o;2386:393::-;2459:12;:24;2472:10;2459:24;;;;;;;;;;;;;;;;2448:7;:35;;2440:44;;;;;;2513:1;2502:7;:12;;2494:61;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2593:81;2619:12;:24;2632:10;2619:24;;;;;;;;;;;;;;;;2657:7;2593:12;:81::i;:::-;2566:12;:24;2579:10;2566:24;;;;;;;;;;;;;;;:108;;;;2685:10;:19;;:28;2705:7;2685:28;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2760:1;2729:43;;2740:10;2729:43;;;2764:7;2729:43;;;;;;;;;;;;;;;;;;2386:393;:::o;1003:47::-;;;;;;;;;;;;;;;;;:::o;4260:181::-;4356:4;366:9:6;:7;:9::i;:::-;358:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4384:13:0::1;:28;4398:13;4384:28;;;;;;;;;;;;;;;;4376:37;;;;;;;;;;;4430:4;4423:11;;4260:181:::0;;;:::o;2852:783::-;3057:4;3025:36;;:13;:28;3039:13;3025:28;;;;;;;;;;;;;;;;;;;;;;;;;:36;;;3017:71;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3120:13;3098:5;;:37;;;;;;;;;;;;;;;;;;3176:89;3202:12;:27;3215:13;3202:27;;;;;;;;;;;;;;;;3243:12;3176;:89::i;:::-;3146:12;:27;3159:13;3146:27;;;;;;;;;;;;;;;:119;;;;3322:106;3348:17;:32;3366:13;3348:32;;;;;;;;;;;;;;;:44;3381:10;3348:44;;;;;;;;;;;;;;;;3406:12;3322;:106::i;:::-;3275:17;:32;3293:13;3275:32;;;;;;;;;;;;;;;:44;3308:10;3275:44;;;;;;;;;;;;;;;:153;;;;3523:4;3460:67;;:5;;;;;;;;;;;:18;;;3479:10;3499:4;3506:12;3460:59;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:67;;;3439:135;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;3603:10;3590:38;;;3615:12;3590:38;;;;;;;;;;;;;;;;;;2852:783;;:::o;4813:99::-;4855:7;4881:12;:24;4894:10;4881:24;;;;;;;;;;;;;;;;4874:31;;4813:99;:::o;738:72::-;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;426:92:6:-;466:4;504:6;;;;;;;;;;;490:20;;:10;:20;;;482:29;;426:92;:::o;158:21::-;;;;;;;;;;;;:::o;4918:173:0:-;5010:7;5040:17;:32;5058:13;5040:32;;;;;;;;;;;;;;;:44;5073:10;5040:44;;;;;;;;;;;;;;;;5033:51;;4918:173;;;:::o;1134:47::-;;;;;;;;;;;;;;;;;:::o;3705:214::-;3778:83;3804:12;:24;3817:10;3804:24;;;;;;;;;;;;;;;;3842:9;3778:12;:83::i;:::-;3751:12;:24;3764:10;3751:24;;;;;;;;;;;;;;;:110;;;;3890:10;3877:35;;;3902:9;3877:35;;;;;;;;;;;;;;;;;;3705:214::o;4016:148::-;4085:4;366:9:6;:7;:9::i;:::-;358:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;4132:4:0::1;4101:13;:28;4115:13;4101:28;;;;;;;;;;;;;;;;:35;;;;;;;;;;;;;;;;;;4153:4;4146:11;;4016:148:::0;;;:::o;875:45::-;;;;;;;;;;;;;;;;;;;;;;:::o;524:166:6:-;366:9;:7;:9::i;:::-;358:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;626:1:::1;605:23;;:9;:23;;;;597:32;;;::::0;::::1;;673:9;644:39;;;665:6;::::0;::::1;;;;;;;;644:39;;;;;;;;;;;;;;;;;;;;524:166:::0;:::o;463:120:7:-;521:7;552:1;547;:6;;540:14;;;;575:1;571;:5;564:12;;463:120;;;;:::o;589:143::-;647:7;666:9;682:1;678;:5;666:17;;705:1;700;:6;;693:14;;;;724:1;717:8;;;589:143;;;;:::o",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.22 <0.9.0;\n\nimport \"./Ownable.sol\";\nimport \"./ERC20.sol\";\nimport \"./SafeMath.sol\";\n\ncontract Bank is Ownable {\n    uint256 public rate = 10;\n\n    constructor(address[] memory addresses) public {\n        for (uint256 i = 0; i < addresses.length; i++) {\n            tokensAllowed[addresses[i]] = true;\n        }\n    }\n\n    event onReceived(address indexed _from, uint256 _amount);\n    event onTransfer(\n        address indexed _from,\n        address indexed _to,\n        uint256 _amount\n    );\n    event depositToken(address indexed _from, uint256 _amount);\n\n    /**\n     * @dev a list for each token and each user that has deposited some of that\n     * token into the bank\n     */\n    mapping(address => mapping(address => uint256)) public tokenOwnerBalance;\n    /**\n     * @dev a list of all supported tokens\n     */\n    mapping(address => bool) public tokensAllowed;\n    /**\n     * @dev a ledger of the amount of each token in the bank\n     */\n    mapping(address => uint256) public _tokenSupply;\n\n    /**\n     * @dev a ledger of the amount of each token in the bank\n     */\n    mapping(address => uint256) public etherBalance;\n\n    ERC20 token;\n\n    /**\n     * @dev method that will withdraw tokens from the bank if the caller\n     * has tokens in the bank\n     */\n\n    function withdrawTokens(address _tokenAddress, uint256 _amount) external {\n        //Check if token is not supported by bank\n        require(tokensAllowed[_tokenAddress] == true, \"Token is not supported\");\n        // Is the user trying to withdraw more tokens than he has in balance?\n        require(_amount <= tokenOwnerBalance[_tokenAddress][msg.sender]);\n        // Withdraw cannot be equal to zero\n        require(_amount != 0, \"Withdraw amount cannot be equal to 0\");\n\n        token = ERC20(address(_tokenAddress));\n\n        _tokenSupply[_tokenAddress] = SafeMath.sub(\n            _tokenSupply[_tokenAddress],\n            _amount\n        );\n        tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.sub(\n            tokenOwnerBalance[_tokenAddress][msg.sender],\n            _amount\n        );\n\n        require(\n            token.transfer(msg.sender, _amount) == true,\n            \"Transfer not complete\"\n        );\n        emit onTransfer(msg.sender, address(0), _amount);\n    }\n\n    /**\n     * @dev method to withdraw eth from account\n     */\n\n    function withdraw(uint256 _amount) external {\n        require(_amount <= etherBalance[msg.sender]);\n        require(_amount != 0, \"Withdraw amount cannot be equal to 0\");\n\n        etherBalance[msg.sender] = SafeMath.sub(\n            etherBalance[msg.sender],\n            _amount\n        );\n\n        msg.sender.transfer(_amount);\n\n        emit onTransfer(msg.sender, address(0), _amount);\n    }\n\n    /**\n     * @dev method to deposit tokens into the bank\n     */\n    function depositTokens(address _tokenAddress, uint256 _tokenAmount)\n        external\n        payable\n    {\n        //Check if token is not supported by bank\n        require(tokensAllowed[_tokenAddress] == true, \"Token is not supported\");\n        token = ERC20(address(_tokenAddress));\n\n        _tokenSupply[_tokenAddress] = SafeMath.add(\n            _tokenSupply[_tokenAddress],\n            _tokenAmount\n        );\n        tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(\n            tokenOwnerBalance[_tokenAddress][msg.sender],\n            _tokenAmount\n        );\n\n        require(\n            token.transferFrom(msg.sender, address(this), _tokenAmount) == true,\n            \"Transfer not complete\"\n        );\n\n        emit depositToken(msg.sender, _tokenAmount);\n    }\n\n    /**\n     * @dev method to deposit eth into the bank\n     */\n    function deposit() external payable {\n        etherBalance[msg.sender] = SafeMath.add(\n            etherBalance[msg.sender],\n            msg.value\n        );\n\n        emit depositToken(msg.sender, msg.value);\n    }\n\n    /**\n     * @dev function that will add a token to the list of supported tokens\n     */\n    function addToken(address _tokenAddress) external onlyOwner returns (bool) {\n        tokensAllowed[_tokenAddress] = true;\n        return true;\n    }\n\n    /**\n     * @dev function that will remove token from list of supported tokens\n     */\n    function removeToken(address _tokenAddress)\n        external\n        onlyOwner\n        returns (bool)\n    {\n        delete (tokensAllowed[_tokenAddress]);\n        return true;\n    }\n\n    /**\n     * @dev method that will show the total amount of tokens in the bank for\n     */\n    function totalTokenSupply(address _tokenAddress)\n        public\n        view\n        returns (uint256)\n    {\n        return _tokenSupply[_tokenAddress];\n    }\n\n    /**\n     * @dev method that will show the balance that the caller has\n     * for a certain token\n     */\n    function balanceOf() public view returns (uint256) {\n        return etherBalance[msg.sender];\n    }\n\n    function balanceOfToken(address _tokenAddress)\n        public\n        view\n        returns (uint256)\n    {\n        return tokenOwnerBalance[_tokenAddress][msg.sender];\n    }\n\n    /**\n     * @dev fallback function to receive any eth sent to this contract\n     */\n\n    receive() external payable {\n        emit onReceived(msg.sender, msg.value);\n    }\n}\n",
   "sourcePath": "/Users/christianroque/Desktop/solidity-playground/contracts/Bank.sol",
   "ast": {
@@ -394,13 +407,13 @@
         430
       ],
       "ERC20": [
-        483
+        604
       ],
       "Ownable": [
-        663
+        1167
       ],
       "SafeMath": [
-        761
+        1265
       ]
     },
     "id": 431,
@@ -427,7 +440,7 @@
         "id": 2,
         "nodeType": "ImportDirective",
         "scope": 431,
-        "sourceUnit": 664,
+        "sourceUnit": 1168,
         "src": "66:23:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -438,7 +451,7 @@
         "id": 3,
         "nodeType": "ImportDirective",
         "scope": 431,
-        "sourceUnit": 484,
+        "sourceUnit": 605,
         "src": "90:21:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -449,7 +462,7 @@
         "id": 4,
         "nodeType": "ImportDirective",
         "scope": 431,
-        "sourceUnit": 762,
+        "sourceUnit": 1266,
         "src": "112:24:0",
         "symbolAliases": [],
         "unitAlias": ""
@@ -462,10 +475,10 @@
               "id": 5,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 663,
+              "referencedDeclaration": 1167,
               "src": "155:7:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$663",
+                "typeIdentifier": "t_contract$_Ownable_$1167",
                 "typeString": "contract Ownable"
               }
             },
@@ -475,14 +488,14 @@
           }
         ],
         "contractDependencies": [
-          663
+          1167
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
         "id": 430,
         "linearizedBaseContracts": [
           430,
-          663
+          1167
         ],
         "name": "Bank",
         "nodeType": "ContractDefinition",
@@ -1321,17 +1334,17 @@
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_ERC20_$483",
+              "typeIdentifier": "t_contract$_ERC20_$604",
               "typeString": "contract ERC20"
             },
             "typeName": {
               "id": 80,
               "name": "ERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 483,
+              "referencedDeclaration": 604,
               "src": "1188:5:0",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_ERC20_$483",
+                "typeIdentifier": "t_contract$_ERC20_$604",
                 "typeString": "contract ERC20"
               }
             },
@@ -1753,7 +1766,7 @@
                       "referencedDeclaration": 81,
                       "src": "1808:5:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ERC20_$483",
+                        "typeIdentifier": "t_contract$_ERC20_$604",
                         "typeString": "contract ERC20"
                       }
                     },
@@ -1829,10 +1842,10 @@
                         "name": "ERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 483,
+                        "referencedDeclaration": 604,
                         "src": "1816:5:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ERC20_$483_$",
+                          "typeIdentifier": "t_type$_t_contract$_ERC20_$604_$",
                           "typeString": "type(contract ERC20)"
                         }
                       },
@@ -1847,13 +1860,13 @@
                       "src": "1816:29:0",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ERC20_$483",
+                        "typeIdentifier": "t_contract$_ERC20_$604",
                         "typeString": "contract ERC20"
                       }
                     },
                     "src": "1808:37:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ERC20_$483",
+                      "typeIdentifier": "t_contract$_ERC20_$604",
                       "typeString": "contract ERC20"
                     }
                   },
@@ -1975,10 +1988,10 @@
                           "name": "SafeMath",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 761,
+                          "referencedDeclaration": 1265,
                           "src": "1886:8:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$761_$",
+                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$1265_$",
                             "typeString": "type(library SafeMath)"
                           }
                         },
@@ -1989,7 +2002,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 736,
+                        "referencedDeclaration": 1240,
                         "src": "1886:12:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
@@ -2213,10 +2226,10 @@
                           "name": "SafeMath",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 761,
+                          "referencedDeclaration": 1265,
                           "src": "2027:8:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$761_$",
+                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$1265_$",
                             "typeString": "type(library SafeMath)"
                           }
                         },
@@ -2227,7 +2240,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 736,
+                        "referencedDeclaration": 1240,
                         "src": "2027:12:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
@@ -2332,7 +2345,7 @@
                               "referencedDeclaration": 81,
                               "src": "2160:5:0",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_ERC20_$483",
+                                "typeIdentifier": "t_contract$_ERC20_$604",
                                 "typeString": "contract ERC20"
                               }
                             },
@@ -2343,7 +2356,7 @@
                             "lValueRequested": false,
                             "memberName": "transfer",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 462,
+                            "referencedDeclaration": 583,
                             "src": "2160:14:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -3067,10 +3080,10 @@
                           "name": "SafeMath",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 761,
+                          "referencedDeclaration": 1265,
                           "src": "2593:8:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$761_$",
+                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$1265_$",
                             "typeString": "type(library SafeMath)"
                           }
                         },
@@ -3081,7 +3094,7 @@
                         "lValueRequested": false,
                         "memberName": "sub",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 736,
+                        "referencedDeclaration": 1240,
                         "src": "2593:12:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
@@ -3557,7 +3570,7 @@
                       "referencedDeclaration": 81,
                       "src": "3098:5:0",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ERC20_$483",
+                        "typeIdentifier": "t_contract$_ERC20_$604",
                         "typeString": "contract ERC20"
                       }
                     },
@@ -3633,10 +3646,10 @@
                         "name": "ERC20",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 483,
+                        "referencedDeclaration": 604,
                         "src": "3106:5:0",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_ERC20_$483_$",
+                          "typeIdentifier": "t_type$_t_contract$_ERC20_$604_$",
                           "typeString": "type(contract ERC20)"
                         }
                       },
@@ -3651,13 +3664,13 @@
                       "src": "3106:29:0",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_ERC20_$483",
+                        "typeIdentifier": "t_contract$_ERC20_$604",
                         "typeString": "contract ERC20"
                       }
                     },
                     "src": "3098:37:0",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_ERC20_$483",
+                      "typeIdentifier": "t_contract$_ERC20_$604",
                       "typeString": "contract ERC20"
                     }
                   },
@@ -3779,10 +3792,10 @@
                           "name": "SafeMath",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 761,
+                          "referencedDeclaration": 1265,
                           "src": "3176:8:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$761_$",
+                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$1265_$",
                             "typeString": "type(library SafeMath)"
                           }
                         },
@@ -3793,7 +3806,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 760,
+                        "referencedDeclaration": 1264,
                         "src": "3176:12:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
@@ -4017,10 +4030,10 @@
                           "name": "SafeMath",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 761,
+                          "referencedDeclaration": 1265,
                           "src": "3322:8:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$761_$",
+                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$1265_$",
                             "typeString": "type(library SafeMath)"
                           }
                         },
@@ -4031,7 +4044,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 760,
+                        "referencedDeclaration": 1264,
                         "src": "3322:12:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
@@ -4196,7 +4209,7 @@
                               "referencedDeclaration": 81,
                               "src": "3460:5:0",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_contract$_ERC20_$483",
+                                "typeIdentifier": "t_contract$_ERC20_$604",
                                 "typeString": "contract ERC20"
                               }
                             },
@@ -4207,7 +4220,7 @@
                             "lValueRequested": false,
                             "memberName": "transferFrom",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 482,
+                            "referencedDeclaration": 603,
                             "src": "3460:18:0",
                             "typeDescriptions": {
                               "typeIdentifier": "t_function_external_nonpayable$_t_address_$_t_address_$_t_uint256_$returns$_t_bool_$",
@@ -4646,10 +4659,10 @@
                           "name": "SafeMath",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 761,
+                          "referencedDeclaration": 1265,
                           "src": "3778:8:0",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$761_$",
+                            "typeIdentifier": "t_type$_t_contract$_SafeMath_$1265_$",
                             "typeString": "type(library SafeMath)"
                           }
                         },
@@ -4660,7 +4673,7 @@
                         "lValueRequested": false,
                         "memberName": "add",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 760,
+                        "referencedDeclaration": 1264,
                         "src": "3778:12:0",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_pure$_t_uint256_$_t_uint256_$returns$_t_uint256_$",
@@ -4942,7 +4955,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 628,
+                  "referencedDeclaration": 1132,
                   "src": "4066:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5149,7 +5162,7 @@
                   "name": "onlyOwner",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 628,
+                  "referencedDeclaration": 1132,
                   "src": "4329:9:0",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$__$",
@@ -5815,13 +5828,13 @@
           430
         ],
         "ERC20": [
-          483
+          604
         ],
         "Ownable": [
-          663
+          1167
         ],
         "SafeMath": [
-          761
+          1265
         ]
       },
       "license": "MIT"
@@ -5845,7 +5858,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 664,
+          "SourceUnit": 1168,
           "absolutePath": "/Users/christianroque/Desktop/solidity-playground/contracts/Ownable.sol",
           "file": "./Ownable.sol",
           "scope": 431,
@@ -5860,7 +5873,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 484,
+          "SourceUnit": 605,
           "absolutePath": "/Users/christianroque/Desktop/solidity-playground/contracts/ERC20.sol",
           "file": "./ERC20.sol",
           "scope": 431,
@@ -5875,7 +5888,7 @@
       },
       {
         "attributes": {
-          "SourceUnit": 762,
+          "SourceUnit": 1266,
           "absolutePath": "/Users/christianroque/Desktop/solidity-playground/contracts/SafeMath.sol",
           "file": "./SafeMath.sol",
           "scope": 431,
@@ -5892,13 +5905,13 @@
         "attributes": {
           "abstract": false,
           "contractDependencies": [
-            663
+            1167
           ],
           "contractKind": "contract",
           "fullyImplemented": true,
           "linearizedBaseContracts": [
             430,
-            663
+            1167
           ],
           "name": "Bank",
           "scope": 431
@@ -5910,7 +5923,7 @@
               {
                 "attributes": {
                   "name": "Ownable",
-                  "referencedDeclaration": 663,
+                  "referencedDeclaration": 1167,
                   "type": "contract Ownable"
                 },
                 "id": 5,
@@ -6810,7 +6823,7 @@
               {
                 "attributes": {
                   "name": "ERC20",
-                  "referencedDeclaration": 483,
+                  "referencedDeclaration": 604,
                   "type": "contract ERC20"
                 },
                 "id": 80,
@@ -7384,7 +7397,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 483,
+                                  "referencedDeclaration": 604,
                                   "type": "type(contract ERC20)",
                                   "value": "ERC20"
                                 },
@@ -7552,7 +7565,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "sub",
-                                  "referencedDeclaration": 736,
+                                  "referencedDeclaration": 1240,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -7561,7 +7574,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 761,
+                                      "referencedDeclaration": 1265,
                                       "type": "type(library SafeMath)",
                                       "value": "SafeMath"
                                     },
@@ -7768,7 +7781,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "sub",
-                                  "referencedDeclaration": 736,
+                                  "referencedDeclaration": 1240,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -7777,7 +7790,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 761,
+                                      "referencedDeclaration": 1265,
                                       "type": "type(library SafeMath)",
                                       "value": "SafeMath"
                                     },
@@ -7987,7 +8000,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "transfer",
-                                      "referencedDeclaration": 462,
+                                      "referencedDeclaration": 583,
                                       "type": "function (address,uint256) external returns (bool)"
                                     },
                                     "children": [
@@ -8684,7 +8697,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "sub",
-                                  "referencedDeclaration": 736,
+                                  "referencedDeclaration": 1240,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -8693,7 +8706,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 761,
+                                      "referencedDeclaration": 1265,
                                       "type": "type(library SafeMath)",
                                       "value": "SafeMath"
                                     },
@@ -9334,7 +9347,7 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 483,
+                                  "referencedDeclaration": 604,
                                   "type": "type(contract ERC20)",
                                   "value": "ERC20"
                                 },
@@ -9502,7 +9515,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "add",
-                                  "referencedDeclaration": 760,
+                                  "referencedDeclaration": 1264,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -9511,7 +9524,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 761,
+                                      "referencedDeclaration": 1265,
                                       "type": "type(library SafeMath)",
                                       "value": "SafeMath"
                                     },
@@ -9718,7 +9731,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "add",
-                                  "referencedDeclaration": 760,
+                                  "referencedDeclaration": 1264,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -9727,7 +9740,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 761,
+                                      "referencedDeclaration": 1265,
                                       "type": "type(library SafeMath)",
                                       "value": "SafeMath"
                                     },
@@ -9941,7 +9954,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "transferFrom",
-                                      "referencedDeclaration": 482,
+                                      "referencedDeclaration": 603,
                                       "type": "function (address,address,uint256) external returns (bool)"
                                     },
                                     "children": [
@@ -10363,7 +10376,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "add",
-                                  "referencedDeclaration": 760,
+                                  "referencedDeclaration": 1264,
                                   "type": "function (uint256,uint256) pure returns (uint256)"
                                 },
                                 "children": [
@@ -10372,7 +10385,7 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 761,
+                                      "referencedDeclaration": 1265,
                                       "type": "type(library SafeMath)",
                                       "value": "SafeMath"
                                     },
@@ -10695,7 +10708,7 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 628,
+                      "referencedDeclaration": 1132,
                       "type": "modifier ()",
                       "value": "onlyOwner"
                     },
@@ -10918,7 +10931,7 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 628,
+                      "referencedDeclaration": 1132,
                       "type": "modifier ()",
                       "value": "onlyOwner"
                     },
@@ -11712,12 +11725,13 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x2D2039CF8B402C5703774e18CeCD52339E559408",
-      "transactionHash": "0x94dc2d78dd8b51503ad5dcb808dc587a92aec35d6b851b5e7cc8c5513acaafd6"
+      "address": "0x4134573Cd11F433f962Ba59F18A2f715f28263cC",
+      "transactionHash": "0xaf39e6ab8cbf72609f7db060f9d2960610c1288de3f121868f02c7b60112c0cf"
     }
   },
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-03-31T23:27:12.563Z",
+  "updatedAt": "2021-03-31T23:32:05.840Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {
