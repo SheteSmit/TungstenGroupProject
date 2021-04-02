@@ -1,3 +1,4 @@
+
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
@@ -52,7 +53,7 @@ contract ExchangeOracle is Ownable {
         // Emit event with new token information
         emit tokenUpdatedData(_name, _symbol, _img, _value);
     }
-
+    
     function getValue(address _tokenAddress) public view returns(uint) {
         return tokenData[_tokenAddress].value;
     }
