@@ -23,21 +23,6 @@ contract ExchangeOracle is Ownable {
         uint256 _value
     );
 
-    function addToken(
-        address _tokenAddress,
-        string memory _name,
-        string memory _symbol,
-        string memory _img,
-        uint256 _value
-    ) public onlyOwner {
-        // Add token struct to mapping using token contract address
-        tokenData[_tokenAddress] = Token(_name, _symbol, _img, _value, true);
-        // Push address to array of tokens tracked
-        trackedTokens.push(_tokenAddress);
-        // Push address of token added to trackedTokens
-        emit tokenUpdatedData(_name, _symbol, _img, _value);
-    }
-
     function updateToken(
         address _tokenAddress,
         string memory _name,
@@ -50,5 +35,17 @@ contract ExchangeOracle is Ownable {
         tokenData[_tokenAddress] = Token(_name, _symbol, _img, _value, _active);
         // Emit event with new token information
         emit tokenUpdatedData(_name, _symbol, _img, _value);
+    }
+
+    function priceOfPair(address _sellTokenAddress, address _buyTokenAddress)
+        public
+        view
+        onlyOwner
+        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    {
+        return (
+            tokenData[_sellTokenAddress].value,
+            tokenData[_buyTokenAddress].value
+        );
     }
 }
