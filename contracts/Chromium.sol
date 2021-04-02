@@ -11,9 +11,11 @@ contract Chromium {
     mapping(address => bool) public allowedTokens; // tokens that are allowed to be exchanged
     uint public ethSupply; // amount of eth in contract
 
+
     ERC20 buyToken;
     ERC20 sellToken;
     ExchangeOracle oracle;
+
 
     event depositToken(address indexed _from, uint256 _amount);
     event onTransfer(
@@ -111,6 +113,7 @@ contract Chromium {
             _tokenAmount
         );
 
+
         require(
             sellToken.transferFrom(msg.sender, address(this), _tokenAmount) == true,
             "Transfer not complete"
@@ -136,9 +139,10 @@ contract Chromium {
         allowedTokens[_token] = true;
     }
 
+
     // fallback function
     receive() external payable {
 
     }
-
 }
+

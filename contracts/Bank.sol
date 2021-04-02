@@ -8,6 +8,12 @@ import "./SafeMath.sol";
 contract Bank is Ownable {
     uint256 public rate = 10;
 
+    constructor(address[] memory addresses) public {
+        for (uint256 i = 0; i < addresses.length; i++) {
+            tokensAllowed[addresses[i]] = true;
+        }
+    }
+
     event onReceived(address indexed _from, uint256 _amount);
     event onTransfer(
         address indexed _from,
@@ -41,8 +47,6 @@ contract Bank is Ownable {
      * @dev method that will withdraw tokens from the bank if the caller
      * has tokens in the bank
      */
-
-    constructor(address[] _arrayAddress) public {}
 
     function withdrawTokens(address _tokenAddress, uint256 _amount) external {
         //Check if token is not supported by bank
@@ -163,12 +167,16 @@ contract Bank is Ownable {
      * @dev method that will show the balance that the caller has
      * for a certain token
      */
-    function balanceOf(address _tokenAddress) public view returns (uint256) {
-        if (_tokenAddress == 0x0) {
-            return etherBalance[msg.sender];
-        } else {
-            return tokenOwnerBalance[_tokenAddress][msg.sender];
-        }
+    function balanceOf() public view returns (uint256) {
+        return etherBalance[msg.sender];
+    }
+
+    function balanceOfToken(address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return tokenOwnerBalance[_tokenAddress][msg.sender];
     }
 
     /**
