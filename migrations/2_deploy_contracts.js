@@ -4,6 +4,8 @@ const Smit = artifacts.require("SmitCoin");
 const Slick = artifacts.require("Token");
 const Ham = artifacts.require("HAM");
 const Bank = artifacts.require("Bank");
+const Oracle = artifacts.require("ExchangeOracle");
+const Chromium = artifacts.require("Chromium");
 
 module.exports = async function (deployer) {
   // deploy my contracts
@@ -21,6 +23,12 @@ module.exports = async function (deployer) {
 
   await deployer.deploy(Ham);
   const hamToken = await Smit.deployed();
+
+  await deployer.deploy(Oracle);
+  const oracle = await Oracle.deployed();
+
+  await deployer.deploy(Chromium, oracle.address);
+  const chromium = await Chromium.deployed();
 
   await deployer.deploy(Bank, [
     CHCtoken.address,

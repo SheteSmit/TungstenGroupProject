@@ -16,6 +16,7 @@ contract ExchangeOracle is Ownable {
     }
     // Events
     event deletedToken(address token);
+
     event tokenUpdatedData(
         string _name,
         string _symbol,
@@ -47,5 +48,13 @@ contract ExchangeOracle is Ownable {
             tokenData[_sellTokenAddress].value,
             tokenData[_buyTokenAddress].value
         );
+    }
+
+    function testConnection()
+        public
+        pure
+        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    {
+        return (2, 3);
     }
 }

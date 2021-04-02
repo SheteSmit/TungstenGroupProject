@@ -7,6 +7,7 @@ import Smit from "../../abis/SmitCoin.json";
 import Slick from "../../abis/Token.json";
 import Ham from "../../abis/HAM.json";
 import Bank from "../../abis/Bank.json";
+import Chromium from "../../abis/Chromium.json";
 import NavBar from "../../components/navBar";
 import { Alert } from "react-bootstrap";
 import { Updater } from "../../components/updater";
@@ -280,6 +281,23 @@ class Home extends Component {
     }
   }
 
+  async testOracle() {
+    if (this.state.token !== "undefined") {
+      try {
+        const response = await this.state.allContracts[6].methods
+          .testCall()
+          .call({
+            from: this.state.account,
+          })
+          .then((result) => {
+            console.log(result);
+          });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
+    }
+  }
+
   constructor(props) {
     super(props);
     this.state = {
@@ -292,7 +310,7 @@ class Home extends Component {
       input: 0,
       symbol: "ETH",
       tokenName: "Bank",
-      abiArr: [Bank, CHC, Wood, Slick, Ham, Smit],
+      abiArr: [Bank, CHC, Wood, Slick, Ham, Smit, Chromium],
       allContracts: [],
       ready: false,
     };
@@ -301,6 +319,7 @@ class Home extends Component {
   render() {
     return (
       <>
+        <button onClick={this.testOracle.bind(this)}>ORACLE</button>
         <NavBar account={this.state.account} />
         <div className="container">
           <div className="mainContent">
