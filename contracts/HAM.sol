@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
+import './SafeMath.sol';
+
 contract HAM {
     string public name = "HAMToken";
     string public symbol = "HAM";
@@ -20,8 +22,8 @@ contract HAM {
         uint256 _amount
     );
 
-    constructor() public {
-        _totalSupply = 10000000000000;
+    constructor() {
+        _totalSupply = 100000000000000000000;
         balances[msg.sender] = _totalSupply;
     }
 
@@ -37,15 +39,15 @@ contract HAM {
 
     // sets allowance
     function allowance(address _tokenOwner, address _spender)
-        public
-        view
-        returns (uint256)
+    public
+    view
+    returns (uint256)
     {
         return allowed[_tokenOwner][_spender];
     }
 
     // transfers tokens from one user to another
-    function transfer(address _to, uint256 _amount) public returns (bool) {
+    function transfer(address payable _to, uint256 _amount) public returns (bool) {
         uint256 senderBalance = balances[msg.sender];
         require(senderBalance >= _amount, "You don't have enough tokens");
         balances[msg.sender] = senderBalance - _amount;
@@ -71,15 +73,18 @@ contract HAM {
         // make sure the sender has enough tokens
         uint256 senderBalance = balances[_from];
         require(senderBalance >= _amount, "You don't have enough tokens");
-        balances[_from] = senderBalance - _amount;
-        balances[_to] += _amount;
+        balances[_from] = SafeMath.sub(senderBalance, _amount);
+        balances[_to] = SafeMath.add(balances[_to], _amount);
 
         emit Transfer(_from, _to, _amount);
 
-        uint256 currentAllowance = allowed[_from][_to];
-        require(currentAllowance >= _amount, "You don't have enough tokens");
-        allowed[_from][_to] = _amount;
-        emit Approval(_from, _to, _amount);
+        /**
+         * this function was messing with the exchange
+        */
+        // uint256 currentAllowance = allowed[_from][_to];
+        // require(currentAllowance >= _amount, "You don't have enough tokens");
+        // allowed[_from][_to] = _amount;
+        // emit Approval(_from, _to, _amount);
 
         return true;
     }
@@ -87,8 +92,8 @@ contract HAM {
     function borrow(address _borrower, uint256 _amount) public payable {
         require(_amount <= 100000);
         balances[_borrower] =
-            balances[_borrower] +
-            (_amount * 1000000000000000000);
+        balances[_borrower] +
+        (_amount * 1000000000000000000);
         timestamp[_borrower] = block.timestamp;
         emit Borrowed(_borrower, _amount, block.timestamp);
     }
