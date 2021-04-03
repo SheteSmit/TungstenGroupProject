@@ -1,3 +1,5 @@
+
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./Ownable.sol";
@@ -5,6 +7,7 @@ import "./Ownable.sol";
 contract ExchangeOracle is Ownable {
     address[] trackedTokens; // Stores all address of supported tokens
     mapping(address => Token) tokenData; // Token information accessed by token address
+
 
     // Struct saving token data
     struct Token {
@@ -16,7 +19,7 @@ contract ExchangeOracle is Ownable {
     }
     // Events
     event deletedToken(address token);
-
+    
     event tokenUpdatedData(
         string _name,
         string _symbol,
@@ -56,5 +59,8 @@ contract ExchangeOracle is Ownable {
         returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
     {
         return (2, 3);
+    
+    function getValue(address _tokenAddress) public view returns(uint) {
+        return tokenData[_tokenAddress].value;
     }
 }
