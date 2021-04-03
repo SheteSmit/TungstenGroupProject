@@ -27,9 +27,6 @@ module.exports = async function (deployer) {
   await deployer.deploy(Oracle);
   const oracle = await Oracle.deployed();
 
-  await deployer.deploy(Chromium, oracle.address);
-  const chromium = await Chromium.deployed();
-
   await deployer.deploy(Bank, [
     CHCtoken.address,
     woodToken.address,
@@ -37,4 +34,8 @@ module.exports = async function (deployer) {
     slickToken.address,
     hamToken.address,
   ]);
+  const bank = await Bank.deployed();
+
+  await deployer.deploy(Chromium, oracle.address, bank.address);
+  const chromium = await Chromium.deployed();
 };
