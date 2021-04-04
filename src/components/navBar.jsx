@@ -7,7 +7,7 @@ export default function NavBar(props) {
       <Navbar expand="lg" variant="light" bg="light">
         <Container fluid>
           <Navbar.Brand href="">Cobalt Lend Treasury</Navbar.Brand>
-          <NavItem className="metaacct"><button className="buttonMid" style={{
+          <NavItem ><button className="buttonMid" style={{
             border: "1px solid #f7f7f7",
             borderRadius: '12px',
             background: "#49bcf8",
