@@ -14,6 +14,8 @@ contract Bank is Ownable {
         }
     }
 
+    ERC20 token;
+
     /**
      * @dev Events emitted
      */
