@@ -34,7 +34,6 @@ contract PeriodicLoan {
      * @dev Recalculates interest and also conducts check and balances
      */
     function newLoan(
-        address _borrower,
         uint256 interestRateNumerator,
         uint256 interestRateDenominator,
         uint256 _paymentPeriod,
@@ -43,7 +42,7 @@ contract PeriodicLoan {
         uint256 units
     ) public {
         loanBook[msg.sender] = Loan(
-            _borrower,
+            msg.sender,
             (block.timestamp + _paymentPeriod),
             Rational(interestRateNumerator, interestRateDenominator),
             _paymentPeriod,
@@ -152,7 +151,7 @@ contract PeriodicLoan {
                 principal == loanBook[msg.sender].remainingBalance
         );
 
-        processPeriod(interest, principal, borrower);
+        processPeriod(interest, principal, msg.sender);
     }
 
     /**
@@ -164,14 +163,16 @@ contract PeriodicLoan {
      *
      */
     function missedPayment() public {
-        require(now > dueDate);
+        require(now > loanBook[msg.sender].dueDate);
 
         uint256 interest;
         uint256 principal;
-        (interest, principal) = calculateComponents(minimumPayment);
+        (interest, principal) = calculateComponents(
+            loanBook[msg.sender].minimumPayment
+        );
 
-        if (principal > remainingBalance) {
-            principal = remainingBalance;
+        if (principal > loanBook[msg.sender].remainingBalance) {
+            principal = loanBook[msg.sender].remainingBalance;
         }
 
         processPeriod(interest, principal, lender);
@@ -186,9 +187,9 @@ contract PeriodicLoan {
      *
      */
     function returnCollateral() public {
-        require(remainingBalance == 0);
+        require(loanBook[msg.sender].remainingBalance == 0);
 
         uint256 amount = token.balanceOf(this);
-        require(token.transfer(borrower, amount));
+        require(token.transfer(loanBook[msg.sender].borrower, amount));
     }
 }
