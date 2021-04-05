@@ -22,6 +22,8 @@ contract Bank is Ownable {
         uint256 denominator;
     }
 
+    ERC20 token;
+
     /**
      * @dev  Using variables needed to use theloan function properly
      */
