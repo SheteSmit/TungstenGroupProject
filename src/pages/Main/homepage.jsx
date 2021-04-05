@@ -7,9 +7,15 @@ import Smit from "../../abis/SmitCoin.json";
 import Slick from "../../abis/Token.json";
 import Ham from "../../abis/HAM.json";
 import Bank from "../../abis/Bank.json";
+import Chromium from "../../abis/Chromium.json";
 import NavBar from "../../components/navBar";
 import { Alert } from "react-bootstrap";
 import { Updater } from "../../components/updater";
+import Tour from "reactour";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+// import { tourConfig } from '../../components/tour';
+
+
 
 class Home extends Component {
   async componentWillMount() {
@@ -44,7 +50,7 @@ class Home extends Component {
         });
 
         await this.state.token.methods
-          .balanceOf(this.state.account)
+          .balanceOf()
           .call({ from: this.state.account })
           .then((result) => {
             console.log(result.toString());
@@ -108,9 +114,9 @@ class Home extends Component {
 
     console.log(this.state);
 
-    if (this.state.tokenName == Bank) {
+    if (this.state.tokenName == "Bank") {
       await this.state.token.methods
-        .balanceOf("ETH")
+        .balanceOf()
         .call({ from: this.state.account })
         .then((result) => {
           console.log(result.toString());
@@ -228,7 +234,7 @@ class Home extends Component {
   async refreshBalance() {
     if (this.state.tokenName == Bank) {
       await this.state.token.methods
-        .balanceOf("ETH")
+        .balanceOf()
         .call({ from: this.state.account })
         .then((result) => {
           console.log(result.toString());
@@ -280,6 +286,40 @@ class Home extends Component {
     }
   }
 
+  async testOracle() {
+    if (this.state.token !== "undefined") {
+      try {
+        const response = await this.state.allContracts[6].methods
+          .testCall()
+          .call({
+            from: this.state.account,
+          })
+          .then((result) => {
+            console.log(result);
+          });
+      } catch (e) {
+        console.log("Error, deposit: ", e);
+      }
+    }
+  }
+  disableBody = (target) => disableBodyScroll(target);
+  enableBody = (target) => enableBodyScroll(target);
+
+  toggleShowMore = () => {
+    this.setState((prevState) => ({
+      isShowingMore: !prevState.isShowingMore
+    }));
+  };
+
+  closeTour = () => {
+    this.setState({ isTourOpen: false });
+  };
+
+  openTour = () => {
+    this.setState({ isTourOpen: true });
+  };
+
+
   constructor(props) {
     super(props);
     this.state = {
@@ -292,16 +332,87 @@ class Home extends Component {
       input: 0,
       symbol: "ETH",
       tokenName: "Bank",
-      abiArr: [Bank, CHC, Wood, Slick, Ham, Smit],
+      abiArr: [Bank, CHC, Wood, Slick, Ham, Smit, Chromium],
       allContracts: [],
       ready: false,
+      isTourOpen: false,
     };
   }
 
+
+
   render() {
+    const { isTourOpen } = this.state;
+    const accentColor = "#49bcf8";
+    const tourConfig = [
+      {
+        selector: '.metaacct',
+        content: `This is your Meta Mask Account you are currently using. Please make sure you verify your account before making transaction.`
+      },
+      {
+        selector: '.form-field',
+        content: `Enter the amount you would like to borrow, repay on a loan, make a deposit, widthdraw or donate.`
+      },
+      {
+        selector: '#cusSelectbox',
+        content: `Find the token you want to handle here. Keep in mind once you select the button the transaction will begin.`
+      },
+      {
+        selector: '.walletActions',
+        content:
+          "Here is where the action is. You can borrow from the liquidity pool, repay a loan, deposit to the liquidity pool, withdraw your funds, or donate to Colbalt. "
+      },
+      {
+        selector: '#balanceNumber',
+        content: "Visibility is important, monitor your balance of your selected token."
+      },
+      {
+        selector: '#contractAddress',
+        content: () => (
+          <div>
+            Add the token of your choice straight into your Meta Mask wallet with a click of the button.
+            <br />
+            <hr />
+            <h6 style={{ textAlign: 'center' }}> "Think you got it now?"{" "}</h6>
+
+            <button
+              style={{
+                border: "1px solid #f7f7f7",
+                background: "none",
+                padding: ".3em .7em",
+                fontSize: "inherit",
+                display: "block",
+                cursor: "pointer",
+                margin: "1em auto"
+              }}
+              onClick={this.closeTour}
+            > 
+              Let's Begin
+             
+            </button>
+          </div>
+        )
+
+      },
+    ];
+
     return (
       <>
-        <NavBar account={this.state.account} />
+        <Tour
+          onRequestClose={this.closeTour}
+          steps={tourConfig}
+          isOpen={isTourOpen}
+          maskClassName="mask"
+          className="helper"
+          rounded={5}
+          accentColor={accentColor}
+          onAfterOpen={this.disableBody}
+          onBeforeClose={this.enableBody}
+        />
+      
+        <NavBar openTour={this.openTour} account={this.state.account} />
+     
+        <button onClick={this.testOracle.bind(this)}>ORACLE</button>
         <div className="container">
           <div className="mainContent">
             <div className="mt-5">
@@ -465,7 +576,8 @@ class Home extends Component {
             </div>
           </div>
         </div>
-      </>
+     
+  </>
     );
   }
 }
