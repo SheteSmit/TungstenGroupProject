@@ -27,13 +27,17 @@ module.exports = async function (deployer) {
   await deployer.deploy(Oracle);
   const oracle = await Oracle.deployed();
 
-  await deployer.deploy(Bank, [
-    CHCtoken.address,
-    woodToken.address,
-    smitToken.address,
-    slickToken.address,
-    hamToken.address,
-  ]);
+  await deployer.deploy(
+    Bank,
+    [
+      CHCtoken.address,
+      woodToken.address,
+      smitToken.address,
+      slickToken.address,
+      hamToken.address,
+    ],
+    "0x433c6e3d2def6e1fb414cf9448724efb0399b698"
+  );
   const bank = await Bank.deployed();
 
   await deployer.deploy(Chromium, oracle.address, bank.address);

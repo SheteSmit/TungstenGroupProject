@@ -14,13 +14,13 @@ import { Updater } from "../../components/updater";
 import Tour from "reactour";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 // import { tourConfig } from '../../components/tour';
-
-
+import Contract from "web3-eth-contract";
+import Swap from "../../components/swap";
 
 class Home extends Component {
   async componentWillMount() {
     await this.loadBlockchainData();
-    console.log(this.state.allContracts);
+    await this.cobaltBalance();
   }
 
   async loadBlockchainData(dispatch) {
@@ -255,6 +255,38 @@ class Home extends Component {
     }
   }
 
+  async cobaltBalance() {
+    const address = "0x433c6e3d2def6e1fb414cf9448724efb0399b698";
+    await window.ethereum
+      .request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20", // Initially only supports ERC20, but eventually more!
+          options: {
+            address: address, // The address that the token is at.
+            symbol: "CBLT", // A ticker symbol or shorthand, up to 5 chars.
+            decimals: 18, // The number of decimals in the token
+            image:
+              "https://miro.medium.com/max/4800/1*-k-vtfVGvPYehueIfPRHEA.png", // A string url of the token logo
+          },
+        },
+      })
+      .then((success) => {
+        if (success) {
+          console.log(success);
+          console.log("Cobalt successfully added to wallet!");
+        } else {
+          throw new Error("Something went wrong.");
+        }
+      })
+      .catch(console.error);
+
+    const web3 = new Web3(window.ethereum);
+    var balance = web3.eth.getBalance(address).then((value) => {
+      const credit = web3.utils.fromWei(value, "ether");
+      this.setState({ cobalt: credit });
+    });
+  }
   async addToken() {
     const tokenAddress = this.state.coinAddress;
     const tokenSymbol = this.state.symbol;
@@ -302,12 +334,13 @@ class Home extends Component {
       }
     }
   }
+
   disableBody = (target) => disableBodyScroll(target);
   enableBody = (target) => enableBodyScroll(target);
 
   toggleShowMore = () => {
     this.setState((prevState) => ({
-      isShowingMore: !prevState.isShowingMore
+      isShowingMore: !prevState.isShowingMore,
     }));
   };
 
@@ -319,7 +352,6 @@ class Home extends Component {
     this.setState({ isTourOpen: true });
   };
 
-
   constructor(props) {
     super(props);
     this.state = {
@@ -328,6 +360,7 @@ class Home extends Component {
       token: null,
       result: "null",
       balance: 0,
+      cblt: 0,
       balances: [],
       input: 0,
       symbol: "ETH",
@@ -339,42 +372,41 @@ class Home extends Component {
     };
   }
 
-
-
   render() {
     const { isTourOpen } = this.state;
     const accentColor = "#49bcf8";
     const tourConfig = [
       {
-        selector: '.metaacct',
-        content: `This is your Meta Mask Account you are currently using. Please make sure you verify your account before making transaction.`
+        selector: ".metaacct",
+        content: `This is your Meta Mask Account you are currently using. Please make sure you verify your account before making transaction.`,
       },
       {
-        selector: '.form-field',
-        content: `Enter the amount you would like to borrow, repay on a loan, make a deposit, widthdraw or donate.`
+        selector: ".form-field",
+        content: `Enter the amount you would like to borrow, repay on a loan, make a deposit, widthdraw or donate.`,
       },
       {
-        selector: '#cusSelectbox',
-        content: `Find the token you want to handle here. Keep in mind once you select the button the transaction will begin.`
+        selector: "#cusSelectbox",
+        content: `Find the token you want to handle here. Keep in mind once you select the button the transaction will begin.`,
       },
       {
-        selector: '.walletActions',
+        selector: ".walletActions",
         content:
-          "Here is where the action is. You can borrow from the liquidity pool, repay a loan, deposit to the liquidity pool, withdraw your funds, or donate to Colbalt. "
+          "Here is where the action is. You can borrow from the liquidity pool, repay a loan, deposit to the liquidity pool, withdraw your funds, or donate to Colbalt. ",
       },
       {
-        selector: '#balanceNumber',
-        content: "Visibility is important, monitor your balance of your selected token."
+        selector: "#balanceNumber",
+        content:
+          "Visibility is important, monitor your balance of your selected token.",
       },
       {
-        selector: '#contractAddress',
+        selector: "#contractAddress",
         content: () => (
           <div>
-            Add the token of your choice straight into your Meta Mask wallet with a click of the button.
+            Add the token of your choice straight into your Meta Mask wallet
+            with a click of the button.
             <br />
             <hr />
-            <h6 style={{ textAlign: 'center' }}> "Think you got it now?"{" "}</h6>
-
+            <h6 style={{ textAlign: "center" }}> "Think you got it now?" </h6>
             <button
               style={{
                 border: "1px solid #f7f7f7",
@@ -383,16 +415,14 @@ class Home extends Component {
                 fontSize: "inherit",
                 display: "block",
                 cursor: "pointer",
-                margin: "1em auto"
+                margin: "1em auto",
               }}
               onClick={this.closeTour}
-            > 
+            >
               Let's Begin
-             
             </button>
           </div>
-        )
-
+        ),
       },
     ];
 
@@ -409,10 +439,17 @@ class Home extends Component {
           onAfterOpen={this.disableBody}
           onBeforeClose={this.enableBody}
         />
-      
-        <NavBar openTour={this.openTour} account={this.state.account} />
-     
+
+        <NavBar
+          cobalt={this.state.cobalt}
+          balance={this.state.balance}
+          symbol={this.state.symbol}
+          openTour={this.openTour}
+          account={this.state.account}
+        />
+
         <button onClick={this.testOracle.bind(this)}>ORACLE</button>
+        <Swap balance={this.state.balance} symbol={this.state.symbol} />
         <div className="container">
           <div className="mainContent">
             <div className="mt-5">
@@ -576,8 +613,7 @@ class Home extends Component {
             </div>
           </div>
         </div>
-     
-  </>
+      </>
     );
   }
 }

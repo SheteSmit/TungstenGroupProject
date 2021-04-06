@@ -1,0 +1,89 @@
+.swapwrapper {
+    display: flex;
+    justify-content: center;
+}
+
+.swapcard {
+    background: white;
+    border-radius: 12px;
+    height: 500px;
+    width: 500px;
+}
+
+.cardtitle {
+    display: flex;
+    justify-content: space-between;
+}
+
+.swapfrom, .swapto {
+    display: flex;
+    align-items: center;
+    border: 2px solid whitesmoke;
+    border-radius: 12px;
+    padding: 4%;
+}
+
+.form-input {
+    display: block;
+  width: 100%;
+  padding: 8px 16px;
+  line-height: 25px;
+  font-size: 26px;
+  font-weight: 500;
+  font-family: inherit;
+  border: none;
+  -webkit-appearance: none;
+  color: var(--input-color);
+  transition: border 0.3s ease;
+}
+
+.downarrow {
+    display: block;
+    padding-top: 4%;
+    padding-bottom: 4%;
+    margin: 0 auto;;
+}
+
+.swaptobtn {
+    display: block;
+    align-items: center;
+    height: 2.2rem;
+    font-size: 20px;
+    background-color: rgb(255, 0, 122);
+    color: rgb(255, 255, 255);
+    border-radius: 12px;
+    box-shadow: rgb(0 0 0 / 8%) 0px 6px 10px;
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+    border: none;
+    width: max-content;
+}
+
+.swapconfirmbtn {
+    display: block;
+    background-color: rgb(237, 238, 242);
+    color: rgb(136, 141, 155);
+    cursor: auto;
+    box-shadow: none;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    outline: none;
+    padding: 2% 28%;
+    opacity: 1;
+    margin: 0 auto;
+    font-size: 24px;
+    text-align: center;
+
+}
+
+.choice {
+
+  margin-left: -4px;
+  -webkit-appearance: none;
+  color: var(--input-color);
+  border: none;
+  font-size: 1.5rem;
+  background: var(--input-background);
+  transition: border 0.3s ease
+}
