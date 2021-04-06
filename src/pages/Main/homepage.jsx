@@ -449,8 +449,8 @@ class Home extends Component {
           account={this.state.account}
         />
 
-        <button onClick={this.testOracle.bind(this)}>ORACLE</button>
         <Swap balance={this.state.balance} symbol={this.state.symbol} />
+        <button onClick={this.testOracle.bind(this)}>ORACLE</button>
         <div className="container">
           <div className="mainContent">
             <div className="mt-5">
