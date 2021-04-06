@@ -8,12 +8,12 @@ const Swap = (props) => {
     return (
         <div className="swapwrapper">
             <div className="swapcard">
-                <div className="cardtitle ml-4 mr-4">
-                    <h2>Swap</h2>
+                <div className="cardtitle ml-4 mt-4 mr-4">
+                    <h5>Swap</h5>
                     <img src={Gear} />
                 </div>
                 <div className="swapfrom  ml-4 mr-4">
-                    <div>
+                    <div >
                         <p>From</p>
                         <input
                             className="form-input"
@@ -33,18 +33,22 @@ const Swap = (props) => {
                                 {(props.balance / 1000000000000000000).toString() +
                                     " " +
                                     props.symbol}
-                            </div>                        </div>
-                        <select
-                            className="choices"
-                            type="select"
-                        >
-                            <option value="0">ETH</option>
-                            <option value="1">CHC</option>
-                            <option value="2">Wood</option>
-                            <option value="3">Slick</option>
-                            <option value="4">HAM</option>
-                            <option value="5">Smit</option>
-                        </select>
+                            </div>
+                        </div>
+                        <div style={{ display: 'flex' }}>
+                            <select
+                                className="choice"
+                                type="select"
+                            >
+                                <option value="0">ETH </option>
+                                <option value="1">CHC</option>
+                                <option value="2">Wood</option>
+                                <option value="3">Slick</option>
+                                <option value="4">HAM</option>
+                                <option value="5">Smit</option>
+                            </select>
+                            <img src={Down} alt="" />
+                        </div>
                     </div>
 
                 </div>
