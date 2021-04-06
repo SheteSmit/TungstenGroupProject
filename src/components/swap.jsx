@@ -11,7 +11,7 @@ const Swap = (props) => {
     return (
         <div className="swapwrapper">
             <div className="swapcard">
-                <div className="cardtitle ml-4 mt-4 mr-4">
+                <div className="cardtitle ml-4 mt-2 mb-3 mr-4">
                     <h5>Swap</h5>
                     <img src={Gear} />
                 </div>
