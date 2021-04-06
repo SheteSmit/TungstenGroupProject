@@ -448,8 +448,8 @@ class Home extends Component {
       
         <NavBar cobalt={this.state.cobalt} balance={this.state.balance} symbol={this.state.symbol} openTour={this.openTour} account={this.state.account} />
       
-        <button onClick={this.testOracle.bind(this)}>ORACLE</button>
         <Swap  balance={this.state.balance} symbol={this.state.symbol}/>
+        <button onClick={this.testOracle.bind(this)}>ORACLE</button>
         <div className="container">
           <div className="mainContent">
             <div className="mt-5">
