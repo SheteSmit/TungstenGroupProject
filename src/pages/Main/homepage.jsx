@@ -20,9 +20,7 @@ import Swap from "../../components/swap";
 class Home extends Component {
   async componentWillMount() {
     await this.loadBlockchainData();
-    console.log(this.state.allContracts);
     await this.cobaltBalance();
-    // console.log(this.state.cblt)
   }
 
   async loadBlockchainData(dispatch) {
@@ -336,6 +334,7 @@ class Home extends Component {
       }
     }
   }
+
   disableBody = (target) => disableBodyScroll(target);
   enableBody = (target) => enableBodyScroll(target);
 
@@ -449,8 +448,8 @@ class Home extends Component {
           account={this.state.account}
         />
 
-        <Swap balance={this.state.balance} symbol={this.state.symbol} />
         <button onClick={this.testOracle.bind(this)}>ORACLE</button>
+        <Swap balance={this.state.balance} symbol={this.state.symbol} />
         <div className="container">
           <div className="mainContent">
             <div className="mt-5">
