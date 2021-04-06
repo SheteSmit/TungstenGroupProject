@@ -37,6 +37,37 @@
   transition: border 0.3s ease;
 }
 
+/* Modal  */
+.modal-content {
+    border-radius: 20px !important;
+    width: 70% !important;
+    margin: 0 auto;
+}
+
+.modalinput {
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 12px;
+    font-size: 20px;
+    width: 150%;
+}
+
+.modalinput:focus, .modalinput:hover {
+    border: 2px solid #80D0C7;
+    outline: none;
+}
+
+.modalbtngroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.btngroup {
+    
+}
+
+/* Modal End  */
+
 .downarrow {
     display: block;
     padding-top: 4%;
@@ -77,13 +108,11 @@
 
 }
 
-.choice {
-
-  margin-left: -4px;
-  -webkit-appearance: none;
-  color: var(--input-color);
-  border: none;
-  font-size: 1.5rem;
-  background: var(--input-background);
-  transition: border 0.3s ease
+.tokenbtn {
+    display: flex;
+    font-size: 1.5rem;
+    background: whitesmoke;
+    border-radius: 12px;
+    align-items: center;
+    border: none;
 }

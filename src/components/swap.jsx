@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Gear from '../icons/settings.svg'
 import Arrow from '../icons/arrow-down.svg'
 import Down from '../icons/chevron-down.svg'
+import { MyVerticallyCenteredModal } from './tokenSelection';
 import './swap.css';
 
 const Swap = (props) => {
+    const [modalShow, setModalShow] = React.useState(false);
+
     return (
         <div className="swapwrapper">
             <div className="swapcard">
@@ -19,11 +22,7 @@ const Swap = (props) => {
                             className="form-input"
                             type="number"
                             placeholder="0.0"
-                            onChange={(e) => {
-                                // this.setState({
-                                //     input: e.target.value,
-                                // });
-                            }}
+                            onChange={props.handleInput}
                         ></input>
                     </div>
                     <div>
@@ -36,18 +35,15 @@ const Swap = (props) => {
                             </div>
                         </div>
                         <div style={{ display: 'flex' }}>
-                            <select
-                                className="choice"
-                                type="select"
-                            >
-                                <option value="0">ETH </option>
-                                <option value="1">CHC</option>
-                                <option value="2">Wood</option>
-                                <option value="3">Slick</option>
-                                <option value="4">HAM</option>
-                                <option value="5">Smit</option>
-                            </select>
-                            <img src={Down} alt="" />
+                            <button className="tokenbtn choice" type="submit"
+                                onClick={() => setModalShow(true)}>
+                                {props.symbol}  <img src={Down} alt="downarrow" />
+                            </button>
+                            <MyVerticallyCenteredModal
+                                show={modalShow}
+                                onHide={() => setModalShow(false)}
+                            />
+
                         </div>
                     </div>
 
@@ -61,11 +57,7 @@ const Swap = (props) => {
                             className="form-input"
                             type="number"
                             placeholder="0.0"
-                            onChange={(e) => {
-                                // this.setState({
-                                //     input: e.target.value,
-                                // });
-                            }}
+                            onChange={props.handleInput}
                         ></input>
                     </div>
                     <div>
