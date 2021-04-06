@@ -372,6 +372,12 @@ class Home extends Component {
     };
   }
 
+  handleInput = (e) => {
+    this.setState({
+      input: e.target.value,
+    });
+  }
+
   render() {
     const { isTourOpen } = this.state;
     const accentColor = "#49bcf8";
@@ -425,7 +431,7 @@ class Home extends Component {
         ),
       },
     ];
-
+    console.log(this.state.input)
     return (
       <>
         <Tour
@@ -449,7 +455,8 @@ class Home extends Component {
         />
 
         <button onClick={this.testOracle.bind(this)}>ORACLE</button>
-        <Swap balance={this.state.balance} symbol={this.state.symbol} />
+        <Swap handleInput={this.handleInput} deposit={this.depositBank} withdrawl={this.withdrawBank} changeToke={this.changeToken}
+          balance={this.state.balance} symbol={this.state.symbol} />
         <div className="container">
           <div className="mainContent">
             <div className="mt-5">
