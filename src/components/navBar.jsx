@@ -21,6 +21,7 @@ export default function NavBar(props) {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto ">
             <Nav.Link href="#swap">Swap</Nav.Link>
+            <Nav.Link href="#loan">Loan</Nav.Link>
             <Nav.Link href="#treasury">Treasury</Nav.Link>
             <Nav.Link href="#vote">Vote</Nav.Link>
           </Nav>
