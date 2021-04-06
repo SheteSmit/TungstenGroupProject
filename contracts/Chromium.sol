@@ -53,23 +53,24 @@ contract Chromium {
     ) external payable {
         // pulls the price of both tokens from an oracle using call without abi
         (bool result, bytes memory data) =
-        oracleAddress.call(
-            abi.encodeWithSignature(
-                "priceOfPair(address,address)",
-                _sellToken,
-                _buyToken
-            )
-        );
+            oracleAddress.call(
+                abi.encodeWithSignature(
+                    "priceOfPair(address,address)",
+                    _sellToken,
+                    _buyToken
+                )
+            );
+
         // Decode bytes data
         (uint256 sellTokenValue, uint256 buyTokenValue) =
-        abi.decode(data, (uint256, uint256));
+            abi.decode(data, (uint256, uint256));
 
         //Calculate tokens bought
         uint256 buyingAmount =
-        SafeMath.mul(
-            _sellAmount,
-            SafeMath.div(sellTokenValue, buyTokenValue)
-        );
+            SafeMath.mul(
+                _sellAmount,
+                SafeMath.div(sellTokenValue, buyTokenValue)
+            );
 
         // checks to see if there are enough tokens in the contract to make the exchange
         require(buyingAmount <= treasury.totalTokenSupply(_buyToken));
@@ -89,32 +90,29 @@ contract Chromium {
      * @param _sellAmount amount of tokens that will be sold
      */
     function exchangeTokenForEth(address _sellToken, uint256 _sellAmount)
-    external
-    payable
+        external
+        payable
     {
         address ethAddress = 0x0000000000000000000000000000000000000000;
 
         // pulls the price of both tokens from an oracle using call without abi
         (bool result, bytes memory data) =
-        oracleAddress.call(
-            abi.encodeWithSignature(
-                "priceOfPair(address,address)",
-                _sellToken,
-                ethAddress
-            )
-        );
+            oracleAddress.call(
+                abi.encodeWithSignature(
+                    "priceOfPair(address,address)",
+                    _sellToken,
+                    ethAddress
+                )
+            );
         // Decode bytes data
         (uint256 sellTokenValue, uint256 ethTokenValue) =
-        abi.decode(data, (uint256, uint256));
+            abi.decode(data, (uint256, uint256));
 
         uint256 ethAmount =
-        SafeMath.mul(
-            _sellAmount,
-            SafeMath.div(
-                sellTokenValue,
-                ethTokenValue
-            )
-        );
+            SafeMath.mul(
+                _sellAmount,
+                SafeMath.div(sellTokenValue, ethTokenValue)
+            );
 
         // checks to see if the contract has enough eth
         require(ethAmount <= ethSupply, "You don't have enough tokens");
@@ -136,28 +134,24 @@ contract Chromium {
      * @param _buyToken the token that you want to buy
      */
     function exchangeEthForToken(address _buyToken) external payable {
-
         address ethAddress = 0x0000000000000000000000000000000000000000;
 
         // pulls the price of both tokens from an oracle using call without abi
         (bool result, bytes memory data) =
-        oracleAddress.call(
-            abi.encodeWithSignature(
-                "priceOfPair(address,address)",
-                ethAddress,
-                _buyToken
-            )
-        );
+            oracleAddress.call(
+                abi.encodeWithSignature(
+                    "priceOfPair(address,address)",
+                    ethAddress,
+                    _buyToken
+                )
+            );
 
         // Decode bytes data
         (uint256 ethValue, uint256 buyTokenValue) =
-        abi.decode(data, (uint256, uint256));
+            abi.decode(data, (uint256, uint256));
 
         uint256 tokenAmount =
-        SafeMath.mul(
-            msg.value,
-            SafeMath.div(ethValue, buyTokenValue)
-        );
+            SafeMath.mul(msg.value, SafeMath.div(ethValue, buyTokenValue));
 
         // checks to see if there are enough tokens in contract to make exchange
         require(tokenAmount <= balancePerToken[_buyToken]);
@@ -175,8 +169,8 @@ contract Chromium {
      * @dev this will accept erc20 tokens to be added to the contracts liquidity pool
      */
     function addLiquidity(address _tokenAddress, uint256 _tokenAmount)
-    external
-    payable
+        external
+        payable
     {
         //Check if token is not supported by bank
         require(allowedTokens[_tokenAddress] == true, "Token is not supported");
@@ -190,7 +184,7 @@ contract Chromium {
 
         require(
             sellToken.transferFrom(msg.sender, address(this), _tokenAmount) ==
-            true,
+                true,
             "Transfer not complete"
         );
 
@@ -216,10 +210,10 @@ contract Chromium {
 
     function testCall() public payable returns (uint256 value) {
         (bool result, bytes memory data) =
-        oracleAddress.call(abi.encodeWithSignature("testConnection()"));
+            oracleAddress.call(abi.encodeWithSignature("testConnection()"));
 
         (uint256 sellTokenValue, uint256 buyTokenValue) =
-        abi.decode(data, (uint256, uint256));
+            abi.decode(data, (uint256, uint256));
         return sellTokenValue + buyTokenValue;
     }
 
