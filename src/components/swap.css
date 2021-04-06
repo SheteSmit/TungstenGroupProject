@@ -25,11 +25,10 @@
 }
 
 .form-input {
-    display: block;
+  display: block;
   width: 100%;
-  padding: 8px 16px;
   line-height: 25px;
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 500;
   font-family: inherit;
   border: none;
@@ -38,10 +37,21 @@
   transition: border 0.3s ease;
 }
 
+.balance {
+    font-size: 16px;
+}
+
+.balancediv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px !important;
+}
+
 /* Modal  */
 .modal-content {
     border-radius: 20px !important;
-    width: 70% !important;
+    width: 60% !important;
     margin: 0 auto;
 }
 
@@ -63,11 +73,20 @@
     justify-content: space-evenly;
 }
 
+.divbtngroup {
+    display: flex;
+    justify-content: space-between;
+}
 .btngroup {
     background: transparent;
     border: none;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.divbtngroup:hover {
+    background: rgb(188, 236, 231, 0.2);
 }
 
 /* Modal End  */

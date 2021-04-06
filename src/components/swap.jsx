@@ -16,7 +16,7 @@ const Swap = (props) => {
                     <img src={Gear} />
                 </div>
                 <div className="swapfrom  ml-4 mr-4">
-                    <div >
+                    <div className="m-atuo">
                         <p>From</p>
                         <input
                             className="form-input"
@@ -26,9 +26,9 @@ const Swap = (props) => {
                         ></input>
                     </div>
                     <div>
-                        <div>
-                            <p className="balanceText">Balance</p>
-                            <div className="form-input" >
+                        <div className="balancediv pb-2">
+                            <p >Balance</p>
+                            <div className="form-input balance pl-2 " >
                                 {(props.balance / 1000000000000000000).toString() +
                                     " " +
                                     props.symbol}

@@ -22,25 +22,35 @@ export function MyVerticallyCenteredModal(props) {
 
             </Modal.Header>
             <Modal.Body>
-                <h4>Centered Modal</h4>
-                <p>
-                    Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-                    dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-                    consectetur ac, vestibulum at eros.
-          </p>
+
                 <div className="modalbtngroup">
-                    <button className="btngroup"><span>ETH</span><span>0</span></button>
-                    <button className="btngroup mt-4"><span>CHC</span><span>0</span></button>
-                    <button className="btngroup mt-4"><span>Wood</span><span>0</span></button>
-                    <button className="btngroup mt-4"><span>Slick</span><span>0</span></button>
-                    <button className="btngroup mt-4"><span>HAM</span><span>0</span></button>
-                    <button className="btngroup mt-4"><span>ETH</span><span>0</span></button>
-                    <button className="btngroup mt-4"><span>Smit</span><span>0</span></button>
+                    <div className="divbtngroup pt-2 pb-2">
+                        <button className="btngroup ml-4"><span>ETH</span><span>0</span></button>
+                    </div>
+                    <div className="divbtngroup pt-2 pb-2">
+                        <button className="btngroup ml-4 mt-4"><span>CHC</span><span>0</span></button>
+                    </div>
+                    <div className="divbtngroup pt-2 pb-2">
+                        <button className="btngroup ml-4 mt-4"><span>Wood</span><span>0</span></button>
+                    </div>
+                    <div className="divbtngroup pt-2 pb-2">
+                        <button className="btngroup ml-4 mt-4"><span>Slick</span><span>0</span></button>
+                    </div>
+                    <div className="divbtngroup pt-2 pb-2">
+                        <button className="btngroup ml-4 mt-4"><span>HAM</span><span>0</span></button>
+                    </div>
+                    <div className="divbtngroup pt-2 pb-2">
+                        <button className="btngroup ml-4 mt-4"><span>ETH</span><span>0</span></button>
+                    </div>
+                    <div className="divbtngroup pt-2 pb-2">
+                        <button className="btngroup ml-4 mt-4"><span>Smit</span><span>0</span></button>
+
+                    </div>
                 </div>
 
             </Modal.Body>
             <Modal.Footer>
-                <Button onClick={props.onHide}>Close</Button>
+                <Button className="m-auto" >Manage</Button>
             </Modal.Footer>
         </Modal>
     );
