@@ -14,6 +14,8 @@ import { Updater } from "../../components/updater";
 import Tour from "reactour";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 // import { tourConfig } from '../../components/tour';
+import Contract from 'web3-eth-contract';
+import Swap from "../../components/swap";
 
 
 
@@ -21,6 +23,8 @@ class Home extends Component {
   async componentWillMount() {
     await this.loadBlockchainData();
     console.log(this.state.allContracts);
+    await this.cobaltBalance()
+    // console.log(this.state.cblt)
   }
 
   async loadBlockchainData(dispatch) {
@@ -255,6 +259,37 @@ class Home extends Component {
     }
   }
 
+
+  async cobaltBalance() {
+    const address ='0x29a99c126596c0dc96b02a88a9eaab44eccf511e'
+     await window.ethereum.request({
+      method: "wallet_watchAsset",
+      params: {
+        type: "ERC20", // Initially only supports ERC20, but eventually more!
+        options: {
+          address: address, // The address that the token is at.
+          symbol: 'CBLT', // A ticker symbol or shorthand, up to 5 chars.
+          decimals: 18, // The number of decimals in the token
+          image: 'https://miro.medium.com/max/4800/1*-k-vtfVGvPYehueIfPRHEA.png', // A string url of the token logo
+        },
+      },
+    }).then((success) => {
+      if (success) {
+        console.log(success)
+        console.log('Cobalt successfully added to wallet!')
+      } else {
+        throw new Error('Something went wrong.')
+      }
+    })
+    .catch(console.error)
+     
+  const web3 = new Web3(window.ethereum);
+  var balance = web3.eth.getBalance(address).then(value => {
+    const credit = web3.utils.fromWei(value, 'ether')
+    this.setState({ cobalt: credit });
+})
+
+  }
   async addToken() {
     const tokenAddress = this.state.coinAddress;
     const tokenSymbol = this.state.symbol;
@@ -328,6 +363,7 @@ class Home extends Component {
       token: null,
       result: "null",
       balance: 0,
+      cblt: 0,
       balances: [],
       input: 0,
       symbol: "ETH",
@@ -410,9 +446,10 @@ class Home extends Component {
           onBeforeClose={this.enableBody}
         />
       
-        <NavBar openTour={this.openTour} account={this.state.account} />
-     
+        <NavBar cobalt={this.state.cobalt} balance={this.state.balance} symbol={this.state.symbol} openTour={this.openTour} account={this.state.account} />
+      
         <button onClick={this.testOracle.bind(this)}>ORACLE</button>
+        <Swap  balance={this.state.balance} symbol={this.state.symbol}/>
         <div className="container">
           <div className="mainContent">
             <div className="mt-5">
@@ -576,7 +613,6 @@ class Home extends Component {
             </div>
           </div>
         </div>
-     
   </>
     );
   }
