@@ -31,7 +31,7 @@ export default class App extends Component {
             <Switch>
               <Route exact path="/" render={() => <ComingSoon />} />
               <Route exact path="/lending" render={() => <Lending />} />
-              <Route exact path="/testing" render={() => <Home />} />
+              <Route exact path="/swap" render={() => <Home />} />
               <Error />
             </Switch>
           </BrowserRouter>

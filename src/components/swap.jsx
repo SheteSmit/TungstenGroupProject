@@ -9,7 +9,7 @@ const Swap = (props) => {
     const [modalShow, setModalShow] = React.useState(false);
 
     return (
-        <div className="swapwrapper">
+        <div className="swapwrapper mt-5">
             <div className="swapcard">
                 <div className="cardtitle ml-4 mt-2 mb-3 mr-4">
                     <h5>Swap</h5>

@@ -2,8 +2,9 @@ import Loader from "./Loader";
 import { useState, useEffect, useContext } from "react";
 import { GlobalState } from "../../GlobalState";
 import LendingApp from "./LendingApp";
+import NavBar from "../../components/navBar";
 
-const Lending = () => {
+const Lending = (props) => {
   const state = useContext(GlobalState);
   const ready = state.account;
   return (

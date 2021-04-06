@@ -453,10 +453,9 @@ class Home extends Component {
           openTour={this.openTour}
           account={this.state.account}
         />
-
-        <button onClick={this.testOracle.bind(this)}>ORACLE</button>
         <Swap handleInput={this.handleInput} deposit={this.depositBank} withdrawl={this.withdrawBank} changeToke={this.changeToken}
           balance={this.state.balance} symbol={this.state.symbol} />
+        <button onClick={this.testOracle.bind(this)}>ORACLE</button>
         <div className="container">
           <div className="mainContent">
             <div className="mt-5">
