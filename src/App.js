@@ -8,6 +8,7 @@ import "./App.css";
 import { DataProvider } from "./GlobalState";
 
 import { Alert } from "react-bootstrap";
+import Lending from "./pages/Lending/Lending";
 
 export default class App extends Component {
   constructor(props) {
@@ -29,6 +30,7 @@ export default class App extends Component {
           <BrowserRouter>
             <Switch>
               <Route exact path="/" render={() => <ComingSoon />} />
+              <Route exact path="/lending" render={() => <Lending />} />
               <Route exact path="/testing" render={() => <Home />} />
               <Error />
             </Switch>
