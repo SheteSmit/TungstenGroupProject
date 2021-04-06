@@ -231,7 +231,7 @@ contract Bank is Ownable {
         uint256 _minimumPayment,
         uint256 principal,
         uint256 units
-    ) public {
+    ) public payable {
         // Needs user approve on transfer funds amount
         // token.approve(address(this), _minimumPayment);
 
@@ -257,6 +257,8 @@ contract Bank is Ownable {
             x / units == _minimumPayment,
             "minimumPayment * collateralPerPayment overflows"
         );
+
+        msg.sender.transfer(principal);
     }
 
     /**
