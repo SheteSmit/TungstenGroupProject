@@ -61,7 +61,7 @@ const Swap = (props) => {
                         ></input>
                     </div>
                     <div>
-                        <button className='swaptobtn'> <span>Select a token <img src={Down} alt="" /></span> </button>
+                        <button className='swaptobtn' onClick={() => setModalShow(true)}> <span>Select a token <img src={Down} alt="" /></span> </button>
                     </div>
                 </div>
                 <div className="swapbtn">
