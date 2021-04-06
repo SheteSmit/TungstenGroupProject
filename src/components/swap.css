@@ -5,7 +5,6 @@
 
 .swapcard {
     background: white;
-    border: 2px solid black;
     border-radius: 12px;
     height: 500px;
     width: 500px;
@@ -19,7 +18,7 @@
 .swapfrom, .swapto {
     display: flex;
     align-items: center;
-    border: 2px solid black;
+    border: 2px solid whitesmoke;
     border-radius: 12px;
     padding: 4%;
 }
@@ -35,7 +34,6 @@
   border: none;
   -webkit-appearance: none;
   color: var(--input-color);
-  background: var(--input-background);
   transition: border 0.3s ease;
 }
 
@@ -47,12 +45,10 @@
 }
 
 .swaptobtn {
-    -webkit-box-align: center;
+    display: block;
     align-items: center;
     height: 2.2rem;
-    width: auto;
     font-size: 20px;
-    font-weight: 500;
     background-color: rgb(255, 0, 122);
     color: rgb(255, 255, 255);
     border-radius: 12px;
@@ -61,7 +57,7 @@
     cursor: pointer;
     user-select: none;
     border: none;
-    padding: 0px 0.5rem;
+    width: max-content;
 }
 
 .swapconfirmbtn {
@@ -79,4 +75,15 @@
     font-size: 24px;
     text-align: center;
 
+}
+
+.choice {
+
+  margin-left: -4px;
+  -webkit-appearance: none;
+  color: var(--input-color);
+  border: none;
+  font-size: 1.5rem;
+  background: var(--input-background);
+  transition: border 0.3s ease
 }
