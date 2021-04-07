@@ -6,8 +6,9 @@
 .swapcard {
     background: white;
     border-radius: 12px;
-    height: 500px;
+    height: auto;
     width: 500px;
+    padding: 2% 1%;
 }
 
 .cardtitle {
@@ -24,11 +25,10 @@
 }
 
 .form-input {
-    display: block;
+  display: block;
   width: 100%;
-  padding: 8px 16px;
   line-height: 25px;
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 500;
   font-family: inherit;
   border: none;
@@ -36,6 +36,65 @@
   color: var(--input-color);
   transition: border 0.3s ease;
 }
+
+.balance {
+    font-size: 16px;
+}
+
+.balancediv p {
+    margin-bottom: 0;
+}
+
+.balancediv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px !important;
+}
+
+/* Modal  */
+.modal-content {
+    border-radius: 20px !important;
+    width: 60% !important;
+    margin: 0 auto;
+}
+
+.modalinput {
+    border: 1px solid rgba(0, 0, 0, .2);
+    border-radius: 12px;
+    font-size: 20px;
+    width: 150%;
+    padding: 4%;
+}
+
+.modalinput:focus, .modalinput:hover {
+    border: 2px solid #80D0C7;
+    outline: none;
+}
+
+.modalbtngroup {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.divbtngroup {
+    display: flex;
+    justify-content: space-between;
+}
+.btngroup {
+    background: transparent;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.divbtngroup:hover {
+    background: rgb(188, 236, 231, 0.2);
+}
+
+/* Modal End  */
 
 .downarrow {
     display: block;
@@ -49,7 +108,7 @@
     align-items: center;
     height: 2.2rem;
     font-size: 20px;
-    background-color: rgb(255, 0, 122);
+    background-color: #0093E9;
     color: rgb(255, 255, 255);
     border-radius: 12px;
     box-shadow: rgb(0 0 0 / 8%) 0px 6px 10px;
@@ -77,13 +136,11 @@
 
 }
 
-.choice {
-
-  margin-left: -4px;
-  -webkit-appearance: none;
-  color: var(--input-color);
-  border: none;
-  font-size: 1.5rem;
-  background: var(--input-background);
-  transition: border 0.3s ease
+.tokenbtn {
+    display: flex;
+    font-size: 1.5rem;
+    background: whitesmoke;
+    border-radius: 12px;
+    align-items: center;
+    border: none;
 }

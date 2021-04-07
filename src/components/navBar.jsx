@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from 'react-router-dom'
 import { Navbar, Nav, NavDropdown, NavItem, Container } from "react-bootstrap";
 import "./navBar.css";
 
@@ -20,9 +21,11 @@ export default function NavBar(props) {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto ">
-            <Nav.Link href="#swap">Swap</Nav.Link>
-            <Nav.Link href="#treasury">Treasury</Nav.Link>
-            <Nav.Link href="#vote">Vote</Nav.Link>
+
+            <Nav.Item><Link to='/swap'>Swap</Link></Nav.Item>
+            <Nav.Item><Link to='/lending'>Loan</Link></Nav.Item>
+            <Nav.Item ><Link to='/treasury'>Treasury</Link></Nav.Item>
+            <Nav.Item><Link to='/voting'>Vote</Link></Nav.Item>
           </Nav>
           <Nav className="justify-content-end align-items-center">
             <Nav.Link href="#deets">

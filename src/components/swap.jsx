@@ -1,53 +1,49 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Gear from '../icons/settings.svg'
 import Arrow from '../icons/arrow-down.svg'
 import Down from '../icons/chevron-down.svg'
+import { MyVerticallyCenteredModal } from './tokenSelection';
 import './swap.css';
 
 const Swap = (props) => {
+    const [modalShow, setModalShow] = React.useState(false);
+
     return (
-        <div className="swapwrapper">
+        <div className="swapwrapper mt-5">
             <div className="swapcard">
-                <div className="cardtitle ml-4 mt-4 mr-4">
+                <div className="cardtitle ml-4 mt-2 mb-3 mr-4">
                     <h5>Swap</h5>
                     <img src={Gear} />
                 </div>
                 <div className="swapfrom  ml-4 mr-4">
-                    <div >
+                    <div className="m-atuo">
                         <p>From</p>
                         <input
                             className="form-input"
                             type="number"
                             placeholder="0.0"
-                            onChange={(e) => {
-                                // this.setState({
-                                //     input: e.target.value,
-                                // });
-                            }}
+                            onChange={props.handleInput}
                         ></input>
                     </div>
                     <div>
-                        <div>
-                            <p className="balanceText">Balance</p>
-                            <div className="form-input" >
+                        <div className="balancediv pb-2">
+                            <p >Balance</p>
+                            <div className="form-input balance pl-2 " >
                                 {(props.balance / 1000000000000000000).toString() +
                                     " " +
                                     props.symbol}
                             </div>
                         </div>
                         <div style={{ display: 'flex' }}>
-                            <select
-                                className="choice"
-                                type="select"
-                            >
-                                <option value="0">ETH </option>
-                                <option value="1">CHC</option>
-                                <option value="2">Wood</option>
-                                <option value="3">Slick</option>
-                                <option value="4">HAM</option>
-                                <option value="5">Smit</option>
-                            </select>
-                            <img src={Down} alt="" />
+                            <button className="tokenbtn choice" type="submit"
+                                onClick={() => setModalShow(true)}>
+                                {props.symbol}  <img src={Down} alt="downarrow" />
+                            </button>
+                            <MyVerticallyCenteredModal
+                                show={modalShow}
+                                onHide={() => setModalShow(false)}
+                            />
+
                         </div>
                     </div>
 
@@ -61,15 +57,11 @@ const Swap = (props) => {
                             className="form-input"
                             type="number"
                             placeholder="0.0"
-                            onChange={(e) => {
-                                // this.setState({
-                                //     input: e.target.value,
-                                // });
-                            }}
+                            onChange={props.handleInput}
                         ></input>
                     </div>
                     <div>
-                        <button className='swaptobtn'> <span>Select a token <img src={Down} alt="" /></span> </button>
+                        <button className='swaptobtn' onClick={() => setModalShow(true)}> <span>Select a token <img src={Down} alt="" /></span> </button>
                     </div>
                 </div>
                 <div className="swapbtn">
