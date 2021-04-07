@@ -1,11 +1,11 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import Web3 from "web3";
 import Bank from "../../abis/Bank.json";
 import { GlobalState } from "../../GlobalState";
 
 const Loader = () => {
   const state = useContext(GlobalState);
-  const [load, setLoad] = useState();
+  const [load, setLoad] = useState("wtf");
 
   useEffect(async () => {
     if (typeof window.ethereum !== "undefined") {
@@ -35,11 +35,10 @@ const Loader = () => {
         console.log("Error", e);
         window.alert("Contracts not deployed to the current network");
       }
+      state.loading = false;
     } else {
       window.alert("Please install MetaMask");
     }
-    console.log(state);
-    setLoad("reload pls");
   }, []);
   return <div></div>;
 };

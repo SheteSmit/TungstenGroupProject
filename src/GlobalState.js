@@ -11,6 +11,7 @@ export const DataProvider = ({ children }) => {
   const state = {
     useContract: [useContract, setUseContract],
     contractAPI: ContractAPI(useContract),
+    loading: true,
   };
 
   return <GlobalState.Provider value={state}>{children}</GlobalState.Provider>;
