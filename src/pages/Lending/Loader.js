@@ -5,6 +5,7 @@ import { GlobalState } from "../../GlobalState";
 
 const Loader = () => {
   const state = useContext(GlobalState);
+  const [load, setLoad] = useState();
 
   useEffect(async () => {
     if (typeof window.ethereum !== "undefined") {
@@ -38,6 +39,7 @@ const Loader = () => {
       window.alert("Please install MetaMask");
     }
     console.log(state);
+    setLoad("reload pls");
   }, []);
   return <div></div>;
 };
