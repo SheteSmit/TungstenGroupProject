@@ -9,6 +9,7 @@ const Ready = (props) => {};
 const Lending = (props) => {
   const state = useContext(GlobalState);
   const ready = state.account;
+  console.log(props)
   return (
     <div>
       <Loader></Loader>
