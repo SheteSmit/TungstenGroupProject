@@ -17,6 +17,7 @@ import Chromium from "./abis/Chromium.json";
 import { Alert } from "react-bootstrap";
 import Lending from "./pages/Lending/Lending";
 import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
+import DIDs from "./pages/DID/DIDs";
 
 export default class App extends Component {
   constructor() {
@@ -54,8 +55,6 @@ export default class App extends Component {
     demoAsyncCall().then(() => this.setState({ loading: false }));
   }
 
-
-
   disableBody = (target) => disableBodyScroll(target);
   enableBody = (target) => enableBodyScroll(target);
 
@@ -73,15 +72,11 @@ export default class App extends Component {
     this.setState({ isTourOpen: true });
   };
 
-
-
   handleInput = (e) => {
     this.setState({
       input: e.target.value,
     });
-  }
-
-
+  };
 
   async loadBlockchainData(dispatch) {
     if (typeof window.ethereum !== "undefined") {
@@ -108,7 +103,7 @@ export default class App extends Component {
           token: token,
           coinAddress: coinAddress,
         });
-        console.log(coinAddress)
+        console.log(coinAddress);
         await this.state.token.methods
           .balanceOf()
           .call({ from: this.state.account })
@@ -147,7 +142,7 @@ export default class App extends Component {
       Token.abi,
       Token.networks[netId].address
     );
-    console.log(this)
+    console.log(this);
     if (this.state.abiArr[event].contractName != "Bank") {
       await token.methods
         .symbol()
@@ -391,14 +386,12 @@ export default class App extends Component {
     // }
   }
 
-
   async componentWillMount() {
     await this.loadBlockchainData();
 
     // await this.cobaltBalance();
-    console.log(this.state)
-    console.log(this.state.abiArr[1])
-
+    console.log(this.state);
+    console.log(this.state.abiArr[1]);
   }
 
   render() {
@@ -409,21 +402,53 @@ export default class App extends Component {
         <DataProvider>
           <BrowserRouter>
             <Switch>
-
               <Route exact path="/" render={() => <ComingSoon />} />
               <Route exact path="/lending" render={() => <Lending />} />
-              <Route exact path="/swap" render={() => <Home
-                coinAddress={this.state.coinAddress}
-                web3={this.state.web3} handleInput={this.handleInput} deposit={this.depositBank} withdrawl={this.withdrawBank}
-                changeToken={this.changeToken} input={this.state.input} balance={this.state.balance} account={this.state.account}
-                token={this.state.token} result={this.state.result} cblt={this.state.cblt} balances={this.state.balances}
-                symbol={this.state.symbol} tokenName={this.state.tokenName} abiArr={this.state.abiArr}
-                allContracts={this.state.allContracts} ready={this.state.ready} isTourOpen={this.state.isTourOpen}
-                testOracle={this.testOracle} addToken={this.addToken} cobaltBalance={this.cobaltBalance}
-                refreshBalance={this.refreshBalance} donateBank={this.donateBank} withdrawBank={this.withdrawBank}
-                depositBank={this.depositBank} borrow={this.borrow} sendAmount={this.sendAmount} sendToken={this.sendToken}
-                loadBlockchainData={this.loadBlockchainData} disableBody={this.disableBody} enableBody={this.enableBody}
-                toggleShowMore={this.toggleShowMore} closeTour={this.closeTour} openTour={this.openTour} handleInput={this.handleInput} />} />
+              <Route exact path="/dids" render={() => <DIDs />} />
+              <Route
+                exact
+                path="/swap"
+                render={() => (
+                  <Home
+                    coinAddress={this.state.coinAddress}
+                    web3={this.state.web3}
+                    handleInput={this.handleInput}
+                    deposit={this.depositBank}
+                    withdrawl={this.withdrawBank}
+                    changeToken={this.changeToken}
+                    input={this.state.input}
+                    balance={this.state.balance}
+                    account={this.state.account}
+                    token={this.state.token}
+                    result={this.state.result}
+                    cblt={this.state.cblt}
+                    balances={this.state.balances}
+                    symbol={this.state.symbol}
+                    tokenName={this.state.tokenName}
+                    abiArr={this.state.abiArr}
+                    allContracts={this.state.allContracts}
+                    ready={this.state.ready}
+                    isTourOpen={this.state.isTourOpen}
+                    testOracle={this.testOracle}
+                    addToken={this.addToken}
+                    cobaltBalance={this.cobaltBalance}
+                    refreshBalance={this.refreshBalance}
+                    donateBank={this.donateBank}
+                    withdrawBank={this.withdrawBank}
+                    depositBank={this.depositBank}
+                    borrow={this.borrow}
+                    sendAmount={this.sendAmount}
+                    sendToken={this.sendToken}
+                    loadBlockchainData={this.loadBlockchainData}
+                    disableBody={this.disableBody}
+                    enableBody={this.enableBody}
+                    toggleShowMore={this.toggleShowMore}
+                    closeTour={this.closeTour}
+                    openTour={this.openTour}
+                    handleInput={this.handleInput}
+                  />
+                )}
+              />
               <Error />
             </Switch>
           </BrowserRouter>
