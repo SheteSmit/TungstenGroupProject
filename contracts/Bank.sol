@@ -415,4 +415,13 @@ contract Bank is Ownable {
         require(loanBook[msg.sender].remainingBalance == 0);
         delete loanBook[msg.sender];
     }
+
+    function loanApplication() public {}
 }
+
+// Starting period, 12-24 months
+// Collateral paid on loan application
+// Create new function to handle application
+// Create a new function to check if loan is ready to lean
+// Array of all voters
+// Save interest amount on loan to an specific
