@@ -28,7 +28,7 @@ export default class App extends Component {
       result: "null",
       coinAddress: null,
       balance: 0,
-      cblt: 0,
+      cblt: null,
       balances: [],
       input: 0,
       symbol: "ETH",
@@ -48,10 +48,6 @@ export default class App extends Component {
     this.refreshBalance = this.refreshBalance.bind(this);
     this.addToken = this.addToken.bind(this);
   }
-  // componentDidMount() {
-  //   // this simulates an async action, after which the component will render the content
-  //   demoAsyncCall().then(() => this.setState({ loading: false }));
-  // }
 
   disableBody = (target) => disableBodyScroll(target);
   enableBody = (target) => enableBodyScroll(target);
@@ -304,39 +300,7 @@ export default class App extends Component {
     }
   }
 
-  async cobaltBalance() {
-    const address = "0x433c6e3d2def6e1fb414cf9448724efb0399b698";
-    await window.ethereum
-      .request({
-        method: "wallet_watchAsset",
-        params: {
-          type: "ERC20", // Initially only supports ERC20, but eventually more!
-          options: {
-            address: address, // The address that the token is at.
-            symbol: "CBLT", // A ticker symbol or shorthand, up to 5 chars.
-            decimals: 18, // The number of decimals in the token
-            image:
-              "https://miro.medium.com/max/4800/1*-k-vtfVGvPYehueIfPRHEA.png", // A string url of the token logo
-          },
-        },
-      })
-      .then((success) => {
-        if (success) {
-          console.log(success);
-          console.log("Cobalt successfully added to wallet!");
-        } else {
-          throw new Error("Something went wrong.");
-        }
-      })
-      .catch(console.error);
 
-    const web3 = new Web3(window.ethereum);
-    var balance = web3.eth.getBalance(address).then((value) => {
-      const credit = web3.utils.fromWei(value, "ether");
-      this.setState({ cobalt: credit });
-    });
-    console.log(balance)
-  }
   async addToken() {
     const tokenAddress = this.state.coinAddress;
     const tokenSymbol = this.state.symbol;
@@ -387,8 +351,9 @@ export default class App extends Component {
 
   async componentWillMount() {
     await this.loadBlockchainData();
-
-    // await this.cobaltBalance();
+    // if (this.state.cblt === null) {
+    //   await this.cobaltBalance();
+    // }
     console.log(this.state);
     console.log(this.state.abiArr[1]);
   }
@@ -427,7 +392,6 @@ export default class App extends Component {
                   isTourOpen={this.state.isTourOpen}
                   testOracle={this.testOracle}
                   addToken={this.addToken}
-                  cobaltBalance={this.cobaltBalance}
                   refreshBalance={this.refreshBalance}
                   donateBank={this.donateBank}
                   withdrawBank={this.withdrawBank}

@@ -5,9 +5,11 @@ import { Alert } from "react-bootstrap";
 import Tour from "reactour";
 import Swap from "../../components/swap";
 import Loading from '../Loading/Loading';
+import Web3 from "web3";
 
 const Home = (props) => {
-  const [title, setTitle] = useState('swap')
+  const [title, setTitle] = useState('cblt')
+  const [cobalt, setCblt] = useState(0)
 
   const accentColor = "#49bcf8";
   const tourConfig = [
@@ -244,7 +246,12 @@ const Home = (props) => {
       return (
         swap()
       )
-    } else if (title === 'exchange') {
+    } else if (title === 'cblt') {
+      return (
+        cblt()
+      )
+    }
+    else if (title === 'exchange') {
       return (
         exchange()
       )
@@ -257,6 +264,53 @@ const Home = (props) => {
     }
   }
 
+  const cblt = () => {
+    return (
+      <>
+        <div className="cbltrender">
+
+          <h1>Welcome to Cobalt Exchange</h1>
+          <h2>Let's get started with adding CBLT</h2>
+          <button className="cblt" style={{ width: '9%' }} onClick={() => cobaltBalance()}>Add Your CBLT</button>
+        </div>
+
+      </>
+    )
+  }
+
+  const cobaltBalance = async () => {
+    const address = "0x433c6e3d2def6e1fb414cf9448724efb0399b698";
+    await window.ethereum
+      .request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20", // Initially only supports ERC20, but eventually more!
+          options: {
+            address: address, // The address that the token is at.
+            symbol: "CBLT", // A ticker symbol or shorthand, up to 5 chars.
+            decimals: 18, // The number of decimals in the token
+            image:
+              "https://miro.medium.com/max/4800/1*-k-vtfVGvPYehueIfPRHEA.png", // A string url of the token logo
+          },
+        },
+      })
+      .then((success) => {
+        if (success) {
+          console.log(success);
+          console.log("Cobalt successfully added to wallet!");
+        } else {
+          throw new Error("Something went wrong.");
+        }
+      })
+      .catch(console.error);
+
+    const web3 = new Web3(window.ethereum);
+    var balance = web3.eth.getBalance(address).then((value) => {
+      const credit = web3.utils.fromWei(value, "ether");
+      setCblt(credit);
+    });
+    console.log(balance)
+  }
 
 
 
@@ -282,11 +336,12 @@ const Home = (props) => {
 
       <NavBar
         handleRender={handleRender}
-        cobalt={props.cobalt}
+        cobalt={cobalt}
         balance={props.balance}
         symbol={props.symbol}
         openTour={props.openTour}
         account={props.account}
+
 
       />
       {pageRender()}
