@@ -1,6 +1,5 @@
 import React from "react";
-import { Link } from 'react-router-dom'
-import { Navbar, Nav, NavDropdown, NavItem, Container } from "react-bootstrap";
+import { Navbar, Nav, NavDropdown, NavItem } from "react-bootstrap";
 import "./navBar.css";
 
 export default function NavBar(props) {
@@ -14,6 +13,7 @@ export default function NavBar(props) {
       <Navbar className="navgroup" collapseOnSelect expand="lg">
         <Navbar.Brand href="#home" className="ml-2">
           <img
+            alt="logo"
             width="50px"
             src="https://miro.medium.com/max/4800/1*-k-vtfVGvPYehueIfPRHEA.png"
           />
@@ -22,10 +22,12 @@ export default function NavBar(props) {
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto ">
 
-            <Nav.Item><Link to='/swap'>Swap</Link></Nav.Item>
-            <Nav.Item><Link to='/lending'>Loan</Link></Nav.Item>
-            <Nav.Item ><Link to='/treasury'>Treasury</Link></Nav.Item>
-            <Nav.Item><Link to='/voting'>Vote</Link></Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender('swap')}>Swap</Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender('exchange')}>Exchange</Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender('loan')}>Loan</Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender('treasury')}>Treasury</Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender('voting')}>Voting</Nav.Item>
+
           </Nav>
           <Nav className="justify-content-end align-items-center">
             <Nav.Link href="#deets">

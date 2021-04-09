@@ -13,7 +13,7 @@ const Swap = (props) => {
             <div className="swapcard">
                 <div className="cardtitle ml-4 mt-2 mb-3 mr-4">
                     <h5>Swap</h5>
-                    <img src={Gear} />
+                    <img alt="gear" src={Gear} />
                 </div>
                 <div className="swapfrom  ml-4 mr-4">
                     <div className="m-atuo">
@@ -49,7 +49,7 @@ const Swap = (props) => {
 
                 </div>
 
-                <img className="downarrow" src={Arrow} alt="" />
+                <img className="downarrow" src={Arrow} alt="arrow" />
                 <div className="swapto ml-4 mr-4">
                     <div>
                         <p>To</p>
@@ -61,7 +61,7 @@ const Swap = (props) => {
                         ></input>
                     </div>
                     <div>
-                        <button className='swaptobtn' onClick={() => setModalShow(true)}> <span>Select a token <img src={Down} alt="" /></span> </button>
+                        <button className='swaptobtn' onClick={() => setModalShow(true)}> <span>Select a token <img src={Down} alt="downarrow" /></span> </button>
                     </div>
                 </div>
                 <div className="swapbtn">
