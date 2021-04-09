@@ -21,13 +21,21 @@ export default function NavBar(props) {
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="mr-auto ">
-
-            <Nav.Item onClick={(e) => props.handleRender('swap')}>Swap</Nav.Item>
-            <Nav.Item onClick={(e) => props.handleRender('exchange')}>Exchange</Nav.Item>
-            <Nav.Item onClick={(e) => props.handleRender('loan')}>Loan</Nav.Item>
-            <Nav.Item onClick={(e) => props.handleRender('treasury')}>Treasury</Nav.Item>
-            <Nav.Item onClick={(e) => props.handleRender('voting')}>Voting</Nav.Item>
-
+            <Nav.Item onClick={(e) => props.handleRender("swap")}>
+              Swap
+            </Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender("treasury")}>
+              Exchange
+            </Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender("loan")}>
+              Loan
+            </Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender("exchange")}>
+              Treasury
+            </Nav.Item>
+            <Nav.Item onClick={(e) => props.handleRender("voting")}>
+              Voting
+            </Nav.Item>
           </Nav>
           <Nav className="justify-content-end align-items-center">
             <Nav.Link href="#deets">
