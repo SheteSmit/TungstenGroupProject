@@ -415,6 +415,32 @@ contract Bank is Ownable {
         require(loanBook[msg.sender].remainingBalance == 0);
         delete loanBook[msg.sender];
     }
+
+    mapping(address => User) userBook;
+
+    struct User {
+        uint256 depositedTime;
+        uint256 interestBalance;
+        uint256 ethBalance;
+    }
+
+    function depositEth() public payable {
+        require(msg.value >= 1e16, "Error, deposit must be >= 0.01 ETH");
+
+        // calculate interest gained up to this point
+        uint256 interestSaved =
+            SafeMath.div(SafeMath.mul(userBook[msg.sender].ethBalance, 1), 20);
+
+        (userBook[msg.sender].depositedTime / block.timestamp);
+
+        // save the token interest inside the struct
+        userBook[msg.sender].interestBalance = SafeMath.add(
+            userBook[msg.sender].interestBalance,
+            interestSaved
+        );
+        // reset depositedTime
+        userBook[msg.sender].depositedTime = block.timestamp;
+    }
 }
 
 // Starting period, 12-24 months
