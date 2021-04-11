@@ -35,6 +35,9 @@ contract Bank is Ownable {
         uint256 collateralPerPayment;
         bool active;
         bool initialized;
+        uint256 timeCreated;
+        bool[] votes;
+        address[] voters;
     }
 
     /**
@@ -249,7 +252,10 @@ contract Bank is Ownable {
             _minimumPayment,
             units,
             false,
-            true
+            true,
+            block.timestamp,
+            new bool[](0),
+            new address[](0)
         );
 
         uint256 x = _minimumPayment * units;
@@ -257,8 +263,6 @@ contract Bank is Ownable {
             x / units == _minimumPayment,
             "minimumPayment * collateralPerPayment overflows"
         );
-
-        msg.sender.transfer(principal);
     }
 
     /**
@@ -522,7 +526,55 @@ contract Bank is Ownable {
         msg.sender.transfer(total);
         onTransfer(address(this), msg.sender, total);
     }
+
+    function verifyLoan() public payable {
+        uint256 timePassed =
+            SafeMath.sub(block.timestamp, loanBook[msg.sender].timeCreated);
+
+        uint256 yes;
+        uint256 no;
+        for (uint256 i = 0; i < loanBook[msg.sender].votes.length; i++) {
+            if (loanBook[msg.sender].votes[i] == true) {
+                yes++;
+            } else {
+                no++;
+            }
+        }
+        require(timePassed > 604800);
+        require(yes > no);
+
+        loanBook[msg.sender].active = true;
+        msg.sender.transfer(loanBook[msg.sender].remainingBalance);
+    }
+
+    function voteYes(uint256 signature) public {
+        loanBook[msg.sender].voters;
+    }
 }
+
+// ********************************* CHANGES ***************************************
+
+// mapping (uint id => Loan) loanBook;
+// signature NFT
+
+// loanBook[id]
+// loanBook[id].signature // NFT
+
+// function borrow() {
+//     require(loanBook[id].signature == NFT.value)
+
+// }
+
+// ******************************** INCENTIVE SYSTEM *******************************
+
+// tier 1 - Loan  50k - Max voters 100 - 5 per head
+//        - msg.sender CBLTs > 300$ worth of ETH
+// tier 2 - Loan 100k - Max voters 150 - 7.5 per head
+//        - msg.sender CBLTs > 200
+// tier 3 - Loan 200k - Max voters 200 - 10 per head
+//        - msg.sender CBLTs > 400
+
+// ********************************* TODOS ***********************************
 
 // Starting period, 12-24 months
 // Collateral paid on loan application
