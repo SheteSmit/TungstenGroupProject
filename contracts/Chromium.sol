@@ -1,21 +1,38 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "./ERC20.sol";
-import "./ExchangeOracle.sol";
-import "./SafeMath.sol";
+/**
+ * getExpectedReturnWithGas is a method on the 1inch protocol that is free to call and will return
+ * a distribution array. each element in array shows an exchange and represents a fraction of trading volume.
+ * it will also return the amount the minimum amount tokens that will be received by the caller based on the amount
+ * that they are selling. it also returns the amount of gas that is being used.
+ *
+ * I removed the oracle because i figured we can use the _minReturn from getExpectedReturnWithGas as the conversion
+ * rate for the two tokens instead of having our own oracle.
+ *
+ * the exchangeTokens method will first check if the tokens are allowed in our contract and if we have enough
+ * tokens in the contract to make the exchange. if we do then the exchange will happen here. if we dont, then
+ * the 1inch swap protocol will be called to complete the exchange
+*/
+
+import "./interfaces/UniversalERC20.sol";
+import "./interfaces/IOneSplit.sol";
+import './ExchangeOracle.sol';
 import "./Bank.sol";
 
 contract Chromium {
-    mapping(address => uint256) public balancePerToken;
-    mapping(address => bool) public allowedTokens; // tokens that are allowed to be exchanged
-    uint256 public ethSupply; // amount of eth in contract
+    using UniversalERC20 for IERC20;
+
+    mapping(IERC20 => uint256) public balancePerToken;
+    mapping(IERC20 => bool) public allowedTokens; // tokens that are allowed to be exchanged
     address oracleAddress;
 
-    ERC20 buyToken;
-    ERC20 sellToken;
-    ExchangeOracle oracle;
     Bank treasury;
+    ExchangeOracle oracle;
+    IOneSplit public oneSplitImpl; // pass in 1inch protocol contract address
+
+    IERC20 private constant ZERO_ADDRESS = IERC20(0x0000000000000000000000000000000000000000); // eth address substitute
+    IERC20 private constant ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE); // eth address substitute
 
     event depositToken(address indexed _from, uint256 _amount);
     event onTransfer(
@@ -32,188 +49,159 @@ contract Chromium {
 
     /**
      * pass in the oracle contract so that it can pull info from it
+     * @param _oneAuditImpl the 1inch protol address (0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E)
      */
-    constructor(address _oracle, address payable _treasury) {
+    constructor(address _oracle, address payable _treasury, address _oneAuditImpl) {
         oracle = ExchangeOracle(_oracle);
         treasury = Bank(_treasury);
+        oneSplitImpl = IOneSplit(_oneAuditImpl);
         oracleAddress = _oracle;
     }
 
     /**
-     * @dev function that will exchange erc20 tokens
-     * @param _sellToken the token that the user wants to sell/trade
-     * @param _sellAmount amount of tokens to be sold
-     * @param _buyToken the token that is going to be purchased
-     * you need to enter the rate of each token in the oracle and then function will do the calculations
-     */
-    function exchangeTokens(
-        address _sellToken,
-        uint256 _sellAmount,
-        address _buyToken
-    ) external payable {
-        // pulls the price of both tokens from an oracle using call without abi
-        (bool result, bytes memory data) =
-            oracleAddress.call(
-                abi.encodeWithSignature(
-                    "priceOfPair(address,address)",
-                    _sellToken,
-                    _buyToken
-                )
-            );
-
-        // Decode bytes data
-        (uint256 sellTokenValue, uint256 buyTokenValue) =
-            abi.decode(data, (uint256, uint256));
-
-        //Calculate tokens bought
-        uint256 buyingAmount =
-            SafeMath.mul(
-                _sellAmount,
-                SafeMath.div(sellTokenValue, buyTokenValue)
-            );
-
-        // checks to see if there are enough tokens in the contract to make the exchange
-        require(buyingAmount <= treasury.totalTokenSupply(_buyToken));
-
-        sellToken = ERC20(address(_sellToken));
-        sellToken.transferFrom(msg.sender, address(treasury), _sellAmount);
-
-        buyToken = ERC20(address(_buyToken));
-        buyToken.transferFrom(address(treasury), msg.sender, buyingAmount);
-
-        emit tokensExchanged(_sellToken, _sellAmount, _buyToken, buyingAmount);
-    }
-
-    /**
-     * @dev function that will exchange erc20 tokens for eth
-     * @param _sellToken the token that you want to exchange/sell
-     * @param _sellAmount amount of tokens that will be sold
-     */
-    function exchangeTokenForEth(address _sellToken, uint256 _sellAmount)
-        external
-        payable
+     * @dev Calculate expected returning amount of `destToken`
+     * @param fromToken (IERC20) Address of token or `address(0)` for Ether
+     * @param destToken (IERC20) Address of token or `address(0)` for Ether
+     * @param amount (uint256) Amount for `fromToken`
+     * @param parts (uint256) Number of pieces source volume could be splitted,
+     * works like granularity, higly affects gas usage. Should be called offchain,
+     * but could be called onchain if user swaps not his own funds, but this is still considered as not safe.
+     * @param flags (uint256) Flags for enabling and disabling some features, default 0
+    */
+    function getExpectedReturnWithGas(
+        IERC20 fromToken,
+        IERC20 destToken,
+        uint256 amount,
+        uint256 parts,
+        uint256 flags // See constants in IOneSplit.sol
+    )
+    public
+    view
+    returns(
+        uint256 returnAmount,
+        uint256 estimateGasAmount,
+        uint256[] memory distribution
+    )
     {
-        address ethAddress = 0x0000000000000000000000000000000000000000;
-
-        // pulls the price of both tokens from an oracle using call without abi
-        (bool result, bytes memory data) =
-            oracleAddress.call(
-                abi.encodeWithSignature(
-                    "priceOfPair(address,address)",
-                    _sellToken,
-                    ethAddress
-                )
-            );
-        // Decode bytes data
-        (uint256 sellTokenValue, uint256 ethTokenValue) =
-            abi.decode(data, (uint256, uint256));
-
-        uint256 ethAmount =
-            SafeMath.mul(
-                _sellAmount,
-                SafeMath.div(sellTokenValue, ethTokenValue)
-            );
-
-        // checks to see if the contract has enough eth
-        require(ethAmount <= ethSupply, "You don't have enough tokens");
-        balancePerToken[_sellToken] = SafeMath.add(
-            balancePerToken[_sellToken],
-            _sellAmount
+        return oneSplitImpl.getExpectedReturnWithGas(
+            fromToken,
+            destToken,
+            amount,
+            parts,
+            flags,
+            0
         );
-        ethSupply = SafeMath.sub(ethSupply, ethAmount);
-
-        sellToken = ERC20(address(_sellToken));
-        sellToken.transferFrom(msg.sender, address(this), _sellAmount);
-
-        // have to wrate msg.sender in payable to make it payable
-        payable(msg.sender).transfer(ethAmount);
     }
 
     /**
-     * @dev function that will exchange eth for erc20 tokens
-     * @param _buyToken the token that you want to buy
-     */
-    function exchangeEthForToken(address _buyToken) external payable {
-        address ethAddress = 0x0000000000000000000000000000000000000000;
+     * @dev Swap `_sellAmount` of `_sellToken` to `_buyToken`
+     * @param _sellToken (IERC20) Address of token or `address(0)` for Ether
+     * @param _buyToken (IERC20) Address of token or `address(0)` for Ether
+     * @param _sellAmount (uint256) Amount for `fromToken`
+     * @param _minReturn (uint256) Minimum expected return, else revert
+     * @param distribution (uint256[]) Array of weights for volume distribution returned by `getExpectedReturnWithGas`
+     * @param flags (uint256) Flags for enabling and disabling some features, default 0
+    */
+    function exchangeTokens(
+        IERC20 _sellToken,
+        IERC20 _buyToken,
+        uint256 _sellAmount,
+        uint256 _minReturn,
+        uint256[] memory distribution,
+        uint256 flags
+    ) external payable returns (uint256 _amountReturned) {
 
         // pulls the price of both tokens from an oracle using call without abi
-        (bool result, bytes memory data) =
-            oracleAddress.call(
-                abi.encodeWithSignature(
-                    "priceOfPair(address,address)",
-                    ethAddress,
-                    _buyToken
-                )
-            );
+        // (bool result, bytes memory data) =
+        //     oracleAddress.call(
+        //         abi.encodeWithSignature(
+        //             "priceOfPair(address,address)",
+        //             _sellToken,
+        //             _buyToken
+        //         )
+        //     );
 
-        // Decode bytes data
-        (uint256 ethValue, uint256 buyTokenValue) =
-            abi.decode(data, (uint256, uint256));
+        // // Decode bytes data
+        // (uint256 sellTokenValue, uint256 buyTokenValue) =
+        //     abi.decode(data, (uint256, uint256));
 
-        uint256 tokenAmount =
-            SafeMath.mul(msg.value, SafeMath.div(ethValue, buyTokenValue));
+        // //Calculate tokens bought
+        // uint256 buyingAmount =
+        //     SafeMath.mul(
+        //         _sellAmount,
+        //         SafeMath.div(sellTokenValue, buyTokenValue)
+        //     );
 
-        // checks to see if there are enough tokens in contract to make exchange
-        require(tokenAmount <= balancePerToken[_buyToken]);
-        balancePerToken[_buyToken] = SafeMath.sub(
-            balancePerToken[_buyToken],
-            tokenAmount
-        );
-        ethSupply = SafeMath.add(ethSupply, msg.value);
+        if (_exchangeWithChromium(_sellToken, _buyToken, _sellAmount)) {
+            // checks to see if there are enough tokens in the contract to make the exchange
+            require(_minReturn <= treasury.totalTokenSupply(address(_buyToken)));
 
-        buyToken = ERC20(address(_buyToken));
-        buyToken.transferFrom(address(this), msg.sender, tokenAmount);
+            _sellToken.universalTransferFrom(msg.sender, address(treasury), _sellAmount);
+            balancePerToken[_sellToken] = SafeMath.add(balancePerToken[_sellToken], _sellAmount);
+
+            _buyToken.universalTransfer(msg.sender, _minReturn);
+            balancePerToken[_buyToken] = SafeMath.sub(balancePerToken[_buyToken], _minReturn);
+
+            emit tokensExchanged(address(_sellToken), _sellAmount, address(_buyToken), _minReturn);
+            _amountReturned = _minReturn;
+        } else {
+            _amountReturned = oneSplitImpl.swap(_sellToken, _buyToken, _sellAmount, _minReturn, distribution, flags);
+            emit tokensExchanged(address(_sellToken), _sellAmount, address(_buyToken), _minReturn);
+        }
     }
+
 
     /**
      * @dev this will accept erc20 tokens to be added to the contracts liquidity pool
      */
-    function addLiquidity(address _tokenAddress, uint256 _tokenAmount)
-        external
-        payable
+    function addLiquidity(IERC20 _token, uint256 _tokenAmount)
+    external
+    payable
     {
         //Check if token is not supported by bank
-        require(allowedTokens[_tokenAddress] == true, "Token is not supported");
-        sellToken = ERC20(address(_tokenAddress));
-        sellToken.approve(address(this), _tokenAmount);
+        require(allowedTokens[_token] == true, "Token is not supported");
+        _token.approve(address(this), _tokenAmount);
 
-        balancePerToken[_tokenAddress] = SafeMath.add(
-            balancePerToken[_tokenAddress],
+        balancePerToken[_token] = SafeMath.add(
+            balancePerToken[_token],
             _tokenAmount
         );
 
-        require(
-            sellToken.transferFrom(msg.sender, address(this), _tokenAmount) ==
-                true,
-            "Transfer not complete"
-        );
-
+        _token.universalTransferFrom(msg.sender, address(this), _tokenAmount);
         emit depositToken(msg.sender, _tokenAmount);
-    }
-
-    /**
-     * @dev allows for eth to be deposited into liquidity pool
-     */
-    function addEthLiquidity() external payable {
-        ethSupply = SafeMath.add(ethSupply, msg.value);
-
-        emit depositToken(msg.sender, msg.value);
     }
 
     /**
      * @dev allows for tokens to be added to the exchange
      * this needs to be done before adding any liquidity for the token
      */
-    function allowToken(address _token) public {
+    function _allowToken(IERC20 _token) public {
         allowedTokens[_token] = true;
+    }
+
+    /**
+     * @dev method determines if chromium is able to make the exchange, if chromium cant make the exchange
+     * then it will return false and the 1inch protocol will complete the exchange
+     * @param _minReturn is the _minReturn that is returned from "getExpectedReturnWithGas"
+    */
+    function _exchangeWithChromium(IERC20 _sellToken, IERC20 _buyToken, uint _minReturn) internal view returns (bool) {
+        if (allowedTokens[_sellToken] == true && allowedTokens[_buyToken] == true) {
+            if (balancePerToken[_buyToken] >= _minReturn) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
     }
 
     function testCall() public payable returns (uint256 value) {
         (bool result, bytes memory data) =
-            oracleAddress.call(abi.encodeWithSignature("testConnection()"));
+        oracleAddress.call(abi.encodeWithSignature("testConnection()"));
 
         (uint256 sellTokenValue, uint256 buyTokenValue) =
-            abi.decode(data, (uint256, uint256));
+        abi.decode(data, (uint256, uint256));
         return sellTokenValue + buyTokenValue;
     }
 

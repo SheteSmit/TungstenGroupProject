@@ -35,6 +35,9 @@ contract Bank is Ownable {
         uint256 collateralPerPayment;
         bool active;
         bool initialized;
+        uint256 timeCreated;
+        bool[] votes;
+        address[] voters;
     }
 
     /**
@@ -249,7 +252,10 @@ contract Bank is Ownable {
             _minimumPayment,
             units,
             false,
-            true
+            true,
+            block.timestamp,
+            new bool[](0),
+            new address[](0)
         );
 
         //borrow functioning
@@ -264,8 +270,6 @@ contract Bank is Ownable {
             x / units == _minimumPayment,
             "minimumPayment * collateralPerPayment overflows"
         );
-
-        msg.sender.transfer(principal);
     }
 
   
@@ -424,36 +428,170 @@ contract Bank is Ownable {
         delete loanBook[msg.sender];
     }
 
+    // **************************** Staking *******************************
+
     mapping(address => User) userBook;
 
     struct User {
-        uint256 depositedTime;
-        uint256 interestBalance;
+        uint256 timeBalanceChanged;
+        uint256 stakingBalance;
         uint256 ethBalance;
     }
 
     function depositEth() public payable {
         require(msg.value >= 1e16, "Error, deposit must be >= 0.01 ETH");
 
-        // calculate interest gained up to this point
-        uint256 interestSaved =
-            SafeMath.div(SafeMath.mul(userBook[msg.sender].ethBalance, 1), 20);
+        // Calculate interest based on time passed
+        uint256 timeTotal =
+            SafeMath.div(
+                userBook[msg.sender].timeBalanceChanged,
+                block.timestamp
+            );
+        uint256 staking = SafeMath.div(SafeMath.div(1, 20), timeTotal);
+        // Calculate the amount Staked
+        uint256 amountStaked =
+            SafeMath.mul(userBook[msg.sender].stakingBalance, staking);
 
-        (userBook[msg.sender].depositedTime / block.timestamp);
-
-        // save the token interest inside the struct
-        userBook[msg.sender].interestBalance = SafeMath.add(
-            userBook[msg.sender].interestBalance,
-            interestSaved
+        // Save the token interest inside the struct
+        userBook[msg.sender].stakingBalance = amountStaked;
+        // Reset depositedTime
+        userBook[msg.sender].timeBalanceChanged = block.timestamp;
+        // Depsit new eth into User's account
+        userBook[msg.sender].ethBalance = SafeMath.add(
+            userBook[msg.sender].ethBalance,
+            msg.value
         );
+
+        emit onReceived(msg.sender, msg.value);
+    }
+
+    function withdrawEth(uint256 _amount) public {
+        uint256 amount = SafeMath.mul(_amount, 1000000000000000000);
+        // Check if amount is within balance bounds
+        require(amount <= etherBalance[msg.sender]);
+        // Withdraw must be higher than 0.01 ETH
+        require(amount >= 1e16, "Error, withdraws must be >= 0.01 ETH");
+
+        uint256 timeTotal =
+            SafeMath.div(
+                userBook[msg.sender].timeBalanceChanged,
+                block.timestamp
+            );
+        uint256 staking = SafeMath.div(SafeMath.div(1, 20), timeTotal);
+        // Calculate the amount Staked
+        uint256 amountStaked =
+            SafeMath.mul(userBook[msg.sender].stakingBalance, staking);
+
+        // Save the token interest inside the struct
+        userBook[msg.sender].stakingBalance = amountStaked;
+        // Reset depositedTime
+        userBook[msg.sender].timeBalanceChanged = block.timestamp;
+
+        // Substract from the struct
+        userBook[msg.sender].ethBalance = SafeMath.sub(
+            userBook[msg.sender].ethBalance,
+            amount
+        );
+<<<<<<< HEAD
         // reset depositedTime
         userBook[msg.sender].depositedTime = block.timestamp;
 
 
+=======
+        // Transfer to user
+        msg.sender.transfer(amount);
+        emit onTransfer(address(this), msg.sender, amount);
+    }
+
+    function viewStaking() public view {
+        // Calculate current staking
+        uint256 timeTotal =
+            SafeMath.div(
+                userBook[msg.sender].timeBalanceChanged,
+                block.timestamp
+            );
+        uint256 staking = SafeMath.div(SafeMath.div(1, 20), timeTotal);
+        // Calculate the amount Staked
+        uint256 amountStaked =
+            SafeMath.mul(userBook[msg.sender].stakingBalance, staking);
+        // Return previous staking gains plus new staking balance
+        SafeMath.add(userBook[msg.sender].stakingBalance, amountStaked);
+    }
+
+    function withdrawStaking() public payable {
+        uint256 timeTotal =
+            SafeMath.div(
+                userBook[msg.sender].timeBalanceChanged,
+                block.timestamp
+            );
+        uint256 staking = SafeMath.div(SafeMath.div(1, 20), timeTotal);
+        // Calculate the amount Staked
+        uint256 amountStaked =
+            SafeMath.mul(userBook[msg.sender].stakingBalance, staking);
+
+        //Calculate total
+        uint256 total =
+            SafeMath.add(userBook[msg.sender].stakingBalance, amountStaked);
+        // Reset depositedTime
+        userBook[msg.sender].timeBalanceChanged = block.timestamp;
+        // Reset staking balace
+        userBook[msg.sender].stakingBalance = 0;
+
+        msg.sender.transfer(total);
+        onTransfer(address(this), msg.sender, total);
+    }
+
+    function verifyLoan() public payable {
+        uint256 timePassed =
+            SafeMath.sub(block.timestamp, loanBook[msg.sender].timeCreated);
+
+        uint256 yes;
+        uint256 no;
+        for (uint256 i = 0; i < loanBook[msg.sender].votes.length; i++) {
+            if (loanBook[msg.sender].votes[i] == true) {
+                yes++;
+            } else {
+                no++;
+            }
+        }
+        require(timePassed > 604800);
+        require(yes > no);
+
+        loanBook[msg.sender].active = true;
+        msg.sender.transfer(loanBook[msg.sender].remainingBalance);
+    }
+
+    function voteYes(uint256 signature) public {
+        loanBook[msg.sender].voters;
+>>>>>>> upstream/main
     }
 
 
 }
+
+// ********************************* CHANGES ***************************************
+
+// mapping (uint id => Loan) loanBook;
+// signature NFT
+
+// loanBook[id]
+// loanBook[id].signature // NFT
+
+// function borrow() {
+//     require(loanBook[id].signature == NFT.value)
+
+// }
+
+// ******************************** INCENTIVE SYSTEM *******************************
+
+// tier 1 - Loan  50k - Max voters 100 - 5 per head
+//        - msg.sender CBLTs > 300$ worth of ETH
+// tier 2 - Loan 100k - Max voters 150 - 7.5 per head
+//        - msg.sender CBLTs > 200
+// tier 3 - Loan 200k - Max voters 200 - 10 per head
+//        - msg.sender CBLTs > 400
+
+// ********************************* TODOS ***********************************
 
 // Starting period, 12-24 months
 // Collateral paid on loan application
