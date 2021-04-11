@@ -187,3 +187,179 @@ Setting Solidity Version:
 - Sets up two events in the beginning which correspond to the address of the minter and the actual mint event
 - Once the minter is established and approved (through passMinterRole) the Mint function will be called and more tokens will be creates
 - This will add to the totalSupply established earlier.
+
+# Creating a Bank
+
+## Set Solidity Version
+
+![](https://i.imgur.com/GJHwh4F.png)
+
+- Sets the version of solidity to between 0.4.22 and 0.9.0
+
+## Import Separate Contracts
+
+![](https://i.imgur.com/dfOjQBs.png)
+
+### Ownable.sol
+
+![](https://i.imgur.com/STsUPql.png)
+
+- Handles the management of the owner role, makes sure the person calling certain functions is the owner of the contract
+-
+
+### ERC20.sol
+
+![](https://i.imgur.com/WoYQSPS.png)
+
+- Sets the basic ERC20 Tokens standards
+- In the main Bank.sol contract this helps create a dummy token that we can pass other token addresses and parameters through
+
+### SafeMath
+
+![](https://i.imgur.com/BCBXS2z.png)
+
+- Helps with the simple math for the contracts, makes sure the calculations are secure
+-
+
+## Starting the contract + Constructor
+
+![](https://i.imgur.com/mFJiM7v.png)
+
+- We use a mapping to attach the address of the user to the loan that they will receive. This information will be put into the variable called loanBook which will record the loans being sent out.
+- Constructor Parameters:
+  - `<address[] memory addresses`>: stores the addresses of the allowed tokens in memory and puts them into an array
+  - `<address _CBLT>`: The address for the CBLT token
+- The constructor will use a for loop to assign the allowed tokens from the addresses array
+- The CBLT token will be created separately since that token will always be a part of the bank/exchange
+
+## Structs
+
+![](https://i.imgur.com/45APvsH.png)
+
+- Structs are used to represent a record of an object. In this case we will use structs to hold information that we need for the loans and calculating the interest rate.
+- In the `<Loan>` struct, key information like the borrower’s address, the dueDate, and the collateral is held. This information can either be called later on when the user needs to view it, or can be changed if something relating to the loan is changed
+- The `<Rational>` struct holds the info for the numerator and denominator. This makes it easier to calculate the interest rate which will be used several times throughout this contract.
+
+## Events
+
+![](https://i.imgur.com/o4Xfpgr.png)
+
+- onReceived handles any donations to the treasury.
+  - The parameters are the address of the sender, and the amount of currency being sent.
+- onTransfer and depositToken handle transfers and deposits
+  - The parameters are the addresses of the sender, receiver, and the amount being sent
+- These events will be called later on in the contract whenever there is anything to do with donations, transfers, or receiving.
+
+## Mappings
+
+![](https://i.imgur.com/NXDlxiD.png)
+
+- Sets the total balance of the owner, the list of allowed tokens, the supply of said tokens, and the current balance of ether
+- Mappings attach the addresses of the user to these specified values which can be called later on in thee contract
+
+## Functions
+
+### withdrawTokens
+
+![](https://i.imgur.com/qxCLrW5.png)
+
+- Parameters:
+  - `<address _tokenAddress>`: address of the specified token that is being withdrawn
+  - `<uint256 _amount>`: The number amount that is being withdrawn
+- This function allows the user to withdraw tokens assuming that they meet certain requirements:
+  - Is the token supported? Does the user have enough in their balance? Is the number 0? The require commands will make sure that these prerequisite are met before the transaction goes through
+  - The supported tokens were added in earlier on in the contract in the constructor.
+- A dummy token is also created so that the parameters of the supported tokens in the treasury can pass through it.
+  - If the user does not meet one of the requirements it will return “Transfer not complete”
+- `<emit onTransfer>` calls the onTransfer event and actually send the tokens
+
+### withdraw
+
+![](https://i.imgur.com/pxN0yFz.png)
+
+- Very similar to withdrawToken, except for ether so no dummy token needs to be created
+- Just like the previous function this one also uses `<require>` to establish certain prerequisites before the transaction can go through.
+
+### depositTokens
+
+![](https://i.imgur.com/gzFP6CH.png)
+
+- Parameters:
+  - `<address _tokenAddress>`: address of the specified token that is being deposited
+  - `<uint256 _amount>`: The number amount that is being deposited
+- This function allows the user to deposit tokens assuming that the token is supported by the treasury. (Very similar to the `<withdrawTokens>` function)
+  - The supported tokens were added in earlier on in the contract in the constructor.
+- A dummy token is also created so that the parameters of the supported tokens in the treasury can pass through it.
+  - If the user does not meet one of the requirements it will return “Transfer not complete”
+- `<emit onTransfer>` calls the depositToken event and actually send the tokens
+
+### deposit
+
+![](https://i.imgur.com/o4302P8.png)
+
+- A basic deposit function used for ether, similar to the withdraw function
+- Since ether is an established currency we can forgo the creation of the dummy token that we use for out custom tokens
+
+### addToken/removeToken
+
+![](https://i.imgur.com/4CLevIk.png)
+
+- Parameters:
+  - `<address _tokenAddress>`: The address of the specified token
+- First checks to see if the person who called the function has the role of owner
+  - The owner role is created and specified in `<Ownable.sol>`. Only the owner can make changes as to what tokens are supported by the treasury.
+- If the user is the owner, these functions will allow for the addition or removal of certain tokens from the treasury.
+
+### totalTokenSupply
+
+![](https://i.imgur.com/gqu3DXV.png)
+
+- Returns the total number of a particular token by checking the balance of the contract address.
+
+# The Lending System
+
+## Functions
+
+### Multiply
+
+![](https://i.imgur.com/1cQNJ8m.png)
+
+- Simply multiplication function
+
+### Calculate Components
+
+![](https://i.imgur.com/7sPuRkS.png)
+
+- Calculates the interest and principal that the borrower has to pay/paid
+
+### Calculate Collateral
+
+![](https://i.imgur.com/i2jn1YZ.png)
+
+- Calculates the collateral based on the DID’s of the borrower and the initial amount handed out
+
+### Process Period
+
+![](https://i.imgur.com/YMlMBrO.png)
+
+- Used to calculate the remaining time left on the loan
+
+### Make Payment
+
+![](https://i.imgur.com/a2wFhcO.png)
+
+- Function for the user to make payments on their loan
+- Calculates changes in interest and principal based on the payment
+
+### Missed Payment
+
+![](https://i.imgur.com/auskJ2w.png)
+
+- If the user missed a payment this function will calculate the changes in interest and principle
+- Will also make sure that the user does not receive the collateral that they would have received
+
+### Return Collateral
+
+![](https://i.imgur.com/QQCDCQi.png)
+
+- Sends some collateral back to the user if they make the payment on time
