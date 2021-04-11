@@ -416,30 +416,111 @@ contract Bank is Ownable {
         delete loanBook[msg.sender];
     }
 
+    // **************************** Staking *******************************
+
     mapping(address => User) userBook;
 
     struct User {
-        uint256 depositedTime;
-        uint256 interestBalance;
+        uint256 timeBalanceChanged;
+        uint256 stakingBalance;
         uint256 ethBalance;
     }
 
     function depositEth() public payable {
         require(msg.value >= 1e16, "Error, deposit must be >= 0.01 ETH");
 
-        // calculate interest gained up to this point
-        uint256 interestSaved =
-            SafeMath.div(SafeMath.mul(userBook[msg.sender].ethBalance, 1), 20);
+        // Calculate interest based on time passed
+        uint256 timeTotal =
+            SafeMath.div(
+                userBook[msg.sender].timeBalanceChanged,
+                block.timestamp
+            );
+        uint256 staking = SafeMath.div(SafeMath.div(1, 20), timeTotal);
+        // Calculate the amount Staked
+        uint256 amountStaked =
+            SafeMath.mul(userBook[msg.sender].stakingBalance, staking);
 
-        (userBook[msg.sender].depositedTime / block.timestamp);
-
-        // save the token interest inside the struct
-        userBook[msg.sender].interestBalance = SafeMath.add(
-            userBook[msg.sender].interestBalance,
-            interestSaved
+        // Save the token interest inside the struct
+        userBook[msg.sender].stakingBalance = amountStaked;
+        // Reset depositedTime
+        userBook[msg.sender].timeBalanceChanged = block.timestamp;
+        // Depsit new eth into User's account
+        userBook[msg.sender].ethBalance = SafeMath.add(
+            userBook[msg.sender].ethBalance,
+            msg.value
         );
-        // reset depositedTime
-        userBook[msg.sender].depositedTime = block.timestamp;
+
+        emit onReceived(msg.sender, msg.value);
+    }
+
+    function withdrawEth(uint256 _amount) public {
+        uint256 amount = SafeMath.mul(_amount, 1000000000000000000);
+        // Check if amount is within balance bounds
+        require(amount <= etherBalance[msg.sender]);
+        // Withdraw must be higher than 0.01 ETH
+        require(amount >= 1e16, "Error, withdraws must be >= 0.01 ETH");
+
+        uint256 timeTotal =
+            SafeMath.div(
+                userBook[msg.sender].timeBalanceChanged,
+                block.timestamp
+            );
+        uint256 staking = SafeMath.div(SafeMath.div(1, 20), timeTotal);
+        // Calculate the amount Staked
+        uint256 amountStaked =
+            SafeMath.mul(userBook[msg.sender].stakingBalance, staking);
+
+        // Save the token interest inside the struct
+        userBook[msg.sender].stakingBalance = amountStaked;
+        // Reset depositedTime
+        userBook[msg.sender].timeBalanceChanged = block.timestamp;
+
+        // Substract from the struct
+        userBook[msg.sender].ethBalance = SafeMath.sub(
+            userBook[msg.sender].ethBalance,
+            amount
+        );
+        // Transfer to user
+        msg.sender.transfer(amount);
+        emit onTransfer(address(this), msg.sender, amount);
+    }
+
+    function viewStaking() public view {
+        // Calculate current staking
+        uint256 timeTotal =
+            SafeMath.div(
+                userBook[msg.sender].timeBalanceChanged,
+                block.timestamp
+            );
+        uint256 staking = SafeMath.div(SafeMath.div(1, 20), timeTotal);
+        // Calculate the amount Staked
+        uint256 amountStaked =
+            SafeMath.mul(userBook[msg.sender].stakingBalance, staking);
+        // Return previous staking gains plus new staking balance
+        SafeMath.add(userBook[msg.sender].stakingBalance, amountStaked);
+    }
+
+    function withdrawStaking() public payable {
+        uint256 timeTotal =
+            SafeMath.div(
+                userBook[msg.sender].timeBalanceChanged,
+                block.timestamp
+            );
+        uint256 staking = SafeMath.div(SafeMath.div(1, 20), timeTotal);
+        // Calculate the amount Staked
+        uint256 amountStaked =
+            SafeMath.mul(userBook[msg.sender].stakingBalance, staking);
+
+        //Calculate total
+        uint256 total =
+            SafeMath.add(userBook[msg.sender].stakingBalance, amountStaked);
+        // Reset depositedTime
+        userBook[msg.sender].timeBalanceChanged = block.timestamp;
+        // Reset staking balace
+        userBook[msg.sender].stakingBalance = 0;
+
+        msg.sender.transfer(total);
+        onTransfer(address(this), msg.sender, total);
     }
 }
 
