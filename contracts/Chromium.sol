@@ -21,18 +21,18 @@ import './ExchangeOracle.sol';
 import "./Bank.sol";
 
 contract Chromium {
-    using UniversalERC20 for IERC20;
+    using UniversalERC20 for ERC20;
 
-    mapping(IERC20 => uint256) public balancePerToken;
-    mapping(IERC20 => bool) public allowedTokens; // tokens that are allowed to be exchanged
+    mapping(ERC20 => uint256) public balancePerToken;
+    mapping(ERC20 => bool) public allowedTokens; // tokens that are allowed to be exchanged
     address oracleAddress;
 
     Bank treasury;
     ExchangeOracle oracle;
     IOneSplit public oneSplitImpl; // pass in 1inch protocol contract address
 
-    IERC20 private constant ZERO_ADDRESS = IERC20(0x0000000000000000000000000000000000000000); // eth address substitute
-    IERC20 private constant ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE); // eth address substitute
+    ERC20 private constant ZERO_ADDRESS = ERC20(0x0000000000000000000000000000000000000000); // eth address substitute
+    ERC20 private constant ETH_ADDRESS = ERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE); // eth address substitute
 
     event depositToken(address indexed _from, uint256 _amount);
     event onTransfer(
@@ -69,8 +69,8 @@ contract Chromium {
      * @param flags (uint256) Flags for enabling and disabling some features, default 0
     */
     function getExpectedReturnWithGas(
-        IERC20 fromToken,
-        IERC20 destToken,
+        ERC20 fromToken,
+        ERC20 destToken,
         uint256 amount,
         uint256 parts,
         uint256 flags // See constants in IOneSplit.sol
@@ -103,8 +103,8 @@ contract Chromium {
      * @param flags (uint256) Flags for enabling and disabling some features, default 0
     */
     function exchangeTokens(
-        IERC20 _sellToken,
-        IERC20 _buyToken,
+        ERC20 _sellToken,
+        ERC20 _buyToken,
         uint256 _sellAmount,
         uint256 _minReturn,
         uint256[] memory distribution,
@@ -154,7 +154,7 @@ contract Chromium {
     /**
      * @dev this will accept erc20 tokens to be added to the contracts liquidity pool
      */
-    function addLiquidity(IERC20 _token, uint256 _tokenAmount)
+    function addLiquidity(ERC20 _token, uint256 _tokenAmount)
     external
     payable
     {
@@ -175,7 +175,7 @@ contract Chromium {
      * @dev allows for tokens to be added to the exchange
      * this needs to be done before adding any liquidity for the token
      */
-    function _allowToken(IERC20 _token) public {
+    function _allowToken(ERC20 _token) public {
         allowedTokens[_token] = true;
     }
 
@@ -184,7 +184,7 @@ contract Chromium {
      * then it will return false and the 1inch protocol will complete the exchange
      * @param _minReturn is the _minReturn that is returned from "getExpectedReturnWithGas"
     */
-    function _exchangeWithChromium(IERC20 _sellToken, IERC20 _buyToken, uint _minReturn) internal view returns (bool) {
+    function _exchangeWithChromium(ERC20 _sellToken, ERC20 _buyToken, uint _minReturn) internal view returns (bool) {
         if (allowedTokens[_sellToken] == true && allowedTokens[_buyToken] == true) {
             if (balancePerToken[_buyToken] >= _minReturn) {
                 return true;

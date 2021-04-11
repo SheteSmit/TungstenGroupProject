@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "../SafeMath.sol";
+import '../ERC20.sol';
+import './SafeERC20.sol';
 
 
 library UniversalERC20 {
 
     using SafeMath for uint256;
-    using SafeERC20 for IERC20;
+    using SafeERC20 for ERC20;
 
-    IERC20 private constant ZERO_ADDRESS = IERC20(0x0000000000000000000000000000000000000000);
-    IERC20 private constant ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
+    ERC20 private constant ZERO_ADDRESS = ERC20(0x0000000000000000000000000000000000000000);
+    ERC20 private constant ETH_ADDRESS = ERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
 
-    function universalTransfer(IERC20 token, address to, uint256 amount) internal returns(bool) {
+    function universalTransfer(ERC20 token, address to, uint256 amount) internal returns(bool) {
         if (amount == 0) {
             return true;
         }
@@ -28,7 +28,7 @@ library UniversalERC20 {
         }
     }
 
-    function universalTransferFrom(IERC20 token, address from, address to, uint256 amount) internal {
+    function universalTransferFrom(ERC20 token, address from, address to, uint256 amount) internal {
         if (amount == 0) {
             return;
         }
@@ -46,7 +46,7 @@ library UniversalERC20 {
         }
     }
 
-    function universalTransferFromSenderToThis(IERC20 token, uint256 amount) internal {
+    function universalTransferFromSenderToThis(ERC20 token, uint256 amount) internal {
         if (amount == 0) {
             return;
         }
@@ -61,7 +61,7 @@ library UniversalERC20 {
         }
     }
 
-    function universalApprove(IERC20 token, address to, uint256 amount) internal {
+    function universalApprove(ERC20 token, address to, uint256 amount) internal {
         if (!isETH(token)) {
             if (amount == 0) {
                 token.safeApprove(to, 0);
@@ -78,7 +78,7 @@ library UniversalERC20 {
         }
     }
 
-    function universalBalanceOf(IERC20 token, address who) internal view returns (uint256) {
+    function universalBalanceOf(ERC20 token, address who) internal view returns (uint256) {
         if (isETH(token)) {
             return who.balance;
         } else {
@@ -87,11 +87,11 @@ library UniversalERC20 {
     }
 
 
-    function isETH(IERC20 token) internal pure returns(bool) {
+    function isETH(ERC20 token) internal pure returns(bool) {
         return (address(token) == address(ZERO_ADDRESS) || address(token) == address(ETH_ADDRESS));
     }
 
-    function eq(IERC20 a, IERC20 b) internal pure returns(bool) {
+    function eq(ERC20 a, ERC20 b) internal pure returns(bool) {
         return a == b || (isETH(a) && isETH(b));
     }
 }
