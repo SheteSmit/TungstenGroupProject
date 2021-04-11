@@ -252,6 +252,13 @@ contract Bank is Ownable {
             true
         );
 
+        //borrow functioning
+        require(loanBook[msg.sender].remainingBalance >= 0);
+        loanBook[msg.sender] =loanBook[msg.sender] + (balanceOf * borrower);
+        timestamp[borrower] = block.timestamp;
+        emit balanceOf(borrower, balanceOfToken(_tokenAddress), timestamp);
+        
+
         uint256 x = _minimumPayment * units;
         require(
             x / units == _minimumPayment,
@@ -261,6 +268,7 @@ contract Bank is Ownable {
         msg.sender.transfer(principal);
     }
 
+  
     /**
      * @dev Prevents overflows
      *
@@ -440,7 +448,11 @@ contract Bank is Ownable {
         );
         // reset depositedTime
         userBook[msg.sender].depositedTime = block.timestamp;
+
+
     }
+
+
 }
 
 // Starting period, 12-24 months
