@@ -15,7 +15,7 @@ contract Bank is Ownable {
      */
     mapping(address => Loan) loanBook;
 
-    constructor(address[] memory addresses, address _CBLT) public {
+    constructor(address[] memory addresses, address _CBLT) {
         for (uint256 i = 0; i < addresses.length; i++) {
             tokensAllowed[addresses[i]] = true;
         }
