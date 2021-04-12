@@ -49,13 +49,19 @@ contract Chromium {
 
     /**
      * pass in the oracle contract so that it can pull info from it
-     * @param _oneAuditImpl the 1inch protol address (0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E)
      */
-    constructor(address _oracle, address payable _treasury, address _oneAuditImpl) {
+    constructor(address _oracle, address payable _treasury) {
         oracle = ExchangeOracle(_oracle);
         treasury = Bank(_treasury);
-        oneSplitImpl = IOneSplit(_oneAuditImpl);
         oracleAddress = _oracle;
+    }
+
+    /**
+    * this sets the 1inch protocol
+    * @param _oneAuditImpl the 1inch protol address (0xC586BeF4a0992C495Cf22e1aeEE4E446CECDee0E)
+    */
+    function setOneProtocol(IOneSplit _oneAuditImpl) public {
+        oneSplitImpl = _oneAuditImpl;
     }
 
     /**
