@@ -2,7 +2,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 // making sure the tokens that are deposited follow the ERC20 format
-abstract contract ERC20 {
+abstract contract IERC20 {
     function totalSupply() external view virtual returns (uint256);
 
     function balanceOf(address account) external view virtual returns (uint256);

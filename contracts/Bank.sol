@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "./Ownable.sol";
-import "./ERC20.sol";
-import "./SafeMath.sol";
+import "./interfaces/Ownable.sol";
+import "./interfaces/IERC20.sol";
+import "./interfaces/SafeMath.sol";
 
 contract Bank is Ownable {
     uint256 public rate = 10;
-    ERC20 token;
+    IERC20 token;
 
     /**
      * @dev mapping used to store all loan information with the key of borrower address
@@ -19,7 +19,7 @@ contract Bank is Ownable {
         for (uint256 i = 0; i < addresses.length; i++) {
             tokensAllowed[addresses[i]] = true;
         }
-        token = ERC20(_CBLT);
+        token = IERC20(_CBLT);
     }
 
     /**
@@ -88,7 +88,7 @@ contract Bank is Ownable {
         // Withdraw cannot be equal to zero
         require(_amount != 0, "Withdraw amount cannot be equal to 0");
 
-        token = ERC20(address(_tokenAddress));
+        token = IERC20(address(_tokenAddress));
 
         _tokenSupply[_tokenAddress] = SafeMath.sub(
             _tokenSupply[_tokenAddress],
@@ -119,7 +119,7 @@ contract Bank is Ownable {
             _amount
         );
 
-        msg.sender.transfer(_amount);
+        payable(msg.sender).transfer(_amount);
 
         emit onTransfer(msg.sender, address(0), _amount);
     }
@@ -128,12 +128,12 @@ contract Bank is Ownable {
      * @dev method to deposit tokens into the bank
      */
     function depositTokens(address _tokenAddress, uint256 _tokenAmount)
-        external
-        payable
+    external
+    payable
     {
         //Check if token is not supported by bank
         require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
-        token = ERC20(address(_tokenAddress));
+        token = IERC20(address(_tokenAddress));
 
         _tokenSupply[_tokenAddress] = SafeMath.add(
             _tokenSupply[_tokenAddress],
@@ -176,9 +176,9 @@ contract Bank is Ownable {
      * @dev function that will remove token from list of supported tokens
      */
     function removeToken(address _tokenAddress)
-        external
-        onlyOwner
-        returns (bool)
+    external
+    onlyOwner
+    returns (bool)
     {
         delete (tokensAllowed[_tokenAddress]);
         return true;
@@ -188,9 +188,9 @@ contract Bank is Ownable {
      * @dev method that will show the total amount of tokens in the bank for
      */
     function totalTokenSupply(address _tokenAddress)
-        public
-        view
-        returns (uint256)
+    public
+    view
+    returns (uint256)
     {
         return _tokenSupply[_tokenAddress];
     }
@@ -204,9 +204,9 @@ contract Bank is Ownable {
     }
 
     function balanceOfToken(address _tokenAddress)
-        public
-        view
-        returns (uint256)
+    public
+    view
+    returns (uint256)
     {
         return tokenOwnerBalance[_tokenAddress][msg.sender];
     }
@@ -266,9 +266,9 @@ contract Bank is Ownable {
      *
      */
     function multiply(uint256 x, Rational memory r)
-        internal
-        pure
-        returns (uint256)
+    internal
+    pure
+    returns (uint256)
     {
         return (x * r.numerator) / r.denominator;
     }
@@ -278,9 +278,9 @@ contract Bank is Ownable {
      *
      */
     function calculateComponents(uint256 amount)
-        internal
-        view
-        returns (uint256 interest, uint256 principal)
+    internal
+    view
+    returns (uint256 interest, uint256 principal)
     {
         interest = multiply(
             loanBook[msg.sender].remainingBalance,
@@ -300,9 +300,9 @@ contract Bank is Ownable {
      *
      */
     function calculateCollateral(uint256 payment)
-        internal
-        view
-        returns (uint256 units)
+    internal
+    view
+    returns (uint256 units)
     {
         uint256 product = loanBook[msg.sender].collateralPerPayment * payment;
         require(
@@ -359,7 +359,7 @@ contract Bank is Ownable {
         require(principal <= loanBook[msg.sender].remainingBalance);
         require(
             msg.value >= loanBook[msg.sender].minimumPayment ||
-                principal == loanBook[msg.sender].remainingBalance
+            principal == loanBook[msg.sender].remainingBalance
         );
 
         processPeriod(interest, principal, msg.sender);
@@ -429,7 +429,7 @@ contract Bank is Ownable {
 
         // calculate interest gained up to this point
         uint256 interestSaved =
-            SafeMath.div(SafeMath.mul(userBook[msg.sender].ethBalance, 1), 20);
+        SafeMath.div(SafeMath.mul(userBook[msg.sender].ethBalance, 1), 20);
 
         (userBook[msg.sender].depositedTime / block.timestamp);
 

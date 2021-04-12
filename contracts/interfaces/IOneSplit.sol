@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "../ERC20.sol";
+import "./IERC20.sol";
 
 //
 //  [ msg.sender ]
@@ -106,8 +106,8 @@ contract IOneSplitConsts {
 
 abstract contract IOneSplit is IOneSplitConsts {
     function getExpectedReturn(
-        ERC20 fromToken,
-        ERC20 destToken,
+        IERC20 fromToken,
+        IERC20 destToken,
         uint256 amount,
         uint256 parts,
         uint256 flags // See constants in IOneSplit.sol
@@ -121,8 +121,8 @@ abstract contract IOneSplit is IOneSplitConsts {
     );
 
     function getExpectedReturnWithGas(
-        ERC20 fromToken,
-        ERC20 destToken,
+        IERC20 fromToken,
+        IERC20 destToken,
         uint256 amount,
         uint256 parts,
         uint256 flags, // See constants in IOneSplit.sol
@@ -138,8 +138,8 @@ abstract contract IOneSplit is IOneSplitConsts {
     );
 
     function swap(
-        ERC20 fromToken,
-        ERC20 destToken,
+        IERC20 fromToken,
+        IERC20 destToken,
         uint256 amount,
         uint256 minReturn,
         uint256[] memory distribution,
@@ -154,7 +154,7 @@ abstract contract IOneSplit is IOneSplitConsts {
 
 abstract contract IOneSplitMulti is IOneSplit {
     function getExpectedReturnWithGasMulti(
-        ERC20[] memory tokens,
+        IERC20[] memory tokens,
         uint256 amount,
         uint256[] memory parts,
         uint256[] memory flags,
@@ -170,7 +170,7 @@ abstract contract IOneSplitMulti is IOneSplit {
     );
 
     function swapMulti(
-        ERC20[] memory tokens,
+        IERC20[] memory tokens,
         uint256 amount,
         uint256 minReturn,
         uint256[] memory distribution,
