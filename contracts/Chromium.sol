@@ -73,13 +73,15 @@ contract Chromium {
      * works like granularity, higly affects gas usage. Should be called offchain,
      * but could be called onchain if user swaps not his own funds, but this is still considered as not safe.
      * @param flags (uint256) Flags for enabling and disabling some features, default 0
+     * @param destTokenEthPriceTimesGasPrice (uint256) destToken price to ETH multiplied by gas price
     */
     function getExpectedReturnWithGas(
         IERC20 fromToken,
         IERC20 destToken,
         uint256 amount,
         uint256 parts,
-        uint256 flags // See constants in IOneSplit.sol
+        uint256 flags, // See constants in IOneSplit.sol
+        uint256 destTokenEthPriceTimesGasPrice
     )
     public
     view
@@ -95,24 +97,24 @@ contract Chromium {
             amount,
             parts,
             flags,
-            0
+            destTokenEthPriceTimesGasPrice
         );
     }
 
     /**
      * @dev Swap `_sellAmount` of `_sellToken` to `_buyToken`
-     * @param _sellToken (IERC20) Address of token or `address(0)` for Ether
-     * @param _buyToken (IERC20) Address of token or `address(0)` for Ether
-     * @param _sellAmount (uint256) Amount for `fromToken`
-     * @param _minReturn (uint256) Minimum expected return, else revert
+     * @param fromToken (IERC20) Address of token or `address(0)` for Ether
+     * @param destToken (IERC20) Address of token or `address(0)` for Ether
+     * @param amount (uint256) Amount for `fromToken`
+     * @param minReturn (uint256) Minimum expected return, else revert
      * @param distribution (uint256[]) Array of weights for volume distribution returned by `getExpectedReturnWithGas`
      * @param flags (uint256) Flags for enabling and disabling some features, default 0
     */
     function exchangeTokens(
-        IERC20 _sellToken,
-        IERC20 _buyToken,
-        uint256 _sellAmount,
-        uint256 _minReturn,
+        IERC20 fromToken,
+        IERC20 destToken,
+        uint256 amount,
+        uint256 minReturn,
         uint256[] memory distribution,
         uint256 flags
     ) external payable returns (uint256 _amountReturned) {
@@ -138,21 +140,21 @@ contract Chromium {
         //         SafeMath.div(sellTokenValue, buyTokenValue)
         //     );
 
-        if (_exchangeWithChromium(_sellToken, _buyToken, _sellAmount)) {
+        if (_exchangeWithChromium(fromToken, destToken, amount)) {
             // checks to see if there are enough tokens in the contract to make the exchange
-            require(_minReturn <= treasury.totalTokenSupply(address(_buyToken)));
+            require(minReturn <= treasury.totalTokenSupply(address(destToken)));
 
-            _sellToken.universalTransferFrom(msg.sender, address(treasury), _sellAmount);
-            balancePerToken[_sellToken] = SafeMath.add(balancePerToken[_sellToken], _sellAmount);
+            fromToken.universalTransferFrom(msg.sender, address(treasury), amount);
+            balancePerToken[fromToken] = SafeMath.add(balancePerToken[fromToken], amount);
 
-            _buyToken.universalTransfer(msg.sender, _minReturn);
-            balancePerToken[_buyToken] = SafeMath.sub(balancePerToken[_buyToken], _minReturn);
+            destToken.universalTransfer(msg.sender, minReturn);
+            balancePerToken[destToken] = SafeMath.sub(balancePerToken[destToken], minReturn);
 
-            emit tokensExchanged(address(_sellToken), _sellAmount, address(_buyToken), _minReturn);
-            _amountReturned = _minReturn;
+            emit tokensExchanged(address(fromToken), amount, address(destToken), minReturn);
+            _amountReturned = minReturn;
         } else {
-            _amountReturned = oneSplitImpl.swap(_sellToken, _buyToken, _sellAmount, _minReturn, distribution, flags);
-            emit tokensExchanged(address(_sellToken), _sellAmount, address(_buyToken), _minReturn);
+            _amountReturned = oneSplitImpl.swap(fromToken, destToken, amount, minReturn, distribution, flags);
+            emit tokensExchanged(address(fromToken), amount, address(destToken), minReturn);
         }
     }
 
