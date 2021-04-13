@@ -270,7 +270,7 @@ const Home = (props) => {
         <div className="cbltrender">
 
           <h1>Welcome to Cobalt Exchange</h1>
-          <h2>Let's get started with adding CBLT</h2>
+          <h2>Let's get started ith adding CBLT</h2>
           <button className="cblt" style={{ width: '9%' }} onClick={() => cobaltBalance()}>Add Your CBLT</button>
         </div>
 
