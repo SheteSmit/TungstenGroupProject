@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.8.0;
-import "./SafeMath.sol";
+import "./interfaces/SafeMath.sol";
 
 // ----------------------------------------------------------------------------
 // Safe Math Library
@@ -32,7 +32,7 @@ contract SmitCoin {
      *
      * Initializes contract with initial supply tokens to the creator of the contract
      */
-    constructor() public {
+    constructor() {
         name = "SmitCoin";
         symbol = "SMC";
         decimals = 18;
