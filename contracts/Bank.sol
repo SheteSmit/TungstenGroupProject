@@ -547,7 +547,7 @@ contract Bank is Ownable {
         msg.sender.transfer(loanBook[msg.sender].remainingBalance);
     }
 
-    function voteYes(uint256 signature) public {
+    function voteYes(uint256 signature) public view {
         loanBook[msg.sender].voters;
     }
 }
@@ -562,7 +562,6 @@ contract Bank is Ownable {
 
 // function borrow() {
 //     require(loanBook[id].signature == NFT.value)
-
 // }
 
 // ******************************** INCENTIVE SYSTEM *******************************
