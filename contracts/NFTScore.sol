@@ -1,14 +1,31 @@
 pragma solidity ^0.8.0;
 
-contract ERC721 is Context, ERC165, IERC721, IERC721Metadata {
-    using Address for address;
-    using Strings for uint256;
-
+contract ERC721 {
     // Token name
     string private _name;
 
     // Token symbol
     string private _symbol;
+
+    /* Emitted when `owner` enables `approved` to manage the `tokenId` token.*/
+    event Approval(
+        address indexed owner,
+        address indexed approved,
+        uint256 indexed tokenId
+    );
+
+    /* Emitted when `owner` enables or disables (`approved`) `operator` to manage all of its assets.*/
+    event ApprovalForAll(
+        address indexed owner,
+        address indexed operator,
+        bool approved
+    );
+
+    /* @dev Returns the number of tokens in ``owner``'s account. */
+    function balanceOf(address owner) external view returns (uint256 balance);
+
+    /* @dev Returns the owner of the `tokenId` token. Requirements: - `tokenId` must exist.*/
+    function ownerOf(uint256 tokenId) external view returns (address owner);
 
     // Mapping from token ID to owner address
     mapping(uint256 => address) private _owners;
