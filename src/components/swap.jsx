@@ -36,7 +36,7 @@ function Swap(props) {
         10,
         0
       )
-      .call()
+      .send({from: props.account})
       .then((x) => console.log(x));
     console.log(x);
   }
