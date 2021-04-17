@@ -8,6 +8,7 @@ import "./interfaces/SafeMath.sol";
 contract Bank is Ownable {
     uint256 public rate = 10;
     IERC20 token;
+    address oracleAddress;
 
     /**
      * @dev mapping used to store all loan information with the key of borrower address
@@ -15,10 +16,15 @@ contract Bank is Ownable {
      */
     mapping(address => Loan) loanBook;
 
-    constructor(address[] memory addresses, address _CBLT) {
+    constructor(
+        address[] memory addresses,
+        address _CBLT,
+        address _oracle
+    ) {
         for (uint256 i = 0; i < addresses.length; i++) {
             tokensAllowed[addresses[i]] = true;
         }
+        oracleAddress = _oracle;
         token = IERC20(_CBLT);
     }
 
@@ -82,7 +88,6 @@ contract Bank is Ownable {
      * @dev method that will withdraw tokens from the bank if the caller
      * has tokens in the bank
      */
-
     function withdrawTokens(address _tokenAddress, uint256 _amount) external {
         //Check if token is not supported by bank
         require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
@@ -112,7 +117,6 @@ contract Bank is Ownable {
     /**
      * @dev method to withdraw eth from account
      */
-
     function withdraw(uint256 _amount) external {
         require(_amount <= etherBalance[msg.sender]);
         require(_amount != 0, "Withdraw amount cannot be equal to 0");
@@ -131,8 +135,8 @@ contract Bank is Ownable {
      * @dev method to deposit tokens into the bank
      */
     function depositTokens(address _tokenAddress, uint256 _tokenAmount)
-    external
-    payable
+        external
+        payable
     {
         //Check if token is not supported by bank
         require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
@@ -179,9 +183,9 @@ contract Bank is Ownable {
      * @dev function that will remove token from list of supported tokens
      */
     function removeToken(address _tokenAddress)
-    external
-    onlyOwner
-    returns (bool)
+        external
+        onlyOwner
+        returns (bool)
     {
         delete (tokensAllowed[_tokenAddress]);
         return true;
@@ -191,9 +195,9 @@ contract Bank is Ownable {
      * @dev method that will show the total amount of tokens in the bank for
      */
     function totalTokenSupply(address _tokenAddress)
-    public
-    view
-    returns (uint256)
+        public
+        view
+        returns (uint256)
     {
         return _tokenSupply[_tokenAddress];
     }
@@ -207,9 +211,9 @@ contract Bank is Ownable {
     }
 
     function balanceOfToken(address _tokenAddress)
-    public
-    view
-    returns (uint256)
+        public
+        view
+        returns (uint256)
     {
         return tokenOwnerBalance[_tokenAddress][msg.sender];
     }
@@ -217,7 +221,6 @@ contract Bank is Ownable {
     /**
      * @dev fallback function to receive any eth sent to this contract
      */
-
     receive() external payable {
         emit onReceived(msg.sender, msg.value);
     }
@@ -270,9 +273,9 @@ contract Bank is Ownable {
      *
      */
     function multiply(uint256 x, Rational memory r)
-    internal
-    pure
-    returns (uint256)
+        internal
+        pure
+        returns (uint256)
     {
         return (x * r.numerator) / r.denominator;
     }
@@ -282,9 +285,9 @@ contract Bank is Ownable {
      *
      */
     function calculateComponents(uint256 amount)
-    internal
-    view
-    returns (uint256 interest, uint256 principal)
+        internal
+        view
+        returns (uint256 interest, uint256 principal)
     {
         interest = multiply(
             loanBook[msg.sender].remainingBalance,
@@ -304,9 +307,9 @@ contract Bank is Ownable {
      *
      */
     function calculateCollateral(uint256 payment)
-    internal
-    view
-    returns (uint256 units)
+        internal
+        view
+        returns (uint256 units)
     {
         uint256 product = loanBook[msg.sender].collateralPerPayment * payment;
         require(
@@ -363,7 +366,7 @@ contract Bank is Ownable {
         require(principal <= loanBook[msg.sender].remainingBalance);
         require(
             msg.value >= loanBook[msg.sender].minimumPayment ||
-            principal == loanBook[msg.sender].remainingBalance
+                principal == loanBook[msg.sender].remainingBalance
         );
 
         processPeriod(interest, principal, msg.sender);
@@ -453,7 +456,6 @@ contract Bank is Ownable {
             userBook[msg.sender].ethBalance,
             msg.value
         );
-
 
         emit onReceived(msg.sender, msg.value);
     }
@@ -553,7 +555,7 @@ contract Bank is Ownable {
     }
 }
 
-// ********************************* CHANGES ***************************************
+// ************************************* CHANGES ************************************
 
 // mapping (uint id => Loan) loanBook;
 // signature NFT
@@ -574,7 +576,7 @@ contract Bank is Ownable {
 // tier 3 - Loan 200k - Max voters 200 - 10 per head
 //        - msg.sender CBLTs > 400
 
-// ********************************* TODOS ***********************************
+// ************************************** TODOS ************************************
 
 // Starting period, 12-24 months
 // Collateral paid on loan application
