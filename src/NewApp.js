@@ -9,6 +9,9 @@ import Ham from './abis/HAM.json';
 import Chromium from './abis/Chromium.json';
 import { useState, useEffect } from 'react';
 import Swap from './components/swap';
+import Router from './components/Router/Router';
+import { Link } from 'react-router-dom';
+
 export default function NewApp() {
   const [account, setAccount] = useState(null);
   const [stateWeb3, setWeb3] = useState(null);
@@ -75,13 +78,10 @@ export default function NewApp() {
   }
   return (
     <div>
-      <Swap
-        balance={balance}
-        web3={stateWeb3}
-        token={sToken}
-        account={account}
-        allContracts={allContracts}
-      />
+      <Router>
+        <Link to="/">Bank</Link>
+        <Link to="/swap">Exchange</Link>
+      </Router>
     </div>
   );
 }
