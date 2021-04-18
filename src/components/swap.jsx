@@ -7,6 +7,7 @@ import Wood from '../abis/WoodToken.json';
 import Smit from '../abis/SmitCoin.json';
 import Slick from '../abis/Token.json';
 import './swap.css';
+import Container from './Container'
 import { useForm } from 'react-hook-form';
 import Chromium from '../abis/Chromium.json';
 import Web3 from 'web3';
@@ -41,9 +42,9 @@ function Swap(props) {
     console.log(x);
   }
   return (
-    <div className="swapwrapper mt-5">
-      <form onSubmit={handleSubmit(submit)}>
-        <div className="swapcard">
+    <Container>
+        <form onSubmit={handleSubmit(submit)}>
+
           <div className="cardtitle ml-4 mt-2 mb-3 mr-4">
             <h5>Swap</h5>
             <img alt="gear" src={Gear} />
@@ -88,19 +89,18 @@ function Swap(props) {
             </div>
             <div>
               <select {...register('coin2')}>
-                <option>ETH</option>
-                <option>CHC</option>
-                <option>Wood</option>
-                <option>Slick</option>
+                <option value="ETH">ETH</option>
+                <option value="CHC">CHC</option>
+                <option value="Wood">Wood</option>
+                <option value="Slick">Slick</option>
               </select>
             </div>
           </div>
           <div className="swapbtn">
             <input type="submit" />
           </div>
-        </div>
-      </form>
-    </div>
+          </form>
+          </Container>
   );
 }
 
