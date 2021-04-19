@@ -317,7 +317,7 @@ Setting Solidity Version:
 - Returns the total number of a particular token by checking the balance of the contract address.
 
 # The Lending System
-
+//
 ## Functions
 
 ### Multiply
