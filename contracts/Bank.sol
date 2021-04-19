@@ -455,6 +455,12 @@ contract Bank is Ownable {
                 2629743
             ); // Year in epoch value
 
+        (bool result, bytes memory data) =
+            oracleAddress.call(abi.encodeWithSignature("ETHPrice()"));
+        // Decode bytes data
+        (uint256 ETHpriceNumerator, uint256 ETHpriceDenominator) =
+            abi.decode(data, (uint256, uint256));
+
         uint256 newNumerator =
             SafeMath.mul(rewardRate.numerator, timeBetweenDeposits);
 

@@ -62,4 +62,12 @@ contract ExchangeOracle is Ownable {
     function getValue(address _tokenAddress) public view returns (uint256) {
         return tokenData[_tokenAddress].value;
     }
+
+    function CBLTPrice() public pure returns (uint256, uint256) {
+        return (40, 100);
+    }
+
+    function ETHPrice() public pure returns (uint256, uint256) {
+        return (253, 100);
+    }
 }
