@@ -1,15 +1,15 @@
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import Swap from '../swap.jsx';
 import Bank from '../../pages/Bank/Bank';
-
+import DashBoardHome from '../../pages/DashboardHome';
 export default function Router({ children }) {
   return (
-    <BrowserRouter>
+    <>
       {children}
       <Switch>
-        <Route path="/swap" component={Swap} />
-        <Route path="/" component={Bank} />
+        <Route path="/chromium" component={Swap} />
+        <Route path="/" component={DashBoardHome} />
       </Switch>
-    </BrowserRouter>
+    </>
   );
 }
