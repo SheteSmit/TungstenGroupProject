@@ -11,9 +11,15 @@ import { useState, useEffect } from 'react';
 import Swap from './components/swap';
 import Router from './components/Router/Router';
 import { Link } from 'react-router-dom';
-import CustomAppBar from './components/CustomAppBar';
+import CustomDrawer from './components/CustomDrawer';
 import { BrowserRouter, Switch, Route } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { ThemeProvider } from 'styled-components';
+import AppBar from './components/AppBar';
+
+const theme = {
+  grayText: '#6b7774',
+};
+
 export default function NewApp() {
   const [account, setAccount] = useState(null);
   const [stateWeb3, setWeb3] = useState(null);
@@ -27,7 +33,7 @@ export default function NewApp() {
     async function callData() {
       await loadBlockchainData();
     }
-    callData();
+    // callData();
   }, []);
   async function loadBlockchainData(dispatch) {
     if (typeof window.ethereum !== 'undefined') {
@@ -79,14 +85,15 @@ export default function NewApp() {
     }
   }
   return (
-    <BrowserRouter>
-      <div>
-        <CustomAppBar />
+    <ThemeProvider theme={theme}>
+      <BrowserRouter>
+        <AppBar />
+        <CustomDrawer />
         <div style={{ marginLeft: '240px' }}>
           <SRouter />
         </div>
-      </div>
-    </BrowserRouter>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 const SRouter = styled(Router)`
