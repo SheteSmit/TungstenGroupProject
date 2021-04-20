@@ -11,7 +11,9 @@ import { useState, useEffect } from 'react';
 import Swap from './components/swap';
 import Router from './components/Router/Router';
 import { Link } from 'react-router-dom';
-
+import CustomAppBar from './components/CustomAppBar';
+import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import styled from 'styled-components';
 export default function NewApp() {
   const [account, setAccount] = useState(null);
   const [stateWeb3, setWeb3] = useState(null);
@@ -77,14 +79,19 @@ export default function NewApp() {
     }
   }
   return (
-    <div>
-      <Router>
-        <Link to="/">Bank</Link>
-        <Link to="/swap">Exchange</Link>
-      </Router>
-    </div>
+    <BrowserRouter>
+      <div>
+        <CustomAppBar />
+        <div style={{ marginLeft: '240px' }}>
+          <SRouter />
+        </div>
+      </div>
+    </BrowserRouter>
   );
 }
+const SRouter = styled(Router)`
+  margin-right: 240px;
+`;
 
 async function getToken(str) {
   switch (str) {
