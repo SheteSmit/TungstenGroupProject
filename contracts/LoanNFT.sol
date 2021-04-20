@@ -18,20 +18,11 @@ Any failed loans
 
 Ask: Do we need to make info public when loan is missed? Isnt it better to just show the voters all the info upfront? What kind of info should we show at the start vs make public?
 */
+pragma solidity >=0.6.0 <0.8.0;
 
-pragma solidity ">=0.6.0 <0.8.0;
-
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-
-contract LoanNFT is ERC721 {
+contract LoanNFT {
 
 }
-
-// pragma solidity >=0.6.0 <0.8.0;
-
-// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-// import "@openzeppelin/contracts/utils/Counters.sol";
-// import "@openzeppelin/contracts/access/Ownable.sol";
 
 // contract LoanNFT is ERC721, Ownable {
 //     using Counters for Counters.Counter;

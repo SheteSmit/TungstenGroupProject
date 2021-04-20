@@ -300,10 +300,10 @@ contract Bank is Ownable {
         view
         returns (uint256 interest, uint256 principal)
     {
-        interest = multiply(
-            loanBook[msg.sender].remainingBalance,
-            loanBook[msg.sender].interestRate
-        );
+        // interest = multiply(
+        //     loanBook[msg.sender].remainingBalance,
+        //     loanBook[msg.sender].interestRate
+        // );
         require(amount >= interest);
         principal = amount - interest;
         return (interest, principal);
@@ -445,7 +445,7 @@ contract Bank is Ownable {
         uint256 ethBalance;
     }
 
-    function calculateReward() public view returns (uint256) {
+    function calculateReward() public returns (uint256) {
         uint256 timeBetweenDeposits =
             SafeMath.div(
                 SafeMath.sub(
