@@ -5,7 +5,7 @@ const Slick = artifacts.require("Token");
 const Ham = artifacts.require("HAM");
 const Bank = artifacts.require("Bank");
 const Oracle = artifacts.require("ExchangeOracle");
-const LoanNFT = artifacts.require("LoanNFT");
+const NFTLoan = artifacts.require("NFTLoan");
 const Chromium = artifacts.require("Chromium");
 
 module.exports = async function (deployer) {
@@ -28,7 +28,7 @@ module.exports = async function (deployer) {
   await deployer.deploy(Oracle);
   const oracle = await Oracle.deployed();
 
-  await deployer.deploy(LoanNFT);
+  await deployer.deploy(NFTLoan);
 
   await deployer.deploy(
     Bank,
