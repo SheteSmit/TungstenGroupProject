@@ -4,7 +4,6 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  MenuItem,
 } from '@material-ui/core';
 import {
   Home,
@@ -12,6 +11,9 @@ import {
   Work,
   Business,
   AccountBalance,
+  Description,
+  Collections,
+  EnhancedEncryption,
 } from '@material-ui/icons';
 import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
@@ -19,15 +21,22 @@ const SidebarItems = [
   { icon: <Home />, text: 'Dashboard', link: '' },
   { icon: <SwapHoriz />, text: 'Exchange', link: 'chromium' },
   { icon: <Work />, text: 'Catalyst', link: 'catalyst' },
-  { icon: <Business />, text: 'SCO', link: 'sco' },
-  { icon: <AccountBalance />, text: 'Lend and Borrow', link: 'lend' },
+  { icon: <Business />, text: 'CBLP', link: 'cblp' },
+  { icon: <AccountBalance />, text: 'Borrow', link: 'lend' },
+  { icon: <EnhancedEncryption />, text: 'Staking', link: 'staking' },
+  { icon: <Description />, text: 'Chronicles', link: 'chronicles' },
+  {
+    icon: <Collections />,
+    text: 'Cobalt Collections',
+    link: 'cobaltcollections',
+  },
 ];
 const StyledLink = styled(Link)`
   text-decoration: none !important;
   color: inherit;
 `;
 
-export default function CustomAppBar() {
+export default function CustomDrawer() {
   const location = useLocation();
   console.log(location.pathname.substr(1));
 
@@ -58,13 +67,12 @@ export default function CustomAppBar() {
   return (
     <>
       <StyledDrawer variant="permanent" anchor="left">
-        <img
+        {/* <img
           src="CobaltLogo.jpg"
           style={{ width: '50%', marginTop: '5%' }}
           alt="logo"
         />
-        <h2>Cobalt Lend</h2>
-        <StyledDivider />
+        <StyledDivider /> */}
         <StyledList> {Lists}</StyledList>
       </StyledDrawer>
     </>
@@ -72,23 +80,23 @@ export default function CustomAppBar() {
 }
 
 const StyledDrawer = styled(Drawer)`
-  width: 240px;
+  margin: 0;
   .MuiDrawer-paper {
+    margin-top: 5%;
     width: 240px !important;
     display: flex;
     flex-direction: column;
     align-items: center;
+    z-index: -1;
   }
-  margin-top: 10%;
 `;
 const StyledDivider = styled.hr`
   padding: 5px;
   align-self: stretch;
-  margin-left: 0;
-  margin-right: 0;
+  margin: 4% 0 4% 0;
 `;
 const StyledList = styled(List)`
   width: 80%;
-  margin: auto;
   border-radius: 10px;
+  margin: 0;
 `;
