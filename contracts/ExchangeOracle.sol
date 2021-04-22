@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "./Ownable.sol";
+import "./interfaces/Ownable.sol";
 
 contract ExchangeOracle is Ownable {
     address[] trackedTokens; // Stores all address of supported tokens
@@ -61,5 +61,13 @@ contract ExchangeOracle is Ownable {
 
     function getValue(address _tokenAddress) public view returns (uint256) {
         return tokenData[_tokenAddress].value;
+    }
+
+    function CBLTPrice() public pure returns (uint256, uint256) {
+        return (40, 100);
+    }
+
+    function ETHPrice() public pure returns (uint256, uint256) {
+        return (253, 100);
     }
 }
