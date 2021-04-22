@@ -47,8 +47,8 @@ library SafeMath {
 
     function multiply(
         uint256 x,
-        uint256 _numerator,
-        uint256 _denominator
+        uint256 _numerator, 
+        uint256 _denominator 
     ) internal pure returns (uint256) {
         return (x * _numerator) / _denominator;
     }
