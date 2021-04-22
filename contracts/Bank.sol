@@ -25,6 +25,7 @@ contract Bank is Ownable {
      *  and value of Loan struct with all loan information
      */
     mapping(address => Loan) loanBook;
+    mapping(uint256 => mapping(address => bool)) voteBook; // Signature key => mapping( voters => voted)
 
     constructor(
         address[] memory addresses,
@@ -52,8 +53,13 @@ contract Bank is Ownable {
         bool active;
         bool initialized;
         uint256 timeCreated;
-        bool[] votes;
-        address[] voters;
+        uint256 yes;
+        uint256 no;
+        uint256 totalVote;
+    }
+
+    struct Vote {
+        bool voted;
     }
 
     /**
@@ -257,6 +263,7 @@ contract Bank is Ownable {
             token.transferFrom(msg.sender, address(this), units * 12) == true,
             "Payment was not approved."
         );
+
         loanBook[msg.sender] = Loan(
             msg.sender,
             (block.timestamp + _paymentPeriod),
@@ -268,8 +275,9 @@ contract Bank is Ownable {
             false,
             true,
             block.timestamp,
-            new bool[](0),
-            new address[](0)
+            0,
+            0,
+            0
         );
 
         uint256 x = _minimumPayment * units;
@@ -438,25 +446,6 @@ contract Bank is Ownable {
 
     // **************************** Voting *******************************
 
-    // struct loan
-    // address borrower;
-    // uint256 dueDate;
-    // Rational interestRate;
-    // uint256 paymentPeriod;
-    // uint256 remainingBalance;
-    // uint256 minimumPayment;
-    // uint256 collateralPerPayment;
-    // uint256 timeCreated;
-    // address[] voters;
-    // uint public yes = 0;
-    // uint public no = 0;
-    // uint256 public totalVote = 0;
-    // mapping ( uint => voter) votingBook;
-
-    struct voters {
-        bool voted;
-    }
-
     enum State {Created, Voting, Ended}
     State public state;
 
@@ -471,7 +460,6 @@ contract Bank is Ownable {
      */
     function startVote() internal inState(State.Created) {
         state = State.Voting;
-        emit voteStarted();
     }
 
     /**
@@ -486,21 +474,20 @@ contract Bank is Ownable {
     {
         // bool found = false;
         require(
-            loanBook[_signature].voters[msg.sender].voted == false,
+            voteBook[_signature][msg.sender] == false,
             "You have already voted."
         );
 
-        loanBook[_signature].voters[msg.sender].voted = true;
+        voteBook[_signature][msg.sender] = true;
 
         if (_vote == true) {
-            loanBook[_signature].yes++;
+            loanBook[msg.sender].yes++;
         } else {
-            loanBook[_signature].no++;
+            loanBook[msg.sender].no++;
         }
-        loanBook[_signature].totalVote++;
+        loanBook[msg.sender].totalVote++;
 
-        emit voteDone(msg.sender);
-        return found;
+        return true;
     }
 
     /**
@@ -508,12 +495,11 @@ contract Bank is Ownable {
      *
      */
 
-    function endVote() internal inState(State.Voting) {
-        state = State.Ended;
-        finalResult = countResult;
-
-        emit voteEnded(finalResult);
-    }
+    // function endVote() internal inState(State.Voting) {
+    //     state = State.Ended;
+    //     finalResult = countResult;
+    //     emit voteEnded(finalResult);
+    // }
 
     // if voting is past 7 days then loan ends. Must be take take 21 votes
 
