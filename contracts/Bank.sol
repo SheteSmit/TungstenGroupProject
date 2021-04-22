@@ -52,10 +52,10 @@ contract Bank is Ownable {
         bool active;
         bool initialized;
         uint256 timeCreated;
-        uint public yes = 0;
-        uint public no = 0;
-        uint256 public totalVote = 0;
-        mapping ( uint => address) public vote;
+        uint yes;
+        uint no ;
+        uint256 totalVote;
+        mapping ( uint => address) vote;
     }
 
      
@@ -276,8 +276,10 @@ contract Bank is Ownable {
             false,
             true,
             block.timestamp,
-            new bool[](0),
-            new address[](0)
+
+        0, // yes
+        0,// no
+        0//totalvotes
         );
 
         uint256 x = _minimumPayment * units;
@@ -486,7 +488,7 @@ contract Bank is Ownable {
      */
     function startVote() internal inState(State.Created) {
         state = State.Voting;
-        emit voteStarted();
+        
     }
 
     /**
@@ -514,8 +516,8 @@ contract Bank is Ownable {
         }
         loanBook[_signature].totalVote++;
 
-        emit voteDone(msg.sender);
-        return found;
+
+     
     }
 
     /**
@@ -525,9 +527,7 @@ contract Bank is Ownable {
 
     function endVote() internal inState(State.Voting) {
         state = State.Ended;
-        finalResult = countResult;
-
-        emit voteEnded(finalResult);
+        
     }
 
     // if voting is past 7 days then loan ends. Must be take take 21 votes
