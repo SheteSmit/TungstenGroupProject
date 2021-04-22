@@ -52,9 +52,15 @@ contract Bank is Ownable {
         bool active;
         bool initialized;
         uint256 timeCreated;
-        bool[] votes;
-        address[] voters;
+        uint public yes = 0;
+        uint public no = 0;
+        uint256 public totalVote = 0;
+        mapping ( uint => address) public vote;
     }
+
+     
+
+
 
     /**
      * @dev Struct used to store decimal values
@@ -257,6 +263,8 @@ contract Bank is Ownable {
             token.transferFrom(msg.sender, address(this), units * 12) == true,
             "Payment was not approved."
         );
+
+
         loanBook[msg.sender] = Loan(
             msg.sender,
             (block.timestamp + _paymentPeriod),
@@ -278,6 +286,9 @@ contract Bank is Ownable {
             "minimumPayment * collateralPerPayment overflows"
         );
     }
+
+    /**
+    
 
     function tallyVotes() public {}
 
@@ -438,24 +449,28 @@ contract Bank is Ownable {
 
     // **************************** Voting *******************************
 
-    // struct loan
-    // address borrower;
-    // uint256 dueDate;
-    // Rational interestRate;
-    // uint256 paymentPeriod;
-    // uint256 remainingBalance;
-    // uint256 minimumPayment;
-    // uint256 collateralPerPayment;
-    // uint256 timeCreated;
-    // address[] voters;
-    // uint public yes = 0;
-    // uint public no = 0;
-    // uint256 public totalVote = 0;
-    // mapping ( uint => voter) votingBook;
+   
+
+
+
 
     struct voters {
         bool voted;
     }
+
+     /*
+     * @dev Created mapping for voting tiers
+     * created a struct for tiers for looping
+     *
+     */
+
+    mapping(uint => Tier) cobaltTiers;
+    struct Tier{
+        uint maxLoan;
+        uint numVoters;
+
+    }
+    
 
     enum State {Created, Voting, Ended}
     State public state;
