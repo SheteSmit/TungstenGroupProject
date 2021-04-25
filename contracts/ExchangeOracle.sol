@@ -4,7 +4,6 @@ pragma solidity >=0.4.22 <0.9.0;
 import "./interfaces/Ownable.sol";
 
 contract ExchangeOracle is Ownable {
-    address[] trackedTokens; // Stores all address of supported tokens
     mapping(address => Token) tokenData; // Token information accessed by token address
 
     // Struct saving token data
@@ -15,6 +14,7 @@ contract ExchangeOracle is Ownable {
         uint256 value;
         bool active;
     }
+
     // Events
     event deletedToken(address token);
 
@@ -24,6 +24,16 @@ contract ExchangeOracle is Ownable {
         string _img,
         uint256 _value
     );
+
+    constructor() {
+        tokenData[0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE] = Token(
+            "Ethereum",
+            "ETH",
+            "url",
+            40000000000000,
+            true
+        );
+    }
 
     function updateToken(
         address _tokenAddress,

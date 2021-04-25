@@ -614,6 +614,12 @@ contract Bank is Ownable {
     }
 }
 
+// 7 days
+// 3 missed payments back to back
+// 4 missed payment overall
+// 6 years 100k ++++
+// 2 years 100k ----
+
 // ************************************* CHANGES ************************************
 
 // mapping (uint id => Loan) loanBook;
