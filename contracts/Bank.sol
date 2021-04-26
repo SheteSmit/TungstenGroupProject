@@ -1,36 +1,59 @@
-// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./interfaces/Ownable.sol";
 import "./interfaces/IERC20.sol";
 import "./interfaces/SafeMath.sol";
-import "./Chromium.sol";
 import "./interfaces/UniversalERC20.sol";
+import "./Chromium.sol";
 
 contract Bank is Ownable {
     using UniversalERC20 for IERC20;
 
-    uint256 public rate = 10;
-    IERC20 token;
-
-    address chromiumAddress;
-
+    /**
+    * @dev modifier so that chromium can withdraw cblt form bank
+    */
     modifier onlyChromium() {
         require(msg.sender == chromiumAddress);
         _;
     }
     /**
+     * @dev storing CBLT token in ERC20 type
+     */
+    IERC20 token;
+
+    /**
+     * @dev CobaltLend oracle for scoring and CBLT price
+     */
+    address oracleAddress;
+
+    /**
+    * @dev chromium address for modifier
+    */
+    address chromiumAddress;
+
+    /**
+     * @dev reward rate ratio for staking
+     */
+    Rational rewardRate = Rational(1, 20);
+
+    /**
      * @dev mapping used to store all loan information with the key of borrower address
      *  and value of Loan struct with all loan information
      */
     mapping(address => Loan) loanBook;
+    mapping(uint256 => mapping(address => bool)) voteBook; // Signature key => mapping( voters => voted)
 
-    // constructor(address[] memory addresses, address _CBLT) {
-    //     for (uint256 i = 0; i < addresses.length; i++) {
-    //         tokensAllowed[addresses[i]] = true;
-    //     }
-    //     token = IERC20(_CBLT);
-    // }
+    constructor(
+        address[] memory addresses,
+        address _CBLT,
+        address _oracle
+    ) {
+        for (uint256 i = 0; i < addresses.length; i++) {
+            tokensAllowed[addresses[i]] = true;
+        }
+        oracleAddress = _oracle;
+        token = IERC20(_CBLT);
+    }
 
     /**
      * @dev Struct created so save all loan information
@@ -45,10 +68,18 @@ contract Bank is Ownable {
         uint256 collateralPerPayment;
         bool active;
         bool initialized;
+        uint256 timeCreated;
+        uint256 yes;
+        uint256 no;
+        uint256 totalVote;
+    }
+
+    struct Vote {
+        bool voted;
     }
 
     /**
-     * @dev Struct used to calculate interest rate
+     * @dev Struct used to store decimal values
      */
     struct Rational {
         uint256 numerator;
@@ -86,29 +117,29 @@ contract Bank is Ownable {
     mapping(address => uint256) public etherBalance;
 
     /**
-     * @dev sets the chromium address
+    * @dev sets the chromium address
     */
     function setChromium(address payable _chromium) onlyOwner public {
         chromiumAddress = _chromium;
     }
 
     /**
-     * @dev allows for chromium contract to see which tokens
-     * are allowed to be deposited into treasury
+    * @dev allows for chromium contract to see which tokens
+    * are allowed to be deposited into treasury
     */
-    function isTokenAllowed(address _token) external view returns (bool) {
+    function isTokenAllowed(address _token) public view returns (bool) {
         return tokensAllowed[_token];
     }
 
     /**
-     * @dev allows for CBLT Tokens to be withdrawn from treasury
-     * by chromium
+    * @dev allows for CBLT Tokens to be withdrawn from treasury
+    * by chromium
     */
     function withdrawCbltForExchange(IERC20 fromToken, IERC20 cbltToken, address to, uint amount, uint minReturn)
     onlyChromium
     payable
     public {
-        // require(amount <= totalTokenSupply(address(cbltToken)), "Not enough cblt tokens");
+        require(amount <= totalTokenSupply(address(cbltToken)), "Not enough cblt tokens");
         require(amount != 0, "withdraw amount cannot be equal to 0");
 
         fromToken.universalTransferFrom(msg.sender, address(this), amount);
@@ -146,7 +177,7 @@ contract Bank is Ownable {
         );
 
         require(
-            token.universalTransfer(msg.sender, _amount) == true,
+            token.transfer(msg.sender, _amount) == true,
             "Transfer not complete"
         );
         emit onTransfer(msg.sender, address(0), _amount);
@@ -155,7 +186,6 @@ contract Bank is Ownable {
     /**
      * @dev method to withdraw eth from account
      */
-
     function withdraw(uint256 _amount) external {
         require(_amount <= etherBalance[msg.sender]);
         require(_amount != 0, "Withdraw amount cannot be equal to 0");
@@ -260,7 +290,6 @@ contract Bank is Ownable {
     /**
      * @dev fallback function to receive any eth sent to this contract
      */
-
     receive() external payable {
         etherBalance[address(this)] = SafeMath.add(
             etherBalance[address(this)],
@@ -284,12 +313,14 @@ contract Bank is Ownable {
     ) public payable {
         // Needs user approve on transfer funds amount
         // token.approve(address(this), _minimumPayment);
+        // loanbook[msg.sender] -> loanbook[uint signature]
 
         require(loanBook[msg.sender].initialized == false);
         require(
             token.transferFrom(msg.sender, address(this), units * 12) == true,
             "Payment was not approved."
         );
+
         loanBook[msg.sender] = Loan(
             msg.sender,
             (block.timestamp + _paymentPeriod),
@@ -299,7 +330,11 @@ contract Bank is Ownable {
             _minimumPayment,
             units,
             false,
-            true
+            true,
+            block.timestamp,
+            0,
+            0,
+            0
         );
 
         uint256 x = _minimumPayment * units;
@@ -307,15 +342,15 @@ contract Bank is Ownable {
             x / units == _minimumPayment,
             "minimumPayment * collateralPerPayment overflows"
         );
-
-        msg.sender.transfer(principal);
     }
+
+    function tallyVotes() public {}
 
     /**
      * @dev Prevents overflows
      *
      */
-    function multiply(uint256 x, Rational memory r)
+    function multiplyDecimal(uint256 x, Rational memory r)
     internal
     pure
     returns (uint256)
@@ -332,10 +367,10 @@ contract Bank is Ownable {
     view
     returns (uint256 interest, uint256 principal)
     {
-        interest = multiply(
-            loanBook[msg.sender].remainingBalance,
-            loanBook[msg.sender].interestRate
-        );
+        // interest = multiply(
+        //     loanBook[msg.sender].remainingBalance,
+        //     loanBook[msg.sender].interestRate
+        // );
         require(amount >= interest);
         principal = amount - interest;
         return (interest, principal);
@@ -466,32 +501,204 @@ contract Bank is Ownable {
         delete loanBook[msg.sender];
     }
 
+    // **************************** Voting *******************************
+
+    enum State {Created, Voting, Ended}
+    State public state;
+
+    modifier inState(State _state) {
+        require(state == _state);
+        _;
+    }
+
+    /**
+     * @dev starts the voting process
+     *
+     */
+    function startVote() internal inState(State.Created) {
+        state = State.Voting;
+    }
+
+    /**
+     * @dev DOES the vote takes in the voter choice
+     *
+     */
+
+    function doVote(uint256 _signature, bool _vote)
+    public
+    inState(State.Voting)
+    returns (bool voted)
+    {
+        // bool found = false;
+        require(
+            voteBook[_signature][msg.sender] == false,
+            "You have already voted."
+        );
+
+        voteBook[_signature][msg.sender] = true;
+
+        if (_vote == true) {
+            loanBook[msg.sender].yes++;
+        } else {
+            loanBook[msg.sender].no++;
+        }
+        loanBook[msg.sender].totalVote++;
+
+        return true;
+    }
+
+    /**
+     * @dev Ends the voting
+     *
+     */
+
+    // function endVote() internal inState(State.Voting) {
+    //     state = State.Ended;
+    //     finalResult = countResult;
+    //     emit voteEnded(finalResult);
+    // }
+
+    // if voting is past 7 days then loan ends. Must be take take 21 votes
+
+    // **************************** Staking *******************************
+
     mapping(address => User) userBook;
 
     struct User {
-        uint256 depositedTime;
-        uint256 interestBalance;
+        uint256 timeBalanceChanged;
+        uint256 firstDepositTime;
+        uint256 rewardWallet;
         uint256 ethBalance;
+    }
+
+    function calculateReward() public returns (uint256) {
+        uint256 timeBetweenDeposits =
+        SafeMath.div(
+            SafeMath.sub(
+                block.timestamp, // Current time
+                userBook[msg.sender].timeBalanceChanged // Time of last deposit
+            ),
+            2629743
+        ); // Year in epoch value
+
+        (bool result, bytes memory data) =
+        oracleAddress.call(abi.encodeWithSignature("ETHPrice()"));
+        // Decode bytes data
+        (uint256 ETHpriceNumerator, uint256 ETHpriceDenominator) =
+        abi.decode(data, (uint256, uint256));
+
+        uint256 newNumerator =
+        SafeMath.mul(rewardRate.numerator, timeBetweenDeposits);
+
+        // Calculate the amount Staked
+        uint256 stakingReward =
+        SafeMath.multiply(
+            userBook[msg.sender].ethBalance,
+            newNumerator,
+            rewardRate.denominator
+        );
+
+        return stakingReward;
     }
 
     function depositEth() public payable {
         require(msg.value >= 1e16, "Error, deposit must be >= 0.01 ETH");
 
-        // calculate interest gained up to this point
-        uint256 interestSaved =
-        SafeMath.div(SafeMath.mul(userBook[msg.sender].ethBalance, 1), 20);
+        // Calculates staking reward
+        uint256 stakingReward = calculateReward();
 
-        (userBook[msg.sender].depositedTime / block.timestamp);
-
-        // save the token interest inside the struct
-        userBook[msg.sender].interestBalance = SafeMath.add(
-            userBook[msg.sender].interestBalance,
-            interestSaved
+        // Save reward in wallet
+        userBook[msg.sender].rewardWallet = SafeMath.add(
+            userBook[msg.sender].rewardWallet,
+            stakingReward
         );
-        // reset depositedTime
-        userBook[msg.sender].depositedTime = block.timestamp;
+        // Save new eth deposit
+        userBook[msg.sender].ethBalance = SafeMath.add(
+            userBook[msg.sender].ethBalance,
+            msg.value
+        );
+        // Change the latest time of deposit
+        userBook[msg.sender].timeBalanceChanged = block.timestamp;
+
+        emit onReceived(msg.sender, msg.value);
+    }
+
+    function withdrawEth(uint256 _amount) public {
+        // Calulate how many days since first staked
+        uint256 daysAfterDeposit =
+        SafeMath.div(
+            SafeMath.sub(
+                block.timestamp,
+                userBook[msg.sender].firstDepositTime
+            ),
+            86400
+        );
+        // Make sure user
+        require(daysAfterDeposit >= 30, "Wait 30 days to withdraw");
+        // Calculate staking reward
+        uint256 stakingReward = calculateReward();
+
+        // Save reward in wallet
+        userBook[msg.sender].rewardWallet = SafeMath.add(
+            userBook[msg.sender].rewardWallet,
+            stakingReward
+        );
+
+        // Substract eth from user account
+        userBook[msg.sender].ethBalance = SafeMath.sub(
+            userBook[msg.sender].ethBalance,
+            _amount
+        );
+        // Change the latest time of deposit
+        userBook[msg.sender].timeBalanceChanged = block.timestamp;
+
+        payable(msg.sender).transfer(_amount);
+    }
+
+    function withdrawStaking() public payable {
+        require(
+            userBook[msg.sender].rewardWallet >= 50,
+            "Reward wallet does not have 50$"
+        );
+    }
+
+    function changeAPR(uint256 _numerator, uint256 _denominator)
+    public
+    onlyOwner
+    {
+        rewardRate.numerator = _numerator;
+        rewardRate.denominator = _denominator;
     }
 }
+
+// 7 days
+// 3 missed payments back to back
+// 4 missed payment overall
+// 6 years 100k ++++
+// 2 years 100k ----
+
+// ************************************* CHANGES ************************************
+
+// mapping (uint id => Loan) loanBook;
+// signature NFT
+
+// loanBook[id]
+// loanBook[id].signature // NFT
+
+// function borrow() {
+//     require(loanBook[id].signature == NFT.value)
+// }
+
+// ******************************** INCENTIVE SYSTEM *******************************
+
+// tier 1 - Loan  50k - Max voters 100 - 5 per head
+//        - msg.sender CBLTs > 300$ worth of ETH
+// tier 2 - Loan 100k - Max voters 150 - 7.5 per head
+//        - msg.sender CBLTs > 200
+// tier 3 - Loan 200k - Max voters 200 - 10 per head
+//        - msg.sender CBLTs > 400
+
+// ************************************** TODOS ************************************
 
 // Starting period, 12-24 months
 // Collateral paid on loan application
@@ -499,3 +706,17 @@ contract Bank is Ownable {
 // Create a new function to check if loan is ready to loan
 // Array of all voters
 // Save interest amount on loan to an specific
+
+// Calling oracle from ABI
+
+// (bool result, bytes memory data) =
+//             oracleAddress.call(
+//                 abi.encodeWithSignature(
+//                     "priceOfPair(address,address)",
+//                     _sellToken,
+//                     _buyToken
+//                 )
+//             );
+//         // Decode bytes data
+//         (uint256 sellTokenValue, uint256 buyTokenValue) =
+//             abi.decode(data, (uint256, uint256));
