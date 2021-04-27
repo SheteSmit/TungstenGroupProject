@@ -506,6 +506,7 @@ contract Bank is Ownable {
     // **************************** Staking *******************************
 
     mapping(address => User) userBook;
+    uint256 CBLTReserve = 100000;
 
     struct User {
         uint256 timeBalanceChanged;
@@ -514,7 +515,7 @@ contract Bank is Ownable {
         uint256 ethBalance;
     }
 
-    function calculateReward() public returns (uint256) {
+    function calculateReward() public view returns (uint256) {
         uint256 timeBetweenDeposits =
             SafeMath.div(
                 SafeMath.sub(
@@ -546,7 +547,7 @@ contract Bank is Ownable {
 
     function depositEth() public payable {
         require(msg.value >= 1e16, "Error, deposit must be >= 0.01 ETH");
-
+        require(msg.value >= CBLTReserve, "Treasury is currently depleted");
         // Calculates staking reward
         uint256 stakingReward = calculateReward();
 
@@ -612,6 +613,12 @@ contract Bank is Ownable {
         rewardRate.numerator = _numerator;
         rewardRate.denominator = _denominator;
     }
+    // Cobalt tokens saved on amount staked
+    // Wallet only updated when user deposits or withdraws
+    // Fixed period loans
+    // Functions check the current balance the treasury has avaliable to stake
+    // Tier system in place
+    // Function to recalculate amount of cblt tokens reserved based on amount staked
 }
 
 // 7 days
