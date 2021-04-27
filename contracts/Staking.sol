@@ -113,3 +113,10 @@
 //         rewardRate.denominator = _denominator;
 //     }
 // }
+
+// Cobalt tokens saved on amount staked 
+// Wallet only updated when user deposits or withdraws 
+// Fixed period loans
+// Functions check the current balance the treasury has avaliable to stake
+// Tier system in place
+// Function to recalculate amount of cblt tokens reserved based on amount staked 
