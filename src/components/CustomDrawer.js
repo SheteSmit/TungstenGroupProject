@@ -17,6 +17,7 @@ import {
 } from '@material-ui/icons';
 import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
+
 const SidebarItems = [
   { icon: <Home />, text: 'Dashboard', link: '' },
   { icon: <SwapHoriz />, text: 'Exchange', link: 'chromium' },
@@ -25,16 +26,15 @@ const SidebarItems = [
   { icon: <AccountBalance />, text: 'Borrow', link: 'lend' },
   { icon: <EnhancedEncryption />, text: 'Staking', link: 'staking' },
   { icon: <Description />, text: 'Chronicles', link: 'chronicles' },
-  {
-    icon: <Collections />,
-    text: 'Cobalt Collections',
-    link: 'cobaltcollections',
-  },
+  { icon: <Collections />, text: 'Cobalt Collections', link: 'cobaltcollections' },
 ];
 const StyledLink = styled(Link)`
   text-decoration: none !important;
   color: inherit;
 `;
+function ListItemLink(props) {
+  return <ListItem button component="a" {...props} />;
+}
 
 export default function CustomDrawer() {
   const location = useLocation();
@@ -58,7 +58,11 @@ export default function CustomDrawer() {
             }}>
             {item.icon}
           </ListItemIcon>
-          <ListItemText primary={item.text} />
+          <ListItemLink href={item.link}>
+
+            <ListItemText primary={item.text} />
+          </ListItemLink>
+
         </ListItem>
       </StyledLink>
     );
@@ -71,8 +75,8 @@ export default function CustomDrawer() {
           src="CobaltLogo.jpg"
           style={{ width: '50%', marginTop: '5%' }}
           alt="logo"
-        />
-        <StyledDivider /> */}
+        /> */}
+        <StyledDivider />
         <StyledList> {Lists}</StyledList>
       </StyledDrawer>
     </>
