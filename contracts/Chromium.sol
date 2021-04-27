@@ -119,8 +119,8 @@ contract Chromium is Ownable{
 
         fromToken.universalApprove(address(treasury), amount);
         treasury.withdrawCbltForExchange{value: msg.value}(
-            destToken,
             fromToken,
+            destToken,
             msg.sender,
             amount,
             minReturn
