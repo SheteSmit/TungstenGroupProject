@@ -25,6 +25,7 @@ contract Bank is Ownable {
      *  and value of Loan struct with all loan information
      */
     mapping(address => Loan) loanBook;
+    mapping(uint256 => mapping(address => bool)) voteBook; // Signature key => mapping( voters => voted)
 
     constructor(
         address[] memory addresses,
@@ -52,10 +53,13 @@ contract Bank is Ownable {
         bool active;
         bool initialized;
         uint256 timeCreated;
-        uint yes;
-        uint no ;
+        uint256 yes;
+        uint256 no;
         uint256 totalVote;
-        mapping ( uint => address) vote;
+    }
+
+    struct Vote {
+        bool voted;
     }
 
      
@@ -264,7 +268,6 @@ contract Bank is Ownable {
             "Payment was not approved."
         );
 
-
         loanBook[msg.sender] = Loan(
             msg.sender,
             (block.timestamp + _paymentPeriod),
@@ -276,10 +279,9 @@ contract Bank is Ownable {
             false,
             true,
             block.timestamp,
-
-        0, // yes
-        0,// no
-        0//totalvotes
+            0,
+            0,
+            0
         );
 
         uint256 x = _minimumPayment * units;
@@ -434,6 +436,7 @@ contract Bank is Ownable {
      * The simplest way to handle that is to allow excess tokens to be claimed when the remainingBalance is zero:
      *
      */
+
     function returnCollateral() public {
         require(loanBook[msg.sender].remainingBalance == 0);
 
@@ -451,29 +454,6 @@ contract Bank is Ownable {
 
     // **************************** Voting *******************************
 
-   
-
-
-
-
-    struct voters {
-        bool voted;
-    }
-
-     /*
-     * @dev Created mapping for voting tiers
-     * created a struct for tiers for looping
-     *
-     */
-
-    mapping(uint => Tier) cobaltTiers;
-    struct Tier{
-        uint maxLoan;
-        uint numVoters;
-
-    }
-    
-
     enum State {Created, Voting, Ended}
     State public state;
 
@@ -482,13 +462,71 @@ contract Bank is Ownable {
         _;
     }
 
+
+    /**
+     * @dev creating function the right to vote 
+     * if a person holds a certain amount of CBLT
+     * they can for tier 1
+     *
+     */
+     function rightToVoteTiers(address borrower) public{
+
+         
+         //Creating tier 1 to allow the person to vote
+         require(
+             tokenOwnerBalance[_tokenAddress][msg.sender] > 100 
+             && tokenOwnerBalance[_tokenAddress][msg.sender] < 10000))
+             {
+
+             }
+
+             //Creating tier 2 to allow the person to vote
+         require(
+             tokenOwnerBalance[_tokenAddress][msg.sender] > 100001 
+             && tokenOwnerBalance[_tokenAddress][msg.sender] < 50000))
+             {
+
+             }
+             //Creating tier 3 to allow the person to vote
+         require(
+             tokenOwnerBalance[_tokenAddress][msg.sender] > 50001 
+             && tokenOwnerBalance[_tokenAddress][msg.sender] < 100000))
+             {
+
+             }
+
+             //Creating tier 4 to allow the person to vote
+         require(
+             tokenOwnerBalance[_tokenAddress][msg.sender] > 100 
+             && tokenOwnerBalance[_tokenAddress][msg.sender] < 100000))
+             {
+
+             }
+
+             //Creating tier 5 to allow the person to vote
+         require(
+             tokenOwnerBalance[_tokenAddress][msg.sender] > 100 
+             && tokenOwnerBalance[_tokenAddress][msg.sender] < 100000))
+             {
+
+             }
+           
+               
+     }
+
+
+     /**
+     * @dev Creating vote limiter for each loan
+     *
+     */
+     function voteLimiter(address borrower)
+
     /**
      * @dev starts the voting process
      *
      */
     function startVote() internal inState(State.Created) {
         state = State.Voting;
-        
     }
 
     /**
@@ -503,21 +541,20 @@ contract Bank is Ownable {
     {
         // bool found = false;
         require(
-            loanBook[_signature].voters[msg.sender].voted == false,
+            voteBook[_signature][msg.sender] == false,
             "You have already voted."
         );
 
-        loanBook[_signature].voters[msg.sender].voted = true;
+        voteBook[_signature][msg.sender] = true;
 
         if (_vote == true) {
-            loanBook[_signature].yes++;
+            loanBook[msg.sender].yes++;
         } else {
-            loanBook[_signature].no++;
+            loanBook[msg.sender].no++;
         }
-        loanBook[_signature].totalVote++;
+        loanBook[msg.sender].totalVote++;
 
-
-     
+        return true;
     }
 
     /**
@@ -525,10 +562,11 @@ contract Bank is Ownable {
      *
      */
 
-    function endVote() internal inState(State.Voting) {
-        state = State.Ended;
-        
-    }
+    // function endVote() internal inState(State.Voting) {
+    //     state = State.Ended;
+    //     finalResult = countResult;
+    //     emit voteEnded(finalResult);
+    // }
 
     // if voting is past 7 days then loan ends. Must be take take 21 votes
 

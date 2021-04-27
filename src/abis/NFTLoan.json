@@ -1,0 +1,328 @@
+{
+  "contractName": "NFTLoan",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/christianroque/Desktop/solidity-playground/contracts/NFTLoan.sol\":\"NFTLoan\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/christianroque/Desktop/solidity-playground/contracts/NFTLoan.sol\":{\"keccak256\":\"0x8a8ba655b65d6c1c19ddcfd640227455edd4ccdbd62776cef20bf09a49a39591\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://647fd9c386fc17d0b96d4c76d3139357e413148a1461018ca7f32781490549df\",\"dweb:/ipfs/QmX11wYpCcNC3AbA3xok3BTnVkXVb5G8RLKzNxGaQSjZah\"]}},\"version\":1}",
+  "bytecode": "0x60806040526040518060400160405280600781526020017f4e46544c6f616e000000000000000000000000000000000000000000000000008152506000908051906020019061004f9291906100ae565b506040518060400160405280600781526020017f4e46544c4f414e000000000000000000000000000000000000000000000000008152506001908051906020019061009b9291906100ae565b503480156100a857600080fd5b50610159565b828054600181600116156101000203166002900490600052602060002090601f0160209004810192826100e4576000855561012b565b82601f106100fd57805160ff191683800117855561012b565b8280016001018555821561012b579182015b8281111561012a57825182559160200191906001019061010f565b5b509050610138919061013c565b5090565b5b8082111561015557600081600090555060010161013d565b5090565b6102b3806101686000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c806306fdde031461003b57806395d89b41146100be575b600080fd5b610043610141565b6040518080602001828103825283818151815260200191508051906020019080838360005b83811015610083578082015181840152602081019050610068565b50505050905090810190601f1680156100b05780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6100c66101df565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156101065780820151818401526020810190506100eb565b50505050905090810190601f1680156101335780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101d75780601f106101ac576101008083540402835291602001916101d7565b820191906000526020600020905b8154815290600101906020018083116101ba57829003601f168201915b505050505081565b60018054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156102755780601f1061024a57610100808354040283529160200191610275565b820191906000526020600020905b81548152906001019060200180831161025857829003601f168201915b50505050508156fea2646970667358221220487aba832e316defa8a4e048ea728423c299b220ae319ea3cec94035e3729fc464736f6c63430007060033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c806306fdde031461003b57806395d89b41146100be575b600080fd5b610043610141565b6040518080602001828103825283818151815260200191508051906020019080838360005b83811015610083578082015181840152602081019050610068565b50505050905090810190601f1680156100b05780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b6100c66101df565b6040518080602001828103825283818151815260200191508051906020019080838360005b838110156101065780820151818401526020810190506100eb565b50505050905090810190601f1680156101335780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b60008054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156101d75780601f106101ac576101008083540402835291602001916101d7565b820191906000526020600020905b8154815290600101906020018083116101ba57829003601f168201915b505050505081565b60018054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156102755780601f1061024a57610100808354040283529160200191610275565b820191906000526020600020905b81548152906001019060200180831161025857829003601f168201915b50505050508156fea2646970667358221220487aba832e316defa8a4e048ea728423c299b220ae319ea3cec94035e3729fc464736f6c63430007060033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "516:94:4:-:0;;;539:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;575:32;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;516:94;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;:::o;:::-;;;;;;;;;;;;;;;;;;;;;:::o;:::-;;;;;;;",
+  "deployedSourceMap": "516:94:4:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;539:30;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;575:32;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;539:30;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o;575:32::-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::o",
+  "source": "// SPDX-License-Identifier: MIT\n\n/*\nname\nsymbol\nRisk Factor\n# of Collateral\nPast & Current Loans:\nLoan Amount\nAmount Remaining\nInterest Rate\nPayment Details\nTime Period on Payments\nType of currency\nUSD Value\nTotal number of payments/loans\nTotal Interest\n# of Voters - Payout Amount\nAny failed loans\n\nAsk: Do we need to make info public when loan is missed? Isnt it better to just show the voters all the info upfront? What kind of info should we show at the start vs make public?\n*/\npragma solidity >=0.6.0 <0.8.0;\n\ncontract NFTLoan {\n    string public name = \"NFTLoan\";\n    string public symbol = \"NFTLOAN\";\n}\n",
+  "sourcePath": "/Users/christianroque/Desktop/solidity-playground/contracts/NFTLoan.sol",
+  "ast": {
+    "absolutePath": "/Users/christianroque/Desktop/solidity-playground/contracts/NFTLoan.sol",
+    "exportedSymbols": {
+      "NFTLoan": [
+        2306
+      ]
+    },
+    "id": 2307,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 2299,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.6",
+          ".0",
+          "<",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "483:31:4"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 2306,
+        "linearizedBaseContracts": [
+          2306
+        ],
+        "name": "NFTLoan",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "functionSelector": "06fdde03",
+            "id": 2302,
+            "mutability": "mutable",
+            "name": "name",
+            "nodeType": "VariableDeclaration",
+            "scope": 2306,
+            "src": "539:30:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 2300,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "539:6:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": {
+              "hexValue": "4e46544c6f616e",
+              "id": 2301,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "string",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "560:9:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_stringliteral_30d2eac75deadcebce779ca5e0bb74bbe2401c7ae9445d24268bc7f420254c45",
+                "typeString": "literal_string \"NFTLoan\""
+              },
+              "value": "NFTLoan"
+            },
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "functionSelector": "95d89b41",
+            "id": 2305,
+            "mutability": "mutable",
+            "name": "symbol",
+            "nodeType": "VariableDeclaration",
+            "scope": 2306,
+            "src": "575:32:4",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 2303,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "575:6:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": {
+              "hexValue": "4e46544c4f414e",
+              "id": 2304,
+              "isConstant": false,
+              "isLValue": false,
+              "isPure": true,
+              "kind": "string",
+              "lValueRequested": false,
+              "nodeType": "Literal",
+              "src": "598:9:4",
+              "typeDescriptions": {
+                "typeIdentifier": "t_stringliteral_99d805e5885ab873738e0a486c501ebdb6fb833118a3d3568d650c741d78951a",
+                "typeString": "literal_string \"NFTLOAN\""
+              },
+              "value": "NFTLOAN"
+            },
+            "visibility": "public"
+          }
+        ],
+        "scope": 2307,
+        "src": "516:94:4"
+      }
+    ],
+    "src": "483:128:4"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/Users/christianroque/Desktop/solidity-playground/contracts/NFTLoan.sol",
+      "exportedSymbols": {
+        "NFTLoan": [
+          2306
+        ]
+      },
+      "license": "MIT"
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            ">=",
+            "0.6",
+            ".0",
+            "<",
+            "0.8",
+            ".0"
+          ]
+        },
+        "id": 2299,
+        "name": "PragmaDirective",
+        "src": "483:31:4"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            2306
+          ],
+          "name": "NFTLoan",
+          "scope": 2307
+        },
+        "children": [
+          {
+            "attributes": {
+              "constant": false,
+              "functionSelector": "06fdde03",
+              "mutability": "mutable",
+              "name": "name",
+              "scope": 2306,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "string",
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "name": "string",
+                  "type": "string"
+                },
+                "id": 2300,
+                "name": "ElementaryTypeName",
+                "src": "539:6:4"
+              },
+              {
+                "attributes": {
+                  "hexvalue": "4e46544c6f616e",
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "lValueRequested": false,
+                  "token": "string",
+                  "type": "literal_string \"NFTLoan\"",
+                  "value": "NFTLoan"
+                },
+                "id": 2301,
+                "name": "Literal",
+                "src": "560:9:4"
+              }
+            ],
+            "id": 2302,
+            "name": "VariableDeclaration",
+            "src": "539:30:4"
+          },
+          {
+            "attributes": {
+              "constant": false,
+              "functionSelector": "95d89b41",
+              "mutability": "mutable",
+              "name": "symbol",
+              "scope": 2306,
+              "stateVariable": true,
+              "storageLocation": "default",
+              "type": "string",
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "name": "string",
+                  "type": "string"
+                },
+                "id": 2303,
+                "name": "ElementaryTypeName",
+                "src": "575:6:4"
+              },
+              {
+                "attributes": {
+                  "hexvalue": "4e46544c4f414e",
+                  "isConstant": false,
+                  "isLValue": false,
+                  "isPure": true,
+                  "lValueRequested": false,
+                  "token": "string",
+                  "type": "literal_string \"NFTLOAN\"",
+                  "value": "NFTLOAN"
+                },
+                "id": 2304,
+                "name": "Literal",
+                "src": "598:9:4"
+              }
+            ],
+            "id": 2305,
+            "name": "VariableDeclaration",
+            "src": "575:32:4"
+          }
+        ],
+        "id": 2306,
+        "name": "ContractDefinition",
+        "src": "516:94:4"
+      }
+    ],
+    "id": 2307,
+    "name": "SourceUnit",
+    "src": "483:128:4"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.7.6+commit.7338295f.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2021-04-22T15:21:54.513Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
