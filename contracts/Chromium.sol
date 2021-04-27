@@ -112,7 +112,7 @@ contract Chromium is Ownable{
     payable
     {
         require(_checkTokensAllowed(fromToken, destToken));
-        // require(treasury.totalTokenSupply(address(destToken)) >= minReturn, "Not enough tokens in Treasury.");
+        require(treasury.totalTokenSupply(address(destToken)) >= minReturn, "Not enough tokens in Treasury.");
 
         fromToken.universalTransferFromSenderToThis(amount);
         liquidityAmount[fromToken] = amount;
