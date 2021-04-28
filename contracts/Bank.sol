@@ -469,48 +469,35 @@ contract Bank is Ownable {
      * they can for tier 1
      *
      */
-     function rightToVoteTiers(address borrower) public{
+     function rightToVoteTiers(address borrowerAddress) public{
 
          
          //Creating tier 1 to allow the person to vote
          require(
-             tokenOwnerBalance[_tokenAddress][msg.sender] > 100 
-             && tokenOwnerBalance[_tokenAddress][msg.sender] < 10000))
-             {
-
-             }
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 10000, "Person can particpate in tier 1 voting");
 
              //Creating tier 2 to allow the person to vote
          require(
-             tokenOwnerBalance[_tokenAddress][msg.sender] > 100001 
-             && tokenOwnerBalance[_tokenAddress][msg.sender] < 50000))
-             {
-
-             }
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 100001 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 50000,"Person can particpate in tier 2 voting");
+            
              //Creating tier 3 to allow the person to vote
          require(
-             tokenOwnerBalance[_tokenAddress][msg.sender] > 50001 
-             && tokenOwnerBalance[_tokenAddress][msg.sender] < 100000))
-             {
-
-             }
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 50001 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000,"Person can particpate in tier 3 voting");
+            
 
              //Creating tier 4 to allow the person to vote
          require(
-             tokenOwnerBalance[_tokenAddress][msg.sender] > 100 
-             && tokenOwnerBalance[_tokenAddress][msg.sender] < 100000))
-             {
-
-             }
-
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000,"Person can particpate in tier 4 voting");
+           
              //Creating tier 5 to allow the person to vote
          require(
-             tokenOwnerBalance[_tokenAddress][msg.sender] > 100 
-             && tokenOwnerBalance[_tokenAddress][msg.sender] < 100000))
-             {
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000 , "Person can particpate in tier 5 voting");
 
-             }
-           
                
      }
 
@@ -519,7 +506,10 @@ contract Bank is Ownable {
      * @dev Creating vote limiter for each loan
      *
      */
-     function voteLimiter(address borrower)
+     function LoanVoterLimiter(address borrower) public
+     {
+
+     }
 
     /**
      * @dev starts the voting process
