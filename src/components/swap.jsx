@@ -7,7 +7,6 @@ import Wood from '../abis/WoodToken.json';
 import Smit from '../abis/SmitCoin.json';
 import Slick from '../abis/Token.json';
 import './swap.css';
-import Container from './Container'
 import { useForm } from 'react-hook-form';
 import Chromium from '../abis/Chromium.json';
 import Web3 from 'web3';
@@ -37,58 +36,37 @@ function Swap(props) {
         10,
         0
       )
-      .send({from: props.account})
+      .send({ from: props.account })
       .then((x) => console.log(x));
     console.log(x);
   }
   return (
-    <Container>
-        <form onSubmit={handleSubmit(submit)}>
+    <>
+      <form onSubmit={handleSubmit(submit)}>
 
-          <div className="cardtitle ml-4 mt-2 mb-3 mr-4">
-            <h5>Swap</h5>
-            <img alt="gear" src={Gear} />
+        <div className="cardtitle ml-4 mt-2 mb-3 mr-4">
+          <h5>Swap</h5>
+          <img alt="gear" src={Gear} />
+        </div>
+        <div className="swapfrom  ml-4 mr-4">
+          <div className="m-atuo">
+            <p>From</p>
+            <input
+              className="form-input"
+              type="number"
+              placeholder="0.0"
+              {...register('amount')}
+            />
           </div>
-          <div className="swapfrom  ml-4 mr-4">
-            <div className="m-atuo">
-              <p>From</p>
-              <input
-                className="form-input"
-                type="number"
-                placeholder="0.0"
-                {...register('amount')}
-              />
-            </div>
-            <div>
-              <div className="balancediv pb-2">
-                <p>Balance</p>
-                <div className="form-input balance pl-2 ">
-                  {(props.balance / 1000000000000000000).toString()}
-                </div>
-              </div>
-              <div style={{ display: 'flex' }}>
-                <select {...register('coin1')}>
-                  <option value="ETH">ETH</option>
-                  <option value="CHC">CHC</option>
-                  <option value="Wood">Wood</option>
-                  <option value="Slick">Slick</option>
-                </select>
+          <div>
+            <div className="balancediv pb-2">
+              <p>Balance</p>
+              <div className="form-input balance pl-2 ">
+                {(props.balance / 1000000000000000000).toString()}
               </div>
             </div>
-          </div>
-
-          <img className="downarrow" src={Arrow} alt="arrow" />
-          <div className="swapto ml-4 mr-4">
-            <div>
-              <p>To</p>
-              <input
-                disabled
-                className="form-input"
-                type="number"
-                placeholder="0.0"></input>
-            </div>
-            <div>
-              <select {...register('coin2')}>
+            <div style={{ display: 'flex' }}>
+              <select {...register('coin1')}>
                 <option value="ETH">ETH</option>
                 <option value="CHC">CHC</option>
                 <option value="Wood">Wood</option>
@@ -96,11 +74,32 @@ function Swap(props) {
               </select>
             </div>
           </div>
-          <div className="swapbtn">
-            <input type="submit" />
+        </div>
+
+        <img className="downarrow" src={Arrow} alt="arrow" />
+        <div className="swapto ml-4 mr-4">
+          <div>
+            <p>To</p>
+            <input
+              disabled
+              className="form-input"
+              type="number"
+              placeholder="0.0"></input>
           </div>
-          </form>
-          </Container>
+          <div>
+            <select {...register('coin2')}>
+              <option value="ETH">ETH</option>
+              <option value="CHC">CHC</option>
+              <option value="Wood">Wood</option>
+              <option value="Slick">Slick</option>
+            </select>
+          </div>
+        </div>
+        <div className="swapbtn">
+          <input type="submit" />
+        </div>
+      </form>
+    </>
   );
 }
 

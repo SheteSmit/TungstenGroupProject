@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 import { SpaceAroundRow } from '../components/styled/Dashboard';
 import { Card, Avatar } from '@material-ui/core';
@@ -7,6 +9,7 @@ import {
   QueryBuilder,
   ThumbUp,
 } from '@material-ui/icons';
+
 
 const BalanceArr = [
   {
@@ -36,6 +39,33 @@ const BalanceArr = [
 ];
 
 export default function DashBoardHome() {
+
+  const [cryptos, setCryptoList] = useState([]);
+  const [crypto, setCrypto] = useState('');
+
+  const formatter = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const getCrypto = async () => {
+    const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
+    try {
+      const res = await axios.get(url)
+      setCryptoList(res.data)
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  useEffect(() => {
+    getCrypto()
+  }, [])
+
+  function handleChange(event) {
+    setCrypto(event.target.value);
+    console.log(crypto)
+  }
+
   return (
     <Container>
       <SpaceAroundRow>
@@ -43,6 +73,7 @@ export default function DashBoardHome() {
           return <SmallCard {...item} />;
         })}
       </SpaceAroundRow>
+
       <CobaltContainer>
         <CobaltCard elevation={3}>
           <img
@@ -50,6 +81,24 @@ export default function DashBoardHome() {
             style={{ width: '50%', padding: '5%' }}
             alt="cobalt logo"
           />
+          <form>
+            <label>
+              Please add token to your wallet
+              <select onChange={handleChange}>
+                <option>
+                  Please add token to your wallet
+                </option>
+                {cryptos.map(crypto => {
+                  return (<>
+                    <option key={crypto.name} value={crypto.name}>
+                      <img src={crypto.image} alt={crypto.name} width="40px" />
+                      {crypto.name}
+                    </option>
+                  </>)
+                })}
+              </select>
+            </label>
+          </form>
           <h3>CBLT</h3>
           <p>Current Price</p>
           <SpaceAroundRow style={{ width: '100%' }}>

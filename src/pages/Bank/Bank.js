@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import Container from '../../components/Container';
 import { useForm } from 'react-hook-form';
 import { Button, TextField } from '@material-ui/core';
 export default function Bank() {
@@ -17,7 +16,7 @@ export default function Bank() {
     }
   }
   return (
-    <Container>
+    <>
       <form onSubmit={handleSubmit(submit)}>
         <SpaceAroundRow>
           <Button variant="outlined">Scoring Token</Button>
@@ -87,7 +86,7 @@ export default function Bank() {
           <option value="deposit">Deposit</option>
         </select>
       </form>
-    </Container>
+    </>
   );
 }
 
