@@ -47,9 +47,21 @@ library SafeMath {
 
     function multiply(
         uint256 x,
-        uint256 _numerator, 
-        uint256 _denominator 
+        uint256 _numerator,
+        uint256 _denominator
     ) internal pure returns (uint256) {
         return (x * _numerator) / _denominator;
+    }
+
+    /**
+     * @dev this function will find the rate for the exchange. it will
+     * multiply the amount by a factor of 3 so that we can get three decimals
+     * on the front end, the return will need to be divided by 1000 to get the actual
+     * number
+    */
+    function findRate(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a*(10 ** 3) / b;
+        return c;
+
     }
 }

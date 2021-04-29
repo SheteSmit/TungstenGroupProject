@@ -100,7 +100,8 @@ contract NFTLoan {
     // Mint Loan
     function mint(string memory _loan) public {
         require(!_loanExists[_loan]);
-        //_id = defaults.push(_loan);
+        defaults.push(_loan);
+        _id = defaults.length -1;
         _mint(msg.sender, _id);
         _loanExists[_loan] = true;
     }
