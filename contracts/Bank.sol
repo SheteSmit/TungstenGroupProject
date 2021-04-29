@@ -470,8 +470,6 @@ contract Bank is Ownable {
      *
      */
      function rightToVoteTiers(address borrowerAddress) public{
-
-         
          //Creating tier 1 to allow the person to vote
          require(
              tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
@@ -506,8 +504,22 @@ contract Bank is Ownable {
      * @dev Creating vote limiter for each loan
      *
      */
-     function LoanVoterLimiter(address borrower) public
+     function LoanVoterLimiter(address loanBook , uint voteBook, address borrowersAddress ) public
      {
+         // if both the senders have the same value then it most be the same loan.
+         //from there take this loan and require a limit of voters depending on the loan amount
+        if(loanBook[_signature][msg.sender]  == votebook[msg.sender])
+        {
+            // and if the token owner balance is in a certain range then 
+            // we must require a limit of how many votes of the voting book
+            if(tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 10000)
+             {
+                 require(votebook[msg.sender] )
+
+             }
+            
+        }
 
      }
 
