@@ -1,14 +1,18 @@
 import { AppBar as MUIAppBar, Toolbar, Button } from '@material-ui/core';
-
 import styled from 'styled-components';
-export default function AppBar() {
+import './navBar.css';
+
+export default function AppBar(props) {
+  console.log(props)
   return (
     <MUIAppBar position="static">
       <SToolbar>
         <h2>Cobalt Lend</h2>
         <div>
-          <Button variant="outlined">Scoring Token </Button>
-          <Button variant="outlined">Connect Wallet </Button>
+          <Button className="cblt">20000 CBLT </Button>
+          <Button className="navbtn eth">200 ETH </Button>
+          <Button className="cblt">Scoring Token </Button>
+          <Button className="cblt" onClick={() => props.loadBlockchainData()} >Connect Wallet </Button>
         </div>
       </SToolbar>
     </MUIAppBar>
