@@ -39,7 +39,8 @@ module.exports = async function (deployer) {
       slickToken.address,
       hamToken.address,
     ],
-    "0x433c6e3d2def6e1fb414cf9448724efb0399b698"
+    "0x433c6e3d2def6e1fb414cf9448724efb0399b698",
+    oracle.address
   );
   const bank = await Bank.deployed();
 
