@@ -174,6 +174,7 @@ export default function NewApp() {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
+      <NavBar/>
         <AppBar loadBlockchainData={loadBlockchainData} />
         <CustomDrawer />
         <div style={{ marginLeft: '240px' }}>

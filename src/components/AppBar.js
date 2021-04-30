@@ -1,5 +1,6 @@
 import { AppBar as MUIAppBar, Toolbar, Button } from '@material-ui/core';
 import styled from 'styled-components';
+import './navBar.css';
 
 export default function AppBar(props) {
   console.log(props)
@@ -8,6 +9,8 @@ export default function AppBar(props) {
       <SToolbar>
         <h2>Cobalt Lend</h2>
         <div>
+          <Button className="cblt">20000 CBLT </Button>
+          <Button className="navbtn eth">200 ETH </Button>
           <Button className="cblt">Scoring Token </Button>
           <Button className="cblt" onClick={() => props.loadBlockchainData()} >Connect Wallet </Button>
         </div>
