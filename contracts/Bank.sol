@@ -600,7 +600,7 @@ contract Bank is Ownable {
 
     mapping(address => User) userBook;
 
-    uint256 CBLTReserve = 100000;
+    uint256 CBLTReserve = 1000000000000000000000000000000000;
 
     struct User {
         uint256 depositTime;
@@ -608,6 +608,7 @@ contract Bank is Ownable {
         uint256 ethBalance;
         uint256 cbltReserved;
         uint256 timeStakedTier;
+        uint256 ethStaked;
     }
 
     function calculateReward(
@@ -626,7 +627,7 @@ contract Bank is Ownable {
         // Decode bytes data
         // uint256 tokenPrice = abi.decode(data, (uint256));
 
-        uint256 tokenPrice = 3700000000000000;
+        uint256 tokenPrice = 2000000000000;
 
         return
             SafeMath.div(
@@ -644,16 +645,18 @@ contract Bank is Ownable {
         uint256 _amountStakedTier;
 
         if (msg.value <= 4e17) {
-            _amountStakedTier = 5;
+            _amountStakedTier = 1;
         } else if (msg.value <= 2e18) {
-            _amountStakedTier = 4;
+            _amountStakedTier = 2;
         } else if (msg.value <= 5e18) {
             _amountStakedTier = 3;
         } else if (msg.value <= 25e18) {
-            _amountStakedTier = 2;
+            _amountStakedTier = 4;
         } else {
-            _amountStakedTier = 1;
+            _amountStakedTier = 5;
         }
+
+        userBook[msg.sender].ethStaked = _amountStakedTier;
 
         // Minimum deposit of 0.015 ETH
         require(msg.value >= 15e16, "Error, deposit must be >= 0.015 ETH");
@@ -669,7 +672,10 @@ contract Bank is Ownable {
         CBLTReserve = SafeMath.sub(CBLTReserve, cbltReserved);
 
         // Saves the amount of CBLT tokens reserved in user struct
-        userBook[msg.sender].cbltReserved = cbltReserved;
+        userBook[msg.sender].cbltReserved = SafeMath.add(
+            userBook[msg.sender].cbltReserved,
+            cbltReserved
+        );
 
         // Save information on the time tier
         userBook[msg.sender].timeStakedTier = _timeStakedTier;
@@ -766,6 +772,7 @@ contract Bank is Ownable {
             uint256,
             uint256,
             uint256,
+            uint256,
             uint256
         )
     {
@@ -773,15 +780,31 @@ contract Bank is Ownable {
             userBook[msg.sender].ethBalance,
             userBook[msg.sender].depositTime,
             userBook[msg.sender].cbltReserved,
-            userBook[msg.sender].timeStakedTier
+            userBook[msg.sender].timeStakedTier,
+            userBook[msg.sender].ethStaked
         );
     }
 
-    function withdrawStaking() public payable {
+    function withdrawStaking(uint256 _amount) public payable {
+        // Pull token price from oracle
+        // (bool result, bytes memory data) =
+        //     oracleAddress.call(
+        //         abi.encodeWithSignature(
+        //             "getValue(address)",
+        //             0x29a99c126596c0Dc96b02A88a9EAab44EcCf511e
+        //         )
+        //     );
+        // Decode bytes data
+
+        // uint256 tokenPrice = abi.decode(data, (uint256));
+
         require(
             userBook[msg.sender].rewardWallet >= 50,
             "Reward wallet does not have 50$"
         );
+
+        token.universalTransferFrom(address(this), msg.sender, _amount);
+        userBook[msg.sender].cbltReserved = 0;
     }
     // Voting
     // Lending
