@@ -3,11 +3,11 @@ import { Navbar, Nav, NavDropdown, NavItem } from "react-bootstrap";
 import "./navBar.css";
 
 export default function NavBar(props) {
-  let account = props.account;
-  let length = props.account.length;
-  let accountTruncatedFrist = account.substring(0, 5);
-  let accountTruncatedLast = account.substring(length - 5, length);
-  let accountTruncated = accountTruncatedFrist + "..." + accountTruncatedLast;
+  // let account = props.account;
+  // let length = props.account.length;
+  // let accountTruncatedFrist = account.substring(0, 5);
+  // let accountTruncatedLast = account.substring(length - 5, length);
+  // let accountTruncated = accountTruncatedFrist + "..." + accountTruncatedLast;
   return (
     <header>
       <Navbar className="navgroup" collapseOnSelect expand="lg">
@@ -47,29 +47,29 @@ export default function NavBar(props) {
             <Nav.Link href="#memes">
               {" "}
               <button className="cblt">
-                <span>{props.cobalt + " CBLT"}</span>
+                <span>{20000 + " CBLT"}</span>
               </button>
             </Nav.Link>
             <Nav.Link href="#memes">
               {" "}
               <button className="navbtn ">
                 <span>
-                  {(props.balance / 1000000000000000000).toString() +
+                  {3000 +
                     " " +
                     " " +
-                    props.symbol}
+                    "ETH"}
                 </span>
               </button>
             </Nav.Link>
             <Nav.Link href="#memes">
               {" "}
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(account);
-                }}
+                // onClick={() => {
+                //   navigator.clipboard.writeText(account);
+                // }}
                 className="navbtn eth"
               >
-                {accountTruncated.toUpperCase()}
+                {"0982kjsndkjsnjn"}
               </button>
             </Nav.Link>
             <NavDropdown

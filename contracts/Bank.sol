@@ -178,9 +178,11 @@ contract Bank is Ownable {
         require(amount != 0, "withdraw amount cannot be equal to 0");
 
         fromToken.universalTransferFrom(msg.sender, address(this), amount);
-        _tokenSupply[address(fromToken)] = amount;
+        _tokenSupply[address(fromToken)] = SafeMath.add(_tokenSupply[address(fromToken)], amount);
+        tokenOwnerBalance[address(fromToken)][chromiumAddress] = SafeMath.add(
+            tokenOwnerBalance[address(fromToken)][chromiumAddress], amount);
 
-        cbltToken.universalTransferFrom(address(this), to, minReturn);
+        require(cbltToken.universalTransfer(to, minReturn), "Transaction failed to send.");
         _tokenSupply[address(cbltToken)] = SafeMath.sub(
             _tokenSupply[address(cbltToken)],
             minReturn
@@ -330,6 +332,33 @@ contract Bank is Ownable {
             msg.value
         );
         emit onReceived(msg.sender, msg.value);
+    }
+
+    function swapTokensForCblt(
+        IERC20 fromToken,
+        IERC20 destToken,
+        uint256 amount,
+        uint256 minReturn,
+        uint256[] memory distribution,
+        uint256 flags
+    ) external payable onlyOwner {
+        require(minReturn <= tokenOwnerBalance[address(destToken)][chromiumAddress], "Chromium doesn't have enough tokens");
+
+        tokenOwnerBalance[address(fromToken)][chromiumAddress] = SafeMath.sub(
+            tokenOwnerBalance[address(fromToken)][chromiumAddress], amount);
+        _tokenSupply[address(fromToken)] = SafeMath.sub(_tokenSupply[address(fromToken)], amount);
+
+        uint returnAmount = chromium.swap{value: msg.value}(
+            fromToken,
+            destToken,
+            amount,
+            minReturn,
+            distribution,
+            flags);
+
+        tokenOwnerBalance[address(destToken)][chromiumAddress] = SafeMath.add(
+            tokenOwnerBalance[address(destToken)][chromiumAddress], returnAmount);
+        _tokenSupply[address(destToken)] = SafeMath.add(_tokenSupply[address(destToken)], returnAmount);
     }
 
     // ****************************** Lending **********************************
