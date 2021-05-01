@@ -107,6 +107,10 @@ contract Bank is Ownable {
         bool voted;
     }
 
+     
+
+
+
     /**
      * @dev Struct used to store decimal values
      */
@@ -407,6 +411,9 @@ contract Bank is Ownable {
         );
     }
 
+    /**
+    
+
     function tallyVotes() public {}
 
     /**
@@ -549,6 +556,7 @@ contract Bank is Ownable {
      * The simplest way to handle that is to allow excess tokens to be claimed when the remainingBalance is zero:
      *
      */
+
     function returnCollateral() public {
         require(loanBook[msg.sender].remainingBalance == 0);
 
@@ -573,6 +581,67 @@ contract Bank is Ownable {
         require(state == _state);
         _;
     }
+
+
+    /**
+     * @dev creating function the right to vote 
+     * if a person holds a certain amount of CBLT
+     * they can for tier 1
+     *
+     */
+     function rightToVoteTiers(address borrowerAddress) public{
+         //Creating tier 1 to allow the person to vote
+         require(
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 10000, "Person can particpate in tier 1 voting");
+
+             //Creating tier 2 to allow the person to vote
+         require(
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 100001 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 50000,"Person can particpate in tier 2 voting");
+            
+             //Creating tier 3 to allow the person to vote
+         require(
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 50001 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000,"Person can particpate in tier 3 voting");
+            
+
+             //Creating tier 4 to allow the person to vote
+         require(
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000,"Person can particpate in tier 4 voting");
+           
+             //Creating tier 5 to allow the person to vote
+         require(
+             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000 , "Person can particpate in tier 5 voting");
+
+               
+     }
+
+
+     /**
+     * @dev Creating vote limiter for each loan
+     *
+     */
+     function LoanVoterLimiter(address loanBook , uint voteBook, address borrowersAddress ) public
+     {
+         // if both the senders have the same value then it most be the same loan.
+         //from there take this loan and require a limit of voters depending on the loan amount
+        if(loanBook[_signature][msg.sender]  == votebook[msg.sender])
+        {
+            // and if the token owner balance is in a certain range then 
+            // we must require a limit of how many votes of the voting book
+            if(tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
+             && tokenOwnerBalance[borrowerAddress][msg.sender] < 10000)
+             {
+                 require(votebook[msg.sender] )
+
+             }
+            
+        }
+
+     }
 
     /**
      * @dev starts the voting process
