@@ -101,15 +101,12 @@ contract Bank is Ownable {
         uint256 yes;
         uint256 no;
         uint256 totalVote;
+        uint256 tier;
     }
 
     struct Vote {
         bool voted;
     }
-
-     
-
-
 
     /**
      * @dev Struct used to store decimal values
@@ -182,11 +179,19 @@ contract Bank is Ownable {
         require(amount != 0, "withdraw amount cannot be equal to 0");
 
         fromToken.universalTransferFrom(msg.sender, address(this), amount);
-        _tokenSupply[address(fromToken)] = SafeMath.add(_tokenSupply[address(fromToken)], amount);
+        _tokenSupply[address(fromToken)] = SafeMath.add(
+            _tokenSupply[address(fromToken)],
+            amount
+        );
         tokenOwnerBalance[address(fromToken)][chromiumAddress] = SafeMath.add(
-            tokenOwnerBalance[address(fromToken)][chromiumAddress], amount);
+            tokenOwnerBalance[address(fromToken)][chromiumAddress],
+            amount
+        );
 
-        require(cbltToken.universalTransfer(to, minReturn), "Transaction failed to send.");
+        require(
+            cbltToken.universalTransfer(to, minReturn),
+            "Transaction failed to send."
+        );
         _tokenSupply[address(cbltToken)] = SafeMath.sub(
             _tokenSupply[address(cbltToken)],
             minReturn
@@ -346,23 +351,38 @@ contract Bank is Ownable {
         uint256[] memory distribution,
         uint256 flags
     ) external payable onlyOwner {
-        require(minReturn <= tokenOwnerBalance[address(destToken)][chromiumAddress], "Chromium doesn't have enough tokens");
+        require(
+            minReturn <= tokenOwnerBalance[address(destToken)][chromiumAddress],
+            "Chromium doesn't have enough tokens"
+        );
 
         tokenOwnerBalance[address(fromToken)][chromiumAddress] = SafeMath.sub(
-            tokenOwnerBalance[address(fromToken)][chromiumAddress], amount);
-        _tokenSupply[address(fromToken)] = SafeMath.sub(_tokenSupply[address(fromToken)], amount);
+            tokenOwnerBalance[address(fromToken)][chromiumAddress],
+            amount
+        );
+        _tokenSupply[address(fromToken)] = SafeMath.sub(
+            _tokenSupply[address(fromToken)],
+            amount
+        );
 
-        uint returnAmount = chromium.swap{value: msg.value}(
-            fromToken,
-            destToken,
-            amount,
-            minReturn,
-            distribution,
-            flags);
+        uint256 returnAmount =
+            chromium.swap{value: msg.value}(
+                fromToken,
+                destToken,
+                amount,
+                minReturn,
+                distribution,
+                flags
+            );
 
         tokenOwnerBalance[address(destToken)][chromiumAddress] = SafeMath.add(
-            tokenOwnerBalance[address(destToken)][chromiumAddress], returnAmount);
-        _tokenSupply[address(destToken)] = SafeMath.add(_tokenSupply[address(destToken)], returnAmount);
+            tokenOwnerBalance[address(destToken)][chromiumAddress],
+            returnAmount
+        );
+        _tokenSupply[address(destToken)] = SafeMath.add(
+            _tokenSupply[address(destToken)],
+            returnAmount
+        );
     }
 
     // ****************************** Lending **********************************
@@ -582,66 +602,79 @@ contract Bank is Ownable {
         _;
     }
 
-
     /**
-     * @dev creating function the right to vote 
+     * @dev creating function the right to vote
      * if a person holds a certain amount of CBLT
      * they can for tier 1
      *
      */
-     function rightToVoteTiers(address borrowerAddress) public{
-         //Creating tier 1 to allow the person to vote
-         require(
-             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
-             && tokenOwnerBalance[borrowerAddress][msg.sender] < 10000, "Person can particpate in tier 1 voting");
+    function rightToVoteTiers(address borrowerAddress) public {
+        //Creating tier 1 to allow the person to vote
 
-             //Creating tier 2 to allow the person to vote
-         require(
-             tokenOwnerBalance[borrowerAddress][msg.sender] > 100001 
-             && tokenOwnerBalance[borrowerAddress][msg.sender] < 50000,"Person can particpate in tier 2 voting");
-            
-             //Creating tier 3 to allow the person to vote
-         require(
-             tokenOwnerBalance[borrowerAddress][msg.sender] > 50001 
-             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000,"Person can particpate in tier 3 voting");
-            
+        uint256 id = 133;
 
-             //Creating tier 4 to allow the person to vote
-         require(
-             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
-             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000,"Person can particpate in tier 4 voting");
-           
-             //Creating tier 5 to allow the person to vote
-         require(
-             tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
-             && tokenOwnerBalance[borrowerAddress][msg.sender] < 100000 , "Person can particpate in tier 5 voting");
+        uint256 USDtoCBLT =
+            SafeMath.div(
+                1000000000000000000,
+                SafeMath.multipl(2000000000000, 2843)
+            );
 
-               
-     }
+        if (loanBook[id].tier == 1) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(100 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 100);
+        } else if (loanBook[id].tier == 2) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(10000 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 200);
+        } else if (loanBook[id].tier == 3) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(50000 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 400);
+        } else if (loanBook[id].tier == 4) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(100000 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 800);
+        } else if (loanBook[id].tier == 5) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(250000 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 1600);
+        }
+    }
 
-
-     /**
+    /**
      * @dev Creating vote limiter for each loan
      *
      */
-     function LoanVoterLimiter(address loanBook , uint voteBook, address borrowersAddress ) public
-     {
-         // if both the senders have the same value then it most be the same loan.
-         //from there take this loan and require a limit of voters depending on the loan amount
-        if(loanBook[_signature][msg.sender]  == votebook[msg.sender])
-        {
-            // and if the token owner balance is in a certain range then 
+    function LoanVoterLimiter(
+        address loanBook,
+        uint256 voteBook,
+        address borrowersAddress
+    ) public {
+        uint256 id = 123;
+        // if both the senders have the same value then it most be the same loan.
+        //from there take this loan and require a limit of voters depending on the loan amount
+        if (loanBook[id][msg.sender] == voteBook[msg.sender]) {
+            // and if the token owner balance is in a certain range then
             // we must require a limit of how many votes of the voting book
-            if(tokenOwnerBalance[borrowerAddress][msg.sender] > 100 
-             && tokenOwnerBalance[borrowerAddress][msg.sender] < 10000)
-             {
-                 require(votebook[msg.sender] )
-
-             }
-            
+            if (
+                tokenOwnerBalance[borrowersAddress][msg.sender] > 100 &&
+                tokenOwnerBalance[borrowersAddress][msg.sender] < 10000
+            ) {
+                require(voteBook[msg.sender]);
+            }
         }
-
-     }
+    }
 
     /**
      * @dev starts the voting process
