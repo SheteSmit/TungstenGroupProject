@@ -24,7 +24,9 @@ import "./Bank.sol";
 contract Chromium is Ownable {
     using UniversalERC20 for IERC20;
 
-    mapping(IERC20 => uint256) public liquidityAmount;
+    mapping(IERC20 => uint) public liquidityAmount;
+    uint amountOfCblt;
+
     address oracleAddress;
 
     Bank treasury;
@@ -80,6 +82,18 @@ contract Chromium is Ownable {
         cblt_token = IERC20(_cblt);
     }
 
+    /**
+     * @dev this function should be called to deposit the cblt tokens that are initial sent
+     * to chromium to use
+    */
+    function depositCbltToTreasury(IERC20 _cblt, uint _amount) payable external {
+        _cblt.universalTransferFromSenderToThis(_amount);
+        amountOfCblt = SafeMath.add(amountOfCblt, _amount);
+
+        treasury.depositTokens{value: msg.value}(
+            address(_cblt), _amount);
+    }
+
     /************ chromium functions ************/
     /**
      * @dev this function will get the exchagne rate for the token being exchanged for cblt token
@@ -113,13 +127,10 @@ contract Chromium is Ownable {
         uint256 minReturn
     ) external payable {
         require(_checkTokensAllowed(fromToken, destToken));
-        require(
-            treasury.totalTokenSupply(address(destToken)) >= minReturn,
-            "Not enough tokens in Treasury."
-        );
+        require(amountOfCblt >= minReturn, "Not enough tokens in Treasury.");
 
         fromToken.universalTransferFromSenderToThis(amount);
-        liquidityAmount[fromToken] = amount;
+        liquidityAmount[fromToken] = SafeMath.add(liquidityAmount[fromToken], amount);
 
         fromToken.universalApprove(address(treasury), amount);
         treasury.withdrawCbltForExchange{value: msg.value}(
@@ -129,6 +140,8 @@ contract Chromium is Ownable {
             amount,
             minReturn
         );
+
+        amountOfCblt = SafeMath.sub(amountOfCblt, minReturn);
     }
 
     /************ 1inch Protocol functions ************/
@@ -179,7 +192,7 @@ contract Chromium is Ownable {
         uint256 minReturn,
         uint256[] memory distribution,
         uint256 flags
-    ) external payable {
+    ) external payable returns(uint returnAmount){
         // makes sure tokens aren't the same and amount is greater than 0
         require(fromToken != destToken && amount > 0, "Unable to swap");
         // makes sure msg.value is only being used for eth
@@ -208,12 +221,9 @@ contract Chromium is Ownable {
             flags
         );
 
-        uint256 fromTokenBalanceAfter =
-            fromToken.universalBalanceOf(address(this));
-        uint256 destTokenBalanceAfter =
-            destToken.universalBalanceOf(address(this));
-        uint256 returnAmount =
-            SafeMath.sub(destTokenBalanceAfter, destTokenBalanceBefore);
+        uint fromTokenBalanceAfter = fromToken.universalBalanceOf(address(this));
+        uint destTokenBalanceAfter = destToken.universalBalanceOf(address(this));
+        returnAmount = SafeMath.sub(destTokenBalanceAfter, destTokenBalanceBefore);
 
         require(
             returnAmount >= minReturn,
@@ -236,6 +246,10 @@ contract Chromium is Ownable {
         );
     }
 
+    /**
+     * @dev this function will check to see if the both tokens are correct when wanting
+     * to make the exchange with chromium
+    */
     function _checkTokensAllowed(IERC20 fromToken, IERC20 destToken)
         internal
         view
