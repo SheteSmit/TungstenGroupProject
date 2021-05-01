@@ -591,6 +591,22 @@ contract Bank is Ownable {
         require(loanBook[msg.sender].remainingBalance == 0);
         delete loanBook[msg.sender];
     }
+    /**
+     * @dev validating the loan making sure the loan belongs to that person
+     */
+     function loanValidation(address loanBorrowerAddress ) public
+     {
+         // we check if the loanborrower is the same as the sender
+         // going to require that the loan is the same as the borrower
+         require(loanBook[msg.sender].borrower == loanBook[loanBorrowerAddress]);
+
+         //We require that the loan the borrower is using is active and its true. 
+         require(loanBook[msg.sender].active == true);
+
+         
+
+     }
+
 
     // **************************** Voting *******************************
 
