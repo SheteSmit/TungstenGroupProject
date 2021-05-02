@@ -12,16 +12,16 @@ contract EscrowManager is Ownable {
      * @dev these are all the states that the job can be in.
      * JOB_CREATED_PAYMENT_DEPOSITED is when the job was created and eth deposited into contract
      * JOB_COMPLETED is when the payee confirms that the job has been JOB_COMPLETED
-     * DISPUTE is when creator and payee don't agree
      * PAYMENT_SENT_PAYEE is when the creator confirms job is done and eth is sent to payee
+     * DISPUTE is when creator and payee don't agree
      * PAYMENT_SENT_BACK can only be set if the job was in dispute and we think that he needs his money
      * back because the payee didn't do something correctly
     */
-    enum State {JOB_CREATED_PAYMENT_DEPOSITED, JOB_COMPLETED, DISPUTE, PAYMENT_SENT_PAYEE, PAYMENT_SENT_BACK}
+    enum State {JOB_CREATED_PAYMENT_DEPOSITED, JOB_COMPLETED, PAYMENT_SENT_PAYEE, DISPUTE, PAYMENT_SENT_CREATOR}
 
     // the details of the job
     struct JobInfo {
-        address escrowCreator;
+        address payable escrowCreator;
         address payable payee;
         string jobDetails;
         uint priceInWei;
@@ -45,7 +45,7 @@ contract EscrowManager is Ownable {
      * mainly used to keep track of where the money is. if both are at 0,
      * then the funds were returned to creator after dispute.
     */
-    mapping(uint => mapping(address => uint))  public transactions;
+    mapping(uint => mapping(address => uint)) public transactions;
 
     // emits everytime the job state changes
     event JobState(uint _jobIndex, uint _state);
@@ -67,7 +67,7 @@ contract EscrowManager is Ownable {
         require(msg.value != 0, "msg.value can not equal 0");
         require(_priceInWei == msg.value, "Amount deposited must equal price.");
 
-        jobs[index].escrowCreator = msg.sender;
+        jobs[index].escrowCreator = payable(msg.sender);
         jobs[index].payee = _payee;
         jobs[index].jobDetails = _jobDetails;
         jobs[index].priceInWei = _priceInWei;
@@ -113,15 +113,12 @@ contract EscrowManager is Ownable {
         require(jobs[_index].escrowCreator == msg.sender, "Only the job creator can confirm job completion.");
         require(jobs[_index].state == State.JOB_COMPLETED, "Job is not at this state yet.");
 
+        jobs[_index].confirmJobCompletion = _satisfied;
+
         if(_satisfied) {
-            jobs[_index].confirmJobCompletion = _satisfied;
-            ETH_ADDRESS.universalTransfer(jobs[_index].payee, jobs[_index].paidWei);
-            transactions[_index][jobs[_index].escrowCreator] = 0;
-            transactions[_index][jobs[_index].payee] = jobs[_index].paidWei;
-            jobs[_index].state = State.PAYMENT_SENT_PAYEE;
+            sendFundsToPayee(_index);
             emit JobState(_index, uint(jobs[_index].state));
         } else {
-            jobs[_index].confirmJobCompletion = _satisfied;
             jobs[_index].state = State.DISPUTE;
             emit JobDispute(_index, uint(jobs[_index].state));
         }
@@ -138,20 +135,54 @@ contract EscrowManager is Ownable {
         require(jobs[_index].state == State.DISPUTE, "This job is not in dispute.");
 
         if(_setState == State.PAYMENT_SENT_PAYEE) {
-            ETH_ADDRESS.universalTransfer(jobs[_index].payee, jobs[_index].paidWei);
-            transactions[_index][jobs[_index].escrowCreator] = 0;
-            transactions[_index][jobs[_index].payee] = jobs[_index].paidWei;
-            jobs[_index].state = State.PAYMENT_SENT_PAYEE;
+            sendFundsToPayee(_index);
             emit JobState(_index, uint(jobs[_index].state));
-        } else if (_setState == State.PAYMENT_SENT_BACK) {
-            ETH_ADDRESS.universalTransfer(jobs[_index].escrowCreator, jobs[_index].paidWei);
-            transactions[_index][jobs[_index].escrowCreator] = 0;
-            jobs[_index].state = State.PAYMENT_SENT_BACK;
+        } else if (_setState == State.PAYMENT_SENT_CREATOR) {
+            sendFundsToCreator(_index);
             emit JobState(_index, uint(jobs[_index].state));
         } else {
             jobs[_index].state = _setState;
             emit JobState(_index, uint(jobs[_index].state));
         }
+    }
+
+    /**
+     * @dev this function needs to be called by both creator and payee
+     * once they both call this function, it will send the funds back to the creator
+     * @param _index is the index of the job
+    */
+    function cancel(uint _index) external {
+        if(msg.sender == jobs[_index].escrowCreator) {
+            jobs[_index].confirmJobCompletion == false;
+        } else if (msg.sender == jobs[_index].payee) {
+            jobs[_index].jobCompletion == false;
+        }
+
+        if(!jobs[_index].confirmJobCompletion && !jobs[_index].jobCompletion) {
+            sendFundsToCreator(_index);
+        }
+    }
+
+    /**
+     * @dev this function will send funds back to the creator, can only be called
+     * inside of another function
+     * @param _index is the index of the job
+    */
+    function sendFundsToCreator(uint _index) internal {
+        require(ETH_ADDRESS.universalTransfer(jobs[_index].escrowCreator, jobs[_index].paidWei), "Transfer didn't complete");
+        transactions[_index][jobs[_index].escrowCreator] = 0;
+        jobs[_index].state = State.PAYMENT_SENT_CREATOR;
+    }
+
+    /**
+     * @dev this function will send the funds to the payee
+     * @param _index is the index of the jobs
+    */
+    function sendFundsToPayee(uint _index) private {
+        require(ETH_ADDRESS.universalTransfer(jobs[_index].payee, jobs[_index].paidWei), "Transfer didn't complete.");
+        transactions[_index][jobs[_index].escrowCreator] = 0;
+        transactions[_index][jobs[_index].payee] = jobs[_index].paidWei;
+        jobs[_index].state = State.PAYMENT_SENT_PAYEE;
     }
 
 }
