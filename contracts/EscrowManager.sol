@@ -37,6 +37,9 @@ contract EscrowManager is Ownable {
     // used to index each job, each job that is created will increment this by 1
     uint index;
 
+    // used to hold the amount of fees collected (0.5% for each job)
+    uint fees;
+
     // mapping of the index to the job details
     mapping(uint => JobInfo) public jobs;
 
@@ -71,10 +74,10 @@ contract EscrowManager is Ownable {
         jobs[index].payee = _payee;
         jobs[index].jobDetails = _jobDetails;
         jobs[index].priceInWei = _priceInWei;
-        jobs[index].paidWei = msg.value;
+        jobs[index].paidWei = SafeMath.sub(msg.value, SafeMath.findFee(msg.value));
 
-
-        transactions[index][msg.sender] = msg.value;
+        fees = SafeMath.add(fees, SafeMath.findFee(msg.value));
+        transactions[index][msg.sender] = jobs[index].paidWei;
         transactions[index][jobs[index].payee] = 0;
         jobs[index].state = State.JOB_CREATED_PAYMENT_DEPOSITED;
 
@@ -184,5 +187,4 @@ contract EscrowManager is Ownable {
         transactions[_index][jobs[_index].payee] = jobs[_index].paidWei;
         jobs[_index].state = State.PAYMENT_SENT_PAYEE;
     }
-
 }
