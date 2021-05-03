@@ -38,7 +38,7 @@ contract EscrowManager is Ownable {
     uint index;
 
     // used to hold the amount of fees collected (0.5% for each job)
-    uint fees;
+    uint public fees;
 
     // mapping of the index to the job details
     mapping(uint => JobInfo) public jobs;
@@ -150,28 +150,11 @@ contract EscrowManager is Ownable {
     }
 
     /**
-     * @dev this function needs to be called by both creator and payee
-     * once they both call this function, it will send the funds back to the creator
-     * @param _index is the index of the job
-    */
-    function cancel(uint _index) external {
-        if(msg.sender == jobs[_index].escrowCreator) {
-            jobs[_index].confirmJobCompletion == false;
-        } else if (msg.sender == jobs[_index].payee) {
-            jobs[_index].jobCompletion == false;
-        }
-
-        if(!jobs[_index].confirmJobCompletion && !jobs[_index].jobCompletion) {
-            sendFundsToCreator(_index);
-        }
-    }
-
-    /**
      * @dev this function will send funds back to the creator, can only be called
      * inside of another function
      * @param _index is the index of the job
     */
-    function sendFundsToCreator(uint _index) internal {
+    function sendFundsToCreator(uint _index) private {
         require(ETH_ADDRESS.universalTransfer(jobs[_index].escrowCreator, jobs[_index].paidWei), "Transfer didn't complete");
         transactions[_index][jobs[_index].escrowCreator] = 0;
         jobs[_index].state = State.PAYMENT_SENT_CREATOR;
