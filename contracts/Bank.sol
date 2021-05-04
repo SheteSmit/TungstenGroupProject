@@ -346,6 +346,7 @@ contract Bank is Ownable {
     /**
      * @dev Recalculates interest and also conducts check and balances
      */
+
     function newLoan(
         uint256 _paymentPeriod,
         uint256 _minimumPayment, // NEEDS TO BE CALCULATED
@@ -424,8 +425,6 @@ contract Bank is Ownable {
     }
 
     /**
-    
-
     function tallyVotes() public {}
 
     /**
