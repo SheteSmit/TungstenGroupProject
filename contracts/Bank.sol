@@ -30,6 +30,7 @@ contract Bank is Ownable {
      * @dev chromium address for modifier
      */
     address chromiumAddress;
+    Chromium chromium;
 
     /**
      * @dev reward rate ratio for staking
@@ -150,6 +151,7 @@ contract Bank is Ownable {
      */
     function setChromium(address payable _chromium) public onlyOwner {
         chromiumAddress = _chromium;
+        chromium = Chromium(_chromium);
     }
 
     /**
