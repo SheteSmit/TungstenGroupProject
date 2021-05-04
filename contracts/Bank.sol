@@ -30,18 +30,7 @@ contract Bank is Ownable {
      * @dev chromium address for modifier
      */
     address chromiumAddress;
-
-    /**
-     * @dev reward rate ratio for staking
-     */
-    Rational rewardRate = Rational(1, 20);
-
-    /**
-     * @dev mapping used to store all loan information with the key of borrower address
-     *  and value of Loan struct with all loan information
-     */
-    mapping(address => Loan) loanBook;
-    mapping(uint256 => mapping(address => bool)) voteBook; // Signature key => mapping( voters => voted)
+    Chromium chromium;
 
     constructor(
         address[] memory addresses,
@@ -53,6 +42,7 @@ contract Bank is Ownable {
         }
         oracleAddress = _oracle;
         token = IERC20(_CBLT);
+        // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1] = 5;
         stakingRewardRate[1][2] = 6;
         stakingRewardRate[1][3] = 7;
@@ -82,37 +72,6 @@ contract Bank is Ownable {
         stakingRewardRate[5][3] = 16;
         stakingRewardRate[5][4] = 19;
         stakingRewardRate[5][5] = 20;
-    }
-
-    /**
-     * @dev Struct created so save all loan information
-     */
-    struct Loan {
-        address borrower;
-        uint256 dueDate;
-        Rational interestRate;
-        uint256 paymentPeriod;
-        uint256 remainingBalance;
-        uint256 minimumPayment;
-        uint256 collateralPerPayment;
-        bool active;
-        bool initialized;
-        uint256 timeCreated;
-        uint256 yes;
-        uint256 no;
-        uint256 totalVote;
-    }
-
-    struct Vote {
-        bool voted;
-    }
-
-    /**
-     * @dev Struct used to store decimal values
-     */
-    struct Rational {
-        uint256 numerator;
-        uint256 denominator;
     }
 
     /**
@@ -150,14 +109,7 @@ contract Bank is Ownable {
      */
     function setChromium(address payable _chromium) public onlyOwner {
         chromiumAddress = _chromium;
-    }
-
-    /**
-     * @dev allows for chromium contract to see which tokens
-     * are allowed to be deposited into treasury
-     */
-    function isTokenAllowed(address _token) public view returns (bool) {
-        return tokensAllowed[_token];
+        chromium = Chromium(_chromium);
     }
 
     /**
@@ -178,9 +130,19 @@ contract Bank is Ownable {
         require(amount != 0, "withdraw amount cannot be equal to 0");
 
         fromToken.universalTransferFrom(msg.sender, address(this), amount);
-        _tokenSupply[address(fromToken)] = amount;
+        _tokenSupply[address(fromToken)] = SafeMath.add(
+            _tokenSupply[address(fromToken)],
+            amount
+        );
+        tokenOwnerBalance[address(fromToken)][chromiumAddress] = SafeMath.add(
+            tokenOwnerBalance[address(fromToken)][chromiumAddress],
+            amount
+        );
 
-        cbltToken.universalTransferFrom(address(this), to, minReturn);
+        require(
+            cbltToken.universalTransfer(to, minReturn),
+            "Transaction failed to send."
+        );
         _tokenSupply[address(cbltToken)] = SafeMath.sub(
             _tokenSupply[address(cbltToken)],
             minReturn
@@ -235,34 +197,6 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev method to deposit tokens into the bank
-     */
-    function depositTokens(address _tokenAddress, uint256 _tokenAmount)
-        external
-        payable
-    {
-        //Check if token is not supported by bank
-        require(tokensAllowed[_tokenAddress] == true, "Token is not supported");
-        token = IERC20(address(_tokenAddress));
-
-        _tokenSupply[_tokenAddress] = SafeMath.add(
-            _tokenSupply[_tokenAddress],
-            _tokenAmount
-        );
-        tokenOwnerBalance[_tokenAddress][msg.sender] = SafeMath.add(
-            tokenOwnerBalance[_tokenAddress][msg.sender],
-            _tokenAmount
-        );
-
-        require(
-            token.transferFrom(msg.sender, address(this), _tokenAmount) == true,
-            "Transfer not complete"
-        );
-
-        emit depositToken(msg.sender, _tokenAmount);
-    }
-
-    /**
      * @dev method to deposit eth into the bank
      */
     function deposit() external payable {
@@ -295,6 +229,14 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev allows for chromium contract to see which tokens
+     * are allowed to be deposited into treasury
+     */
+    function isTokenAllowed(address _token) public view returns (bool) {
+        return tokensAllowed[_token];
+    }
+
+    /**
      * @dev method that will show the total amount of tokens in the bank for
      */
     function totalTokenSupply(address _tokenAddress)
@@ -303,14 +245,6 @@ contract Bank is Ownable {
         returns (uint256)
     {
         return _tokenSupply[_tokenAddress];
-    }
-
-    /**
-     * @dev method that will show the balance that the caller has
-     * for a certain token
-     */
-    function balanceOf() public view returns (uint256) {
-        return etherBalance[msg.sender];
     }
 
     function balanceOfToken(address _tokenAddress)
@@ -332,51 +266,167 @@ contract Bank is Ownable {
         emit onReceived(msg.sender, msg.value);
     }
 
+    function swapTokensForCblt(
+        IERC20 fromToken,
+        IERC20 destToken,
+        uint256 amount,
+        uint256 minReturn,
+        uint256[] memory distribution,
+        uint256 flags
+    ) external payable onlyOwner {
+        require(
+            minReturn <= tokenOwnerBalance[address(destToken)][chromiumAddress],
+            "Chromium doesn't have enough tokens"
+        );
+
+        tokenOwnerBalance[address(fromToken)][chromiumAddress] = SafeMath.sub(
+            tokenOwnerBalance[address(fromToken)][chromiumAddress],
+            amount
+        );
+        _tokenSupply[address(fromToken)] = SafeMath.sub(
+            _tokenSupply[address(fromToken)],
+            amount
+        );
+
+        uint256 returnAmount =
+            chromium.swap{value: msg.value}(
+                fromToken,
+                destToken,
+                amount,
+                minReturn,
+                distribution,
+                flags
+            );
+
+        tokenOwnerBalance[address(destToken)][chromiumAddress] = SafeMath.add(
+            tokenOwnerBalance[address(destToken)][chromiumAddress],
+            returnAmount
+        );
+        _tokenSupply[address(destToken)] = SafeMath.add(
+            _tokenSupply[address(destToken)],
+            returnAmount
+        );
+    }
+
     // ****************************** Lending **********************************
+
+    /**
+     * @dev mapping used to store all loan information with the key of borrower address
+     *  and value of Loan struct with all loan information
+     */
+    mapping(address => Loan) loanBook;
+    mapping(uint256 => mapping(address => bool)) voteBook; // Signature key => mapping( voters => voted)
+
+    /**
+     * @dev Struct used to store decimal values
+     */
+    struct Rational {
+        uint256 numerator;
+        uint256 denominator;
+    }
+
+    /**
+     * @dev Struct created so save all loan information
+     */
+    struct Loan {
+        address borrower; // Address of wallet
+        uint256 dueDate; // Time of contract ending
+        Rational interestRate; // Interest rate for loan
+        uint256 paymentPeriod; // Epoch in months
+        uint256 remainingBalance; // Remaining balance
+        uint256 minimumPayment; // MinimumPayment
+        uint256 collateralPerPayment; // CollateralPerPayment
+        bool active; // Is the current loan active (Voted yes)
+        bool initialized; // Does the borrower have a current loan application
+        uint256 timeCreated; // Time of loan application
+        uint256 yes; // Amount of votes for yes
+        uint256 no; // Amount of votes for no
+        uint256 totalVote; // Total amount determined by tier
+        uint256 tier; // Tier based on amount intended to be borrowed
+    }
 
     /**
      * @dev Recalculates interest and also conducts check and balances
      */
     function newLoan(
-        uint256 interestRateNumerator,
-        uint256 interestRateDenominator,
         uint256 _paymentPeriod,
-        uint256 _minimumPayment,
-        uint256 principal,
-        uint256 units
+        uint256 _minimumPayment, // NEEDS TO BE CALCULATED
+        uint256 principal
     ) public payable {
         // Needs user approve on transfer funds amount
         // token.approve(address(this), _minimumPayment);
         // loanbook[msg.sender] -> loanbook[uint signature]
 
+        uint256 riskScore = 20; // NFT ENTRY!!!!!!
+        uint256 riskFactor = 1.5; // NFT ENTRY!!!!
+        uint256 numerator = 2; // NFT ENTRY!!!!
+        uint256 denominator = 100; // NFT ENTRY!!!!
+
+        (bool result, bytes memory data) =
+            oracleAddress.call(
+                abi.encodeWithSignature(
+                    "getValue(address)",
+                    0x29a99c126596c0Dc96b02A88a9EAab44EcCf511e
+                )
+            );
+        require(result == true, "Oracle is down");
+
+        uint256 tokenPrice = abi.decode(data, (uint256));
+
+        uint256 collateralInCBLT =
+            SafeMath.div(
+                SafeMath.mul(
+                    principal,
+                    SafeMath.multiply(riskScore, riskFactor, 100)
+                ),
+                tokenPrice
+            );
+
+        uint256 paymentPeriodInMonths = SafeMath.div(_paymentPeriod, 2629743);
+
+        uint256 collateralPerPayment =
+            SafeMath.div(collateralInCBLT, paymentPeriodInMonths);
+
         require(loanBook[msg.sender].initialized == false);
+
         require(
-            token.transferFrom(msg.sender, address(this), units * 12) == true,
+            token.transferFrom(msg.sender, address(this), collateralInCBLT) ==
+                true,
             "Payment was not approved."
         );
 
         loanBook[msg.sender] = Loan(
             msg.sender,
             (block.timestamp + _paymentPeriod),
-            Rational(interestRateNumerator, interestRateDenominator),
+            Rational(numerator, denominator),
             _paymentPeriod,
             principal,
-            _minimumPayment,
-            units,
+            _minimumPayment, // Needs to be calculated!!!!!!
+            collateralPerPayment,
             false,
             true,
             block.timestamp,
             0,
             0,
+            0,
             0
         );
 
-        uint256 x = _minimumPayment * units;
-        require(
-            x / units == _minimumPayment,
-            "minimumPayment * collateralPerPayment overflows"
-        );
+        uint256 timeCreated; // Time of loan application
+        uint256 yes; // Amount of votes for yes
+        uint256 no; // Amount of votes for no
+        uint256 totalVote; // Total amount determined by tier
+        uint256 tier; // Tier based on amount intended to be borrowed
+
+        // uint256 x = _minimumPayment * units; // NEEDS TO BE WORKED AT NIGTHT!!!!!!!!
+        // require(
+        //     x / units == _minimumPayment,
+        //     "minimumPayment * collateralPerPayment overflows"
+        // );
     }
+
+    /**
+    
 
     function tallyVotes() public {}
 
@@ -520,6 +570,7 @@ contract Bank is Ownable {
      * The simplest way to handle that is to allow excess tokens to be claimed when the remainingBalance is zero:
      *
      */
+
     function returnCollateral() public {
         require(loanBook[msg.sender].remainingBalance == 0);
 
@@ -543,6 +594,80 @@ contract Bank is Ownable {
     modifier inState(State _state) {
         require(state == _state);
         _;
+    }
+
+    /**
+     * @dev creating function the right to vote
+     * if a person holds a certain amount of CBLT
+     * they can for tier 1
+     *
+     */
+    function rightToVoteTiers(address borrowerAddress) public {
+        //Creating tier 1 to allow the person to vote
+
+        uint256 id = 133;
+
+        uint256 USDtoCBLT =
+            SafeMath.div(
+                1000000000000000000,
+                SafeMath.multiply(2000000000000, 2843)
+            );
+
+        if (loanBook[id].tier == 1) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(100 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 100);
+        } else if (loanBook[id].tier == 2) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(10000 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 200);
+        } else if (loanBook[id].tier == 3) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(50000 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 400);
+        } else if (loanBook[id].tier == 4) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(100000 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 800);
+        } else if (loanBook[id].tier == 5) {
+            require(
+                tokenOwnerBalance[borrowerAddress][msg.sender] >=
+                    SafeMath.mul(250000 * USDtoCBLT)
+            );
+            require(loanBook[id].totalVote = 1600);
+        }
+    }
+
+    /**
+     * @dev Creating vote limiter for each loan
+     *
+     */
+    function LoanVoterLimiter(
+        address loanBook,
+        uint256 voteBook,
+        address borrowersAddress
+    ) public {
+        uint256 id = 123;
+        // if both the senders have the same value then it most be the same loan.
+        //from there take this loan and require a limit of voters depending on the loan amount
+        if (loanBook[id][msg.sender] == voteBook[msg.sender]) {
+            // and if the token owner balance is in a certain range then
+            // we must require a limit of how many votes of the voting book
+            if (
+                tokenOwnerBalance[borrowersAddress][msg.sender] > 100 &&
+                tokenOwnerBalance[borrowersAddress][msg.sender] < 10000
+            ) {
+                require(voteBook[msg.sender]);
+            }
+        }
     }
 
     /**
@@ -600,7 +725,7 @@ contract Bank is Ownable {
 
     mapping(address => User) userBook;
 
-    uint256 CBLTReserve = 100000;
+    uint256 CBLTReserve = 1000000000000000000000000000000000;
 
     struct User {
         uint256 depositTime;
@@ -608,35 +733,62 @@ contract Bank is Ownable {
         uint256 ethBalance;
         uint256 cbltReserved;
         uint256 timeStakedTier;
+        uint256 ethStaked;
     }
 
     function calculateReward(
         uint256 _amount,
         uint256 _timeStakedTier,
         uint256 _amountStakedTier
-    ) public returns (uint256) {
+    ) internal returns (uint256) {
+        // uint256 tokenPrice = 2000000000000;
         // Pull token price from oracle
-        // (bool result, bytes memory data) =
-        //     oracleAddress.call(
-        //         abi.encodeWithSignature(
-        //             "getValue(address)",
-        //             0x29a99c126596c0Dc96b02A88a9EAab44EcCf511e
-        //         )
-        //     );
-        // Decode bytes data
-        // uint256 tokenPrice = abi.decode(data, (uint256));
-
-        uint256 tokenPrice = 3700000000000000;
-
-        return
-            SafeMath.div(
-                SafeMath.multiply(
-                    _amount,
-                    stakingRewardRate[_timeStakedTier][_amountStakedTier],
-                    100
-                ),
-                tokenPrice
+        (bool result, bytes memory data) =
+            oracleAddress.call(
+                abi.encodeWithSignature(
+                    "getValue(address)",
+                    0x29a99c126596c0Dc96b02A88a9EAab44EcCf511e
+                )
             );
+        require(result == true, "Oracle is down");
+
+        // Decode bytes data
+        uint256 tokenPrice = abi.decode(data, (uint256));
+
+        if (userBook[msg.sender].cbltReserved > 0) {
+            // Calculate the new amount of cblt reserved for user at current market price
+            uint256 newReserved =
+                SafeMath.div(
+                    SafeMath.multiply(
+                        _amount,
+                        stakingRewardRate[_timeStakedTier][_amountStakedTier],
+                        100
+                    ),
+                    tokenPrice
+                );
+            // Calculate the difference between new and old amount
+            uint256 cbltDifference =
+                SafeMath.sub(userBook[msg.sender].cbltReserved, newReserved);
+
+            if (cbltDifference == 0) {
+                return userBook[msg.sender].cbltReserved;
+            } else {
+                // Add lefover cblt tokens back into treasury
+                CBLTReserve = SafeMath.add(CBLTReserve, cbltDifference);
+                // Return the new staking reward
+                return newReserved;
+            }
+        } else {
+            return
+                SafeMath.div(
+                    SafeMath.multiply(
+                        _amount,
+                        stakingRewardRate[_timeStakedTier][_amountStakedTier],
+                        100
+                    ),
+                    tokenPrice
+                );
+        }
     }
 
     function depositEth(uint256 _timeStakedTier) public payable {
@@ -644,16 +796,18 @@ contract Bank is Ownable {
         uint256 _amountStakedTier;
 
         if (msg.value <= 4e17) {
-            _amountStakedTier = 5;
+            _amountStakedTier = 1;
         } else if (msg.value <= 2e18) {
-            _amountStakedTier = 4;
+            _amountStakedTier = 2;
         } else if (msg.value <= 5e18) {
             _amountStakedTier = 3;
         } else if (msg.value <= 25e18) {
-            _amountStakedTier = 2;
+            _amountStakedTier = 4;
         } else {
-            _amountStakedTier = 1;
+            _amountStakedTier = 5;
         }
+
+        userBook[msg.sender].ethStaked = _amountStakedTier; // TESTING GET RID OFF!!!!!!!!
 
         // Minimum deposit of 0.015 ETH
         require(msg.value >= 15e16, "Error, deposit must be >= 0.015 ETH");
@@ -669,7 +823,10 @@ contract Bank is Ownable {
         CBLTReserve = SafeMath.sub(CBLTReserve, cbltReserved);
 
         // Saves the amount of CBLT tokens reserved in user struct
-        userBook[msg.sender].cbltReserved = cbltReserved;
+        userBook[msg.sender].cbltReserved = SafeMath.add(
+            userBook[msg.sender].cbltReserved,
+            cbltReserved
+        );
 
         // Save information on the time tier
         userBook[msg.sender].timeStakedTier = _timeStakedTier;
@@ -683,7 +840,7 @@ contract Bank is Ownable {
         // Change the time of deposit
         userBook[msg.sender].depositTime = block.timestamp;
 
-        // emit onReceived(msg.sender, msg.value);
+        emit onReceived(msg.sender, msg.value);
     }
 
     function withdrawEth(uint256 _amount) public {
@@ -694,8 +851,9 @@ contract Bank is Ownable {
                 SafeMath.sub(block.timestamp, userBook[msg.sender].depositTime),
                 2629743
             );
+
         // Make sure user staked for at least 1 month
-        // require(monthsAfterDeposit >= 1, "Wait 30 days to withdraw");
+        require(monthsAfterDeposit >= 1, "Wait 30 days to withdraw");
 
         uint256 _amountStakedTier;
 
@@ -748,6 +906,8 @@ contract Bank is Ownable {
             stakingReward
         );
 
+        userBook[msg.sender].cbltReserved = 0;
+
         // Substract eth from user account
         userBook[msg.sender].ethBalance = SafeMath.sub(
             userBook[msg.sender].ethBalance,
@@ -766,6 +926,7 @@ contract Bank is Ownable {
             uint256,
             uint256,
             uint256,
+            uint256,
             uint256
         )
     {
@@ -773,15 +934,52 @@ contract Bank is Ownable {
             userBook[msg.sender].ethBalance,
             userBook[msg.sender].depositTime,
             userBook[msg.sender].cbltReserved,
-            userBook[msg.sender].timeStakedTier
+            userBook[msg.sender].timeStakedTier,
+            userBook[msg.sender].ethStaked
         );
     }
 
-    function withdrawStaking() public payable {
+    function withdrawStaking(uint256 _amount) public payable {
+        // Pull token price from oracle
+        (bool call1, bytes memory tokenPriceEncoded) =
+            oracleAddress.call(
+                abi.encodeWithSignature(
+                    "getValue(address)",
+                    0x29a99c126596c0Dc96b02A88a9EAab44EcCf511e
+                )
+            );
+        require(call1 == true, "Oracle is down.");
+
+        // Pull ETH price in USD
+        (bool call2, bytes memory ethPriceUSD) =
+            oracleAddress.call(abi.encodeWithSignature("getETHinUSD()"));
+
+        require(call2 == true, "Oracle is down.");
+
+        // Decode bytes data
+        uint256 tokenPrice = abi.decode(tokenPriceEncoded, (uint256));
+        uint256 ETHinUSD = abi.decode(ethPriceUSD, (uint256));
+
+        uint256 USDtoCBLT =
+            SafeMath.div(
+                100000000000000000000,
+                SafeMath.mul(tokenPrice, ETHinUSD) // A and B coming from oracle
+            );
+
         require(
-            userBook[msg.sender].rewardWallet >= 50,
+            userBook[msg.sender].rewardWallet >= SafeMath.mul(USDtoCBLT, 50),
             "Reward wallet does not have 50$"
         );
+
+        require(
+            token.universalTransferFrom(
+                address(this),
+                msg.sender,
+                userBook[msg.sender].rewardWallet
+            ),
+            "Transfer not complete"
+        );
+        userBook[msg.sender].rewardWallet = 0;
     }
     // Voting
     // Lending
