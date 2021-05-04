@@ -4,6 +4,7 @@ pragma solidity >=0.4.22 <0.9.0;
 import './interfaces/SafeMath.sol';
 import './interfaces/Ownable.sol';
 import './interfaces/UniversalERC20.sol';
+import './Bank.sol';
 
 contract EscrowManager is Ownable {
     using UniversalERC20 for IERC20;
@@ -33,6 +34,9 @@ contract EscrowManager is Ownable {
 
     // default eth address the contract is going to use
     IERC20 private constant ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
+
+    // creates an instance of the bank
+    Bank treasury;
 
     // used to index each job, each job that is created will increment this by 1
     uint index;
@@ -150,6 +154,13 @@ contract EscrowManager is Ownable {
     }
 
     /**
+     * @dev this function will set the treasury
+    */
+    function setTreasury(address payable _treasury) external onlyOwner {
+        treasury = Bank(_treasury);
+    }
+
+    /**
      * @dev this function will send funds back to the creator, can only be called
      * inside of another function
      * @param _index is the index of the job
@@ -170,4 +181,12 @@ contract EscrowManager is Ownable {
         transactions[_index][escrows[_index].payee] = escrows[_index].paidWei;
         escrows[_index].state = State.PAYMENT_SENT_PAYEE;
     }
+
+    /**
+     * @dev this function will deposit the fees into the treasury
+    */
+    function depositFees() external onlyOwner {
+        treasury.depositTokens(address(ETH_ADDRESS), fees);
+    }
+
 }
