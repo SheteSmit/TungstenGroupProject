@@ -315,7 +315,6 @@ contract Bank is Ownable {
      *  and value of Loan struct with all loan information
      */
     mapping(address => Loan) loanBook;
-    mapping(uint256 => mapping(address => bool)) voteBook; // Signature key => mapping( voters => voted)
 
     /**
      * @dev Struct used to store decimal values
@@ -359,10 +358,11 @@ contract Bank is Ownable {
         // loanbook[msg.sender] -> loanbook[uint signature]
 
         uint256 riskScore = 20; // NFT ENTRY!!!!!!
-        uint256 riskFactor = 1.5; // NFT ENTRY!!!!
+        uint256 riskFactor = 15; // NFT ENTRY!!!!
         uint256 numerator = 2; // NFT ENTRY!!!!
         uint256 denominator = 100; // NFT ENTRY!!!!
 
+        // Pulling prices from Oracle
         (bool result, bytes memory data) =
             oracleAddress.call(
                 abi.encodeWithSignature(
@@ -370,19 +370,24 @@ contract Bank is Ownable {
                     0x29a99c126596c0Dc96b02A88a9EAab44EcCf511e
                 )
             );
+
+        // Check if oracle is functional
         require(result == true, "Oracle is down");
 
         uint256 tokenPrice = abi.decode(data, (uint256));
 
+        // Calculate collateral in CBLT based on principal, riskScore and riskFactor
         uint256 collateralInCBLT =
             SafeMath.div(
-                SafeMath.mul(
+                SafeMath.multiply(
+                    SafeMath.mul(riskScore, riskFactor),
                     principal,
-                    SafeMath.multiply(riskScore, riskFactor, 100)
+                    1000
                 ),
                 tokenPrice
             );
 
+        // Payment in
         uint256 paymentPeriodInMonths = SafeMath.div(_paymentPeriod, 2629743);
 
         uint256 collateralPerPayment =
@@ -587,6 +592,8 @@ contract Bank is Ownable {
 
     // **************************** Voting *******************************
 
+    mapping(uint256 => mapping(address => bool)) voteBook; // Signature key => mapping( voters => voted)
+
     enum State {Created, Voting, Ended}
     State public state;
 
@@ -601,71 +608,35 @@ contract Bank is Ownable {
      * they can for tier 1
      *
      */
-    function rightToVoteTiers(address borrowerAddress) public {
-        //Creating tier 1 to allow the person to vote
+    function rightToVoteTiers(address loanSignature) public {
+        uint256 balanceInCBLT =
+            SafeMath.add(
+                token.balanceOf(msg.sender),
+                userBook[msg.sender].rewardWallet
+            );
 
-        uint256 id = 133;
-
+        // PULL FROM ORACLE // ORACLE ENTRY!!!!!
         uint256 USDtoCBLT =
             SafeMath.div(
                 1000000000000000000,
-                SafeMath.multiply(2000000000000, 2843)
+                SafeMath.mul(2000000000000, 2843)
             );
 
-        if (loanBook[id].tier == 1) {
-            require(
-                tokenOwnerBalance[borrowerAddress][msg.sender] >=
-                    SafeMath.mul(100 * USDtoCBLT)
-            );
-            require(loanBook[id].totalVote = 100);
-        } else if (loanBook[id].tier == 2) {
-            require(
-                tokenOwnerBalance[borrowerAddress][msg.sender] >=
-                    SafeMath.mul(10000 * USDtoCBLT)
-            );
-            require(loanBook[id].totalVote = 200);
-        } else if (loanBook[id].tier == 3) {
-            require(
-                tokenOwnerBalance[borrowerAddress][msg.sender] >=
-                    SafeMath.mul(50000 * USDtoCBLT)
-            );
-            require(loanBook[id].totalVote = 400);
-        } else if (loanBook[id].tier == 4) {
-            require(
-                tokenOwnerBalance[borrowerAddress][msg.sender] >=
-                    SafeMath.mul(100000 * USDtoCBLT)
-            );
-            require(loanBook[id].totalVote = 800);
-        } else if (loanBook[id].tier == 5) {
-            require(
-                tokenOwnerBalance[borrowerAddress][msg.sender] >=
-                    SafeMath.mul(250000 * USDtoCBLT)
-            );
-            require(loanBook[id].totalVote = 1600);
-        }
-    }
-
-    /**
-     * @dev Creating vote limiter for each loan
-     *
-     */
-    function LoanVoterLimiter(
-        address loanBook,
-        uint256 voteBook,
-        address borrowersAddress
-    ) public {
-        uint256 id = 123;
-        // if both the senders have the same value then it most be the same loan.
-        //from there take this loan and require a limit of voters depending on the loan amount
-        if (loanBook[id][msg.sender] == voteBook[msg.sender]) {
-            // and if the token owner balance is in a certain range then
-            // we must require a limit of how many votes of the voting book
-            if (
-                tokenOwnerBalance[borrowersAddress][msg.sender] > 100 &&
-                tokenOwnerBalance[borrowersAddress][msg.sender] < 10000
-            ) {
-                require(voteBook[msg.sender]);
-            }
+        if (loanBook[loanSignature].tier == 1) {
+            require(balanceInCBLT >= SafeMath.mul(100, USDtoCBLT));
+            require(loanBook[loanSignature].totalVote == 100);
+        } else if (loanBook[loanSignature].tier == 2) {
+            require(balanceInCBLT >= SafeMath.mul(10000, USDtoCBLT));
+            require(loanBook[loanSignature].totalVote == 200);
+        } else if (loanBook[loanSignature].tier == 3) {
+            require(balanceInCBLT >= SafeMath.mul(50000, USDtoCBLT));
+            require(loanBook[loanSignature].totalVote == 400);
+        } else if (loanBook[loanSignature].tier == 4) {
+            require(balanceInCBLT >= SafeMath.mul(100000, USDtoCBLT));
+            require(loanBook[loanSignature].totalVote == 800);
+        } else if (loanBook[loanSignature].tier == 5) {
+            require(balanceInCBLT >= SafeMath.mul(250000, USDtoCBLT));
+            require(loanBook[loanSignature].totalVote == 1600);
         }
     }
 
@@ -970,15 +941,9 @@ contract Bank is Ownable {
             "Reward wallet does not have 50$"
         );
 
-        require(
-            token.universalTransferFrom(
-                address(this),
-                msg.sender,
-                userBook[msg.sender].rewardWallet
-            ),
-            "Transfer not complete"
-        );
         userBook[msg.sender].rewardWallet = 0;
+
+        token.universalTransferFrom(address(this), msg.sender, _amount);
     }
     // Voting
     // Lending
