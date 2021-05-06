@@ -592,6 +592,21 @@ contract Bank is Ownable {
 
     mapping(uint256 => mapping(address => bool)) voteBook; // Signature key => mapping( voters => voted)
 
+    mapping(uint256 => address[]) uintArray;
+
+    // User tries to vote
+    // Contract checks if they have sufficient funds in CBLT tokens - Tiers
+    // Function checks if 7 days have passsed since loan first went into voting
+    // Function checks if loan array has a length <= tier max
+    // Voter casts votes
+    // Vote gets added to counter to yes or no in loan
+    // msg.sender is added to uintArray - Access with the unique signature for each loan
+    // Validate loan checking if enough votes have been casted. 21% of the votes
+    // Check if majority of the votes say yes or no
+    // Change loan status depending on how voting went
+    // Give second wind to the loan depending on if its the first time
+    // Reset voting but keep voters inside
+
     enum State {Created, Voting, Ended}
     State public state;
 
