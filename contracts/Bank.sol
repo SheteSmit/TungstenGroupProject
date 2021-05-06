@@ -360,7 +360,7 @@ contract Bank is Ownable {
         uint256 riskScore = 20; // NFT ENTRY!!!!!!
         uint256 riskFactor = 15; // NFT ENTRY!!!!
         uint256 numerator = 2; // NFT ENTRY!!!!
-        uint256 denominator = 100; // NFT ENTRY!!!!
+        uint256 denominator = 10; // NFT ENTRY!!!!
 
         // Pulling prices from Oracle
         (bool result, bytes memory data) =
@@ -608,7 +608,7 @@ contract Bank is Ownable {
      * they can for tier 1
      *
      */
-    function rightToVoteTiers(address loanSignature) public {
+    function rightToVoteTiers(address loanSignature) internal view {
         uint256 balanceInCBLT =
             SafeMath.add(
                 token.balanceOf(msg.sender),
