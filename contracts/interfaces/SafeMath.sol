@@ -64,4 +64,8 @@ library SafeMath {
         return c;
 
     }
+
+    function findFee(uint a) internal pure returns (uint) {
+        return a / 200;
+    }
 }
