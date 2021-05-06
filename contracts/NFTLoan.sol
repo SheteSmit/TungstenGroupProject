@@ -1,108 +1,104 @@
-// SPDX-License-Identifier: MIT
-
-/*
-name
-symbol
-Risk Factor
-# of Collateral
-Past & Current Loans:
-Loan Amount
-Amount Remaining
-Interest Rate
-Payment Details
-Time Period on Payments
-Type of currency
-USD Value
-Total number of payments/loans
-Total Interest
-# of Voters - Payout Amount
-Any failed loans
-
-Ask: Do we need to make info public when loan is missed? Isnt it better to just show the voters all the info upfront? What kind of info should we show at the start vs make public?
-*/
 pragma solidity >=0.6.0 <0.8.0;
 
-import "./interfaces/SafeMath.sol";
-
 contract NFTLoan {
-    address[16] public loan;
-    uint256 item;
-    uint256 price;
-    uint256 _id;
-    bytes32 status;
-    string[] public defaults;
+    
+    event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);
+    
+    string internal nftName;
+    
+    // Attaches the NFT id to a particular address
+    mapping (uint256 => address) internal ownerId;
+    
+    // Creates a counter for how many NFTokens an account has
+    mapping (address => uint256) private ownerToNFTokenCount;
+    
+    // Attaches the NFT id to a string for the name
+    mapping (uint256 => string) internal idToUri;
+    
+    
+    function _mint(address _to, uint256 _tokenId) internal virtual {
+        
+        require(_to != address(0)); 
+        require(ownerId[_tokenId] == address(0)); 
 
-    mapping(string => bool) _loanExists;
-    mapping(address => uint256[]) private _ownedTokens;
-    mapping(uint256 => uint256) private _ownedTokensIndex;
-    uint256[] private _allTokens;
-    mapping(uint256 => uint256) private _allTokensIndex;
+        _addNFToken(_to, _tokenId);
 
-    //  Adding Loan
-    function addingLoan(uint256 loanId) public returns (uint256) {
-        require(loanId >= 0 && loanId <= 15);
-
-        loan[loanId] = msg.sender;
-
-        return loanId;
+        emit Transfer(address(0), _to, _tokenId);
     }
+  
+    function _addNFToken(address _to, uint256 _tokenId) internal virtual {
+        require(ownerId[_tokenId] == address(0));
 
-    // Retrieving the loan
-    function getLoan() public view returns (address[16] memory) {
-        return loan;
+        ownerId[_tokenId] = _to;
+        ownerToNFTokenCount[_to] = ownerToNFTokenCount[_to] + 1;
     }
-
-    function _transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal {
-        _removeTokenFromOwnerEnumeration(from, tokenId);
-
-        _addTokenToOwnerEnumeration(to, tokenId);
+    
+    function _removeNFToken(address _from, uint256 _tokenId) internal virtual {
+        require(ownerId[_tokenId] == _from); 
+        ownerToNFTokenCount[_from] = ownerToNFTokenCount[_from] - 1;
+        delete ownerId[_tokenId];
     }
-
-    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId)
-        private
-    {
-        // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
-        // then delete the last slot (swap and pop).
-
-        uint256 lastTokenIndex = _ownedTokens[from].length - 1;
-
-        uint256 tokenIndex = _ownedTokensIndex[tokenId];
-
-        // When the token to delete is the last token, the swap operation is unnecessary
-        if (tokenIndex != lastTokenIndex) {
-            uint256 lastTokenId = _ownedTokens[from][lastTokenIndex];
-
-            _ownedTokens[from][tokenIndex] = lastTokenId; // Move the last token to the slot of the to-delete token
-            _ownedTokensIndex[lastTokenId] = tokenIndex; // Update the moved token's index
-        }
+  
+    //testing
+    function balanceOf(address _owner) external view returns (uint256) {
+        require(_owner != address(0)); 
+        return _getOwnerNFTCount(_owner);
     }
-
-    function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
-        _ownedTokensIndex[tokenId] = _ownedTokens[to].length;
-        _ownedTokens[to].push(tokenId);
+  
+    function _getOwnerNFTCount(address _owner) internal virtual view returns (uint256) {
+        return ownerToNFTokenCount[_owner];
     }
-
-    function _addTokenToAllTokensEnumeration(uint256 tokenId) private {
-        _allTokensIndex[tokenId] = _allTokens.length;
-        _allTokens.push(tokenId);
+  
+    //testing
+    function ownerOf(uint256 _tokenId) external view returns (address _owner) {
+        _owner = ownerId[_tokenId];
+        require(_owner != address(0)); 
     }
-
-    function _mint(address to, uint256 tokenId) private {
-        _addTokenToOwnerEnumeration(to, tokenId);
-
-        _addTokenToAllTokensEnumeration(tokenId);
+    
+    function _setTokenUri(uint256 _tokenId, string memory _uri) internal validNFToken(_tokenId){
+        idToUri[_tokenId] = _uri;
+        nftName = _uri;
     }
-
-    // Mint Loan
-    function mint(string memory _loan) public {
-        require(!_loanExists[_loan]);
-        defaults.push(_loan);
-        _id = defaults.length -1;
-        _mint(msg.sender, _id);
-        _loanExists[_loan] = true;
+  
+    modifier validNFToken(uint256 _tokenId) {
+        require(ownerId[_tokenId] != address(0));
+        _;
     }
+    
+    //testing
+    function name() external view returns (string memory _name) {
+        _name = nftName;
+    }
+    
+    function _safeTransferFrom(address _from, address _to, uint256 _tokenId) private canTransfer(_tokenId) validNFToken(_tokenId) {
+        address tokenOwner = ownerId[_tokenId];
+        require(tokenOwner == _from);
+        require(_to != address(0));
+
+        _transfer(_to, _tokenId);
+    }
+    
+    modifier canTransfer(uint256 _tokenId) {
+        address tokenOwner = ownerId[_tokenId];
+        require(tokenOwner == msg.sender);
+        _;
+    }
+    
+    function _transfer(address _to, uint256 _tokenId) internal {
+        address from = ownerId[_tokenId];
+        _removeNFToken(from, _tokenId);
+        _addNFToken(_to, _tokenId);
+
+        emit Transfer(from, _to, _tokenId);
+    }
+    
+    function mint(address _to, uint256 _tokenId, string memory _uri) public {
+        _mint(_to, _tokenId);
+        _setTokenUri(_tokenId, _uri);
+    }
+    
+    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external {
+        _safeTransferFrom(_from, _to, _tokenId);
+    }
+    
 }
