@@ -682,29 +682,52 @@ contract Bank is Ownable {
      */
 
     function endVote() internal inState(State.Voting) {
-
-        if(loanBook[msg.sender].intiliazed == true)
-        {
-             // the  1619656173 represents 7 days and must be less then 7 days
-             // in which it requires at least 50% of the voters to past
-            if(loanBook[msg.sender].timeCreated <= 1619656173 )
-            {
-
-            
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 100) >= 50 );
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 200) >= 50 );
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 400) >= 50 );
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 800) >= 50 );
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 1600) >= 50 );
-
+        if (loanBook[msg.sender].intiliazed == true) {
+            // the  1619656173 represents 7 days and must be less then 7 days
+            // in which it requires at least 50% of the voters to past
+            if (loanBook[msg.sender].timeCreated <= 1619656173) {
+                require(
+                    SafeMath.multiply(
+                        loanBook[msg.sender].totalVote,
+                        50,
+                        100
+                    ) >= 50
+                );
+                require(
+                    SafeMath.multiply(
+                        loanBook[msg.sender].totalVote,
+                        50,
+                        200
+                    ) >= 50
+                );
+                require(
+                    SafeMath.multiply(
+                        loanBook[msg.sender].totalVote,
+                        50,
+                        400
+                    ) >= 50
+                );
+                require(
+                    SafeMath.multiply(
+                        loanBook[msg.sender].totalVote,
+                        50,
+                        800
+                    ) >= 50
+                );
+                require(
+                    SafeMath.multiply(
+                        loanBook[msg.sender].totalVote,
+                        50,
+                        1600
+                    ) >= 50
+                );
             }
             state = State.Ended;
             finalResult = countResult;
             emit voteEnded(finalResult);
-           
-        } //if the
-        else if(loanBook.[msg.sender].timeCreated > 1619656173 )
-        {
+        }
+        //if the
+        else if (loanBook[msg.sender].timeCreated > 1619656173) {
             // contract ends
             state = State.Ended;
             finalResult = countResult;
@@ -712,8 +735,6 @@ contract Bank is Ownable {
         }
 
         //How to give voters another chance if the someone did not vote
-        
-
     }
 
     // if voting is past 7 days then loan ends. Must be take take 21 votes
