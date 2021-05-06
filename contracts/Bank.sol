@@ -681,40 +681,38 @@ contract Bank is Ownable {
      *
      */
 
-    function endVote() internal inState(State.Voting) {
-
-        if(loanBook[msg.sender].intiliazed == true)
-        {
-             // the  1619656173 represents 7 days and must be less then 7 days
+    function endVote() internal inState(State.Voting){
+        // the  1619656173 represents 7 days in epoch and must be less then 7 days
+        uint weekOfEpoch = 1619656173;
+        
+             
              // in which it requires at least 50% of the voters to past
-            if(loanBook[msg.sender].timeCreated <= 1619656173 )
+             // will not use multiple ifs for tiers to save on gas 
+            if(loanBook[msg.sender].timeCreated <=  weekOfEpoch)
             {
+                require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 100) >= 50 );
+                require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 200) >= 50 );
+                require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 400) >= 50 );
+                require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 800) >= 50 );
+                require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 1600) >= 50 );
 
-            
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 100) >= 50 );
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 200) >= 50 );
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 400) >= 50 );
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 800) >= 50 );
-            require(SafeMath.multiply(loanBook[msg.sender].totalVote, 50, 1600) >= 50 );
+                state = State.Ended;
+
 
             }
-            state = State.Ended;
-            finalResult = countResult;
-            emit voteEnded(finalResult);
-           
-        } //if the
-        else if(loanBook.[msg.sender].timeCreated > 1619656173 )
-        {
-            // contract ends
-            state = State.Ended;
-            finalResult = countResult;
-            emit voteEnded(finalResult);
-        }
+             else{
+                    state = State.Ended;
+                 }
+        } 
+      
 
-        //How to give voters another chance if the someone did not vote
+       
+
+        //How to give voters another chance if the someone did not vote needs to be added 
+        // in 
         
 
-    }
+    
 
     // if voting is past 7 days then loan ends. Must be take take 21 votes
 
