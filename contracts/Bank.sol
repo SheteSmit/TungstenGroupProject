@@ -513,8 +513,6 @@ contract Bank is Ownable {
             loanBook[msg.sender].remainingBalance -= principal;
 
             loanBook[msg.sender].dueDate += loanBook[msg.sender].paymentPeriod;
-
-            require(token.transfer(recipient, units));
         }
     }
 
@@ -737,7 +735,7 @@ contract Bank is Ownable {
         //How to give voters another chance if the someone did not vote
     }
 
-    // if voting is past 7 days then loan ends. Must be take take 21 votes
+    // if voting is past 7 days then loan ends. Must take 21 votes
 
     // **************************** Staking *******************************
 
@@ -745,7 +743,7 @@ contract Bank is Ownable {
 
     mapping(address => User) userBook;
 
-    uint256 CBLTReserve = 1000000000000000000000000000000000;
+    uint256 CBLTReserve = 100000000000000000000000000000000000;
 
     struct User {
         uint256 depositTime;
