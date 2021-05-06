@@ -16,6 +16,7 @@ import { BrowserRouter, Switch, Route } from 'react-router-dom';
 import styled, { ThemeProvider } from 'styled-components';
 import AppBar from './components/AppBar';
 import NavBar from './components/navBar';
+import { DataProvider } from './GlobalState';
 
 const theme = {
   grayText: '#6b7774',
@@ -174,12 +175,14 @@ export default function NewApp() {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
+      <DataProvider>
       <NavBar/>
         <AppBar loadBlockchainData={loadBlockchainData} />
         <CustomDrawer />
         <div style={{ marginLeft: '240px' }}>
           <SRouter />
         </div>
+        </DataProvider>
       </BrowserRouter>
     </ThemeProvider>
   );

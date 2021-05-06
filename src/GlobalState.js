@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from "react";
+import React, { createContext, useState } from "react";
 import ContractAPI from "./api/contractAPI";
 
 export const GlobalState = createContext();
@@ -6,13 +6,16 @@ export const GlobalState = createContext();
 export const DataProvider = ({ children }) => {
   const [useContract, setUseContract] = useState(false);
 
-  useEffect(() => {}, []);
 
   const state = {
     useContract: [useContract, setUseContract],
-    contractAPI: ContractAPI(useContract),
-    loading: true,
-  };
+    contractAPI: ContractAPI(),
 
-  return <GlobalState.Provider value={state}>{children}</GlobalState.Provider>;
+  };
+  ContractAPI();
+  return (
+  <GlobalState.Provider value={state}>
+    {children}
+    </GlobalState.Provider>
+  );
 };
