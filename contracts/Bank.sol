@@ -4,18 +4,10 @@ import "./interfaces/Ownable.sol";
 import "./interfaces/IERC20.sol";
 import "./interfaces/SafeMath.sol";
 import "./interfaces/UniversalERC20.sol";
-import "./Chromium.sol";
 
 contract Bank is Ownable {
     using UniversalERC20 for IERC20;
 
-    /**
-     * @dev modifier so that chromium can withdraw cblt form bank
-     */
-    modifier onlyChromium() {
-        require(msg.sender == chromiumAddress);
-        _;
-    }
     /**
      * @dev storing CBLT token in ERC20 type
      */
@@ -25,12 +17,6 @@ contract Bank is Ownable {
      * @dev CobaltLend oracle for scoring and CBLT price
      */
     address oracleAddress;
-
-    /**
-     * @dev chromium address for modifier
-     */
-    address chromiumAddress;
-    Chromium chromium;
 
     constructor(
         address[] memory addresses,
@@ -103,51 +89,6 @@ contract Bank is Ownable {
      * @dev a ledger of the amount of each token in the bank
      */
     mapping(address => uint256) public etherBalance;
-
-    /**
-     * @dev sets the chromium address
-     */
-    function setChromium(address payable _chromium) public onlyOwner {
-        chromiumAddress = _chromium;
-        chromium = Chromium(_chromium);
-    }
-
-    /**
-     * @dev allows for CBLT Tokens to be withdrawn from treasury
-     * by chromium
-     */
-    function withdrawCbltForExchange(
-        IERC20 fromToken,
-        IERC20 cbltToken,
-        address to,
-        uint256 amount,
-        uint256 minReturn
-    ) public payable onlyChromium {
-        require(
-            amount <= totalTokenSupply(address(cbltToken)),
-            "Not enough cblt tokens"
-        );
-        require(amount != 0, "withdraw amount cannot be equal to 0");
-
-        fromToken.universalTransferFrom(msg.sender, address(this), amount);
-        _tokenSupply[address(fromToken)] = SafeMath.add(
-            _tokenSupply[address(fromToken)],
-            amount
-        );
-        tokenOwnerBalance[address(fromToken)][chromiumAddress] = SafeMath.add(
-            tokenOwnerBalance[address(fromToken)][chromiumAddress],
-            amount
-        );
-
-        require(
-            cbltToken.universalTransfer(to, minReturn),
-            "Transaction failed to send."
-        );
-        _tokenSupply[address(cbltToken)] = SafeMath.sub(
-            _tokenSupply[address(cbltToken)],
-            minReturn
-        );
-    }
 
     /**
      * @dev method that will withdraw tokens from the bank if the caller
@@ -264,48 +205,6 @@ contract Bank is Ownable {
             msg.value
         );
         emit onReceived(msg.sender, msg.value);
-    }
-
-    function swapTokensForCblt(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 minReturn,
-        uint256[] memory distribution,
-        uint256 flags
-    ) external payable onlyOwner {
-        require(
-            minReturn <= tokenOwnerBalance[address(destToken)][chromiumAddress],
-            "Chromium doesn't have enough tokens"
-        );
-
-        tokenOwnerBalance[address(fromToken)][chromiumAddress] = SafeMath.sub(
-            tokenOwnerBalance[address(fromToken)][chromiumAddress],
-            amount
-        );
-        _tokenSupply[address(fromToken)] = SafeMath.sub(
-            _tokenSupply[address(fromToken)],
-            amount
-        );
-
-        uint256 returnAmount =
-            chromium.swap{value: msg.value}(
-                fromToken,
-                destToken,
-                amount,
-                minReturn,
-                distribution,
-                flags
-            );
-
-        tokenOwnerBalance[address(destToken)][chromiumAddress] = SafeMath.add(
-            tokenOwnerBalance[address(destToken)][chromiumAddress],
-            returnAmount
-        );
-        _tokenSupply[address(destToken)] = SafeMath.add(
-            _tokenSupply[address(destToken)],
-            returnAmount
-        );
     }
 
     // ****************************** Lending **********************************
