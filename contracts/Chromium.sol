@@ -19,17 +19,14 @@ import "./interfaces/UniversalERC20.sol";
 import "./interfaces/Ownable.sol";
 import "./interfaces/IOneSplit.sol";
 import "./ExchangeOracle.sol";
-import "./Bank.sol";
 
 contract Chromium is Ownable {
     using UniversalERC20 for IERC20;
 
     mapping(IERC20 => uint256) public liquidityAmount;
-    uint256 amountOfCblt;
-
+    uint256 public amountOfCblt;
     address oracleAddress;
 
-    Bank treasury;
     ExchangeOracle oracle;
     IERC20 cblt_token;
 
@@ -56,23 +53,13 @@ contract Chromium is Ownable {
     /**
      * pass in the oracle contract so that it can pull info from it
      */
-    constructor(
-        address _oracle,
-        address payable _treasury,
-        address _cbltAddress
-    ) {
+    constructor(address _oracle, address _cbltToken) {
         oracle = ExchangeOracle(_oracle);
-        treasury = Bank(_treasury);
         oracleAddress = _oracle;
-        cblt_token = IERC20(_cbltAddress);
+        cblt_token = IERC20(_cbltToken);
     }
 
     /** this sets the treasury, and oracle */
-
-    function setTreasury(address payable _treasury) public onlyOwner {
-        treasury = Bank(_treasury);
-    }
-
     function setOracle(address _oracle) public onlyOwner {
         oracle = ExchangeOracle(_oracle);
         oracleAddress = _oracle;
@@ -80,20 +67,6 @@ contract Chromium is Ownable {
 
     function setCbltToken(address _cblt) public onlyOwner {
         cblt_token = IERC20(_cblt);
-    }
-
-    /**
-     * @dev this function should be called to deposit the cblt tokens that are initial sent
-     * to chromium to use
-     */
-    function depositCbltToTreasury(IERC20 _cblt, uint256 _amount)
-        external
-        payable
-    {
-        _cblt.universalTransferFromSenderToThis(_amount);
-        amountOfCblt = SafeMath.add(amountOfCblt, _amount);
-
-        // treasury.depositTokens{value: msg.value}(address(_cblt), _amount);
     }
 
     /************ chromium functions ************/
@@ -105,12 +78,12 @@ contract Chromium is Ownable {
      */
     function getCbltExchangeRate(
         IERC20 fromToken,
-        IERC20 destToken,
+        IERC20 cbltToken,
         uint256 amount
     ) public view returns (uint256 returnAmount) {
-        require(_checkTokensAllowed(fromToken, destToken));
+        require(_checkTokensAllowed(cbltToken));
         (uint256 sellTokenValue, uint256 buyTokenValue) =
-            oracle.priceOfPair(address(fromToken), address(destToken));
+            oracle.priceOfPair(fromToken, cbltToken);
         returnAmount = SafeMath.mul(
             amount,
             SafeMath.findRate(sellTokenValue, buyTokenValue)
@@ -124,61 +97,19 @@ contract Chromium is Ownable {
      */
     function swapForCblt(
         IERC20 fromToken,
-        IERC20 destToken,
+        IERC20 cbltToken,
         uint256 amount,
         uint256 minReturn
     ) external payable {
-        require(_checkTokensAllowed(fromToken, destToken));
-        require(amountOfCblt >= minReturn, "Not enough tokens in Treasury.");
+        require(_checkTokensAllowed(cbltToken));
+        require(
+            cbltToken.universalBalanceOf(address(this)) >= minReturn,
+            "Not enough tokens in Treasury."
+        );
 
         fromToken.universalTransferFromSenderToThis(amount);
-        liquidityAmount[fromToken] = SafeMath.add(
-            liquidityAmount[fromToken],
-            amount
-        );
 
-        fromToken.universalApprove(address(treasury), amount);
-        treasury.withdrawCbltForExchange{value: msg.value}(
-            fromToken,
-            destToken,
-            msg.sender,
-            amount,
-            minReturn
-        );
-
-        amountOfCblt = SafeMath.sub(amountOfCblt, minReturn);
-    }
-
-    /************ 1inch Protocol functions ************/
-    /**
-     * @dev Calculate expected returning amount of `destToken`
-     * @param fromToken (IERC20) Address of token or `address(0)` for Ether
-     * @param destToken (IERC20) Address of token or `address(0)` for Ether
-     * @param amount (uint256) Amount for `fromToken`
-     * @param parts (uint256) Number of pieces source volume could be splitted,
-     * works like granularity, higly affects gas usage. Should be called offchain,
-     * but could be called onchain if user swaps not his own funds, but this is still considered as not safe.
-     * @param flags (uint256) Flags for enabling and disabling some features, default 0
-     */
-    function getExpectedReturn(
-        IERC20 fromToken,
-        IERC20 destToken,
-        uint256 amount,
-        uint256 parts,
-        uint256 flags // See constants in IOneSplit.sol
-    )
-        public
-        view
-        returns (uint256 returnAmount, uint256[] memory distribution)
-    {
-        return
-            oneSplitImpl.getExpectedReturn(
-                fromToken,
-                destToken,
-                amount,
-                parts,
-                flags
-            );
+        cbltToken.universalTransfer(msg.sender, minReturn);
     }
 
     /**
@@ -260,15 +191,12 @@ contract Chromium is Ownable {
      * @dev this function will check to see if the both tokens are correct when wanting
      * to make the exchange with chromium
      */
-    function _checkTokensAllowed(IERC20 fromToken, IERC20 destToken)
+    function _checkTokensAllowed(IERC20 cbltToken)
         internal
         view
         returns (bool)
     {
-        if (
-            treasury.isTokenAllowed(address(fromToken)) &&
-            destToken == cblt_token
-        ) {
+        if (cbltToken == cblt_token) {
             return true;
         } else {
             return false;
