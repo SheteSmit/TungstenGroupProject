@@ -25,6 +25,8 @@ const SidebarItems = [
   { icon: <Business />, text: 'CBLP', link: '/cblp' },
   { icon: <AccountBalance />, text: 'Borrow', link: '/lend' },
   { icon: <EnhancedEncryption />, text: 'Staking', link: '/staking' },
+  { icon: <EnhancedEncryption />, text: 'Voting', link: '/voting' },
+  { icon: <EnhancedEncryption />, text: 'Single Vote', link: '/singlevote' },
   { icon: <Description />, text: 'Chronicles', link: '/chronicles' },
   { icon: <Collections />, text: 'Cobalt Collections', link: '/cobaltcollections' },
 ];

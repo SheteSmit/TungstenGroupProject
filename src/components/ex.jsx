@@ -6,7 +6,7 @@ import CHC from '../abis/CHCToken.json';
 import Wood from '../abis/WoodToken.json';
 import Smit from '../abis/SmitCoin.json';
 import Slick from '../abis/Token.json';
-import './swap.css';
+import './exchange.css';
 import { useForm } from 'react-hook-form';
 import Chromium from '../abis/Chromium.json';
 import Web3 from 'web3';
@@ -17,7 +17,6 @@ function Swap(props) {
     console.log(data);
     const web3 = new Web3(window.ethereum);
     const networkId = await web3.eth.net.getId();
-    console.log(networkId);
     web3.eth.defaultAccount = props.account;
     const token = new web3.eth.Contract(
       Chromium.abi,

@@ -8,7 +8,7 @@ import Slick from './abis/Token.json';
 import Ham from './abis/HAM.json';
 import Chromium from './abis/Chromium.json';
 import { useState, useEffect } from 'react';
-import Swap from './components/swap copy';
+import Swap from './components/exchange';
 import Router from './components/Router/Router';
 import { Link } from 'react-router-dom';
 import CustomDrawer from './components/CustomDrawer';

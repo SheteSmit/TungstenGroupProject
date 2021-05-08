@@ -3,7 +3,7 @@ import "./homepage.css";
 import NavBar from "../../components/navBar";
 import { Alert } from "react-bootstrap";
 import Tour from "reactour";
-import Swap from "../../components/swap";
+import Swap from "../../components/ex";
 import Loading from '../Loading/Loading';
 import Web3 from "web3";
 
