@@ -83,7 +83,7 @@ contract Chromium is Ownable{
     returns(uint returnAmount)
     {
         require(_checkTokensAllowed(cbltToken));
-        (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(fromToken, cbltToken);
+        (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(fromToken), address(cbltToken));
         returnAmount = SafeMath.mul(amount,
             SafeMath.findRate(sellTokenValue, buyTokenValue)
         );
