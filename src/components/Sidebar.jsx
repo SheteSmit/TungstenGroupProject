@@ -30,7 +30,7 @@ const SidebarItems = [
   { icon: <EnhancedEncryption />, text: 'Single Vote', link: '/singlevote' },
   { icon: <Description />, text: 'NFT', link: '/nft' },
   { icon: <Description />, text: 'Chronicles', link: '/chronicles' },
-  { icon: <Collections />, text: 'Cobalt Collections', link: '/cobaltcollections' },
+  { icon: <Collections />, text: 'Collections', link: '/collections' },
 ];
 const StyledLink = styled(Link)`
   text-decoration: none !important;

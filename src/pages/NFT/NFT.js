@@ -3,6 +3,7 @@ import {ListGroup, Badge, Container} from 'react-bootstrap'
 import Web3 from 'web3';
 import NFTScore from '../../abis/NFTLoan.json'
 import Slick from '../../abis/HAM.json'
+import NFTScoring from '../../components/nft/nftScoring';
 
 const NFT = () => {
     const [account, setAccount] = useState('');
@@ -74,7 +75,7 @@ const NFT = () => {
 
   return (
     <Container>    
-     NFT
+     <NFTScoring/>
     </Container>
   )
 
