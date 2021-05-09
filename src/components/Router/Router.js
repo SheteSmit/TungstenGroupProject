@@ -3,6 +3,7 @@ import Swap from "../exchange";
 // import Bank from '../../pages/Bank/Bank';
 import Treasury from "../../pages/Treasury/Treasury";
 import DashBoardHome from "../../pages/dashboard";
+import ChromiumApp from "../../pages/Exchange/ChromiumApp";
 import Voting from "../../pages/Voting/Voting";
 import Singlevote from "../../pages/Voting/Singlevote";
 import NFT from "../../pages/NFT/NFT";
@@ -18,6 +19,7 @@ export default function Router() {
         <Route exact path="/singlevote" component={Singlevote} />
         <Route exact path="/voting" component={Voting} />
         <Route path="/chromium" component={Swap} />
+        <Route path="/hugoChromium" component={ChromiumApp} />
         <Route path="/cameo" component={Cameo} />
         <Route path="/chronicles" component={Chronicles} />
         <Route path="/collections" component={Collections} />
