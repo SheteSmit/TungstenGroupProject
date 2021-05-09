@@ -122,7 +122,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -135,7 +136,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -148,7 +150,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -167,7 +170,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -184,7 +188,8 @@
     },
     {
       "stateMutability": "payable",
-      "type": "receive"
+      "type": "receive",
+      "payable": true
     },
     {
       "inputs": [
@@ -239,7 +244,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -267,7 +273,8 @@
       "name": "swapForCblt",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -311,7 +318,8 @@
         }
       ],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [],
@@ -324,7 +332,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_cbltToken\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"depositToken\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_amount\",\"type\":\"uint256\"}],\"name\":\"onTransfer\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_sendingToken\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_amountSent\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_receivedToken\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_amountRecieved\",\"type\":\"uint256\"}],\"name\":\"tokensExchanged\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"_owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"amountOfCblt\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"fromToken\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"cbltToken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"getCbltExchangeRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"returnAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"liquidityAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_cblt\",\"type\":\"address\"}],\"name\":\"setCbltToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"fromToken\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"destToken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minReturn\",\"type\":\"uint256\"},{\"internalType\":\"uint256[]\",\"name\":\"distribution\",\"type\":\"uint256[]\"},{\"internalType\":\"uint256\",\"name\":\"flags\",\"type\":\"uint256\"}],\"name\":\"swap\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"returnAmount\",\"type\":\"uint256\"}],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"fromToken\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"cbltToken\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"minReturn\",\"type\":\"uint256\"}],\"name\":\"swapForCblt\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"testCall\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"getCbltExchangeRate(address,address,uint256)\":{\"details\":\"this function will get the exchagne rate for the token being exchanged for cblt token it will call on the oracle to make the calculation. the returnAmount is going to be a factor of three larger than the actual amount which means the returnAmount will need to be divided by 1000 to get the correct amount that will be swapped\"},\"swap(address,address,uint256,uint256,uint256[],uint256)\":{\"details\":\"Swap `amount` of `fromToken` to 'destToken`\",\"params\":{\"amount\":\"(uint256) Amount for `fromToken`\",\"destToken\":\"(IERC20) Address of token or `address(0)` for Ether\",\"distribution\":\"(uint256[]) Array of weights for volume distribution returned by `getExpectedReturn`\",\"flags\":\"(uint256) Flags for enabling and disabling some features, default 0\",\"fromToken\":\"(IERC20) Address of token or `address(0)` for Ether\",\"minReturn\":\"(uint256) Minimum expected return, returned by getExpectedReturn\"}},\"swapForCblt(address,address,uint256,uint256)\":{\"details\":\"this function will swap cblt tokens for tokens that are allowed in the bank it calls on a function inside of the bank to do the exchange since no tokens are going to be held in the exchange\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":{\"notice\":\"pass in the oracle contract so that it can pull info from it\"},\"setOracle(address)\":{\"notice\":\"this sets the treasury, and oracle \"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/Chromium.sol\":\"Chromium\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/Chromium.sol\":{\"keccak256\":\"0xc73c9c7561a06e88a17ff47b1c56838d6495fb15319d526622ee285ee6a1f858\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ffce03474d606fdf65fd6ce79848e6abb378108342acd04ac2f78bf30d7cddb6\",\"dweb:/ipfs/QmPyyBMM9rNMBwhPkugkMFXY5YqPMXurxY3FwTZe3kgSpH\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExchangeOracle.sol\":{\"keccak256\":\"0x69e909baee421fd251f7581582a15370ed716d96c8fc90e7758c88eed74e24e2\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://e3861205a9e6224509a97eb9d7afd8d1c0696893d2cdf930a0048d28e0db8d2c\",\"dweb:/ipfs/QmfFr1kn9pEJ7CQxciK7oZVtrNNx7AWxdi5HaJj28xVVEu\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Address.sol\":{\"keccak256\":\"0xb64b640e91314976fa92660a6b5d65bed1fe7332cf4fbbfb29cdaced04f304d7\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://05511d7c1d70f7f2d352ed4cf9613db18bb268d6d9326bbdedfd531c30048ebf\",\"dweb:/ipfs/QmVBaWVTVqqiG97noFE9a1ZviYGU4QDHc7EEKdEbGn8gcB\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/IERC20.sol\":{\"keccak256\":\"0x7ec254f7205727e7e8b74fcab0b84f0653fba992b3fb7a6c30d3cf6f0a3a62e0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://20bd87b4fbee46c7075dbd32064e89f746ac481f8f1ca00a44bf18d74007ca93\",\"dweb:/ipfs/QmWCEuqirU62zA9GzEUAhTvQePMcqokwPHyCyqEkAkUJBz\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/IOneSplit.sol\":{\"keccak256\":\"0xa31409b9c289cbe5e6f7f13d6ad988b7d2d833e4e9b38aa0458f79ce9244c2a1\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://782d70d345c0995f1305e8e4a6f96e3e65d18b8f9f0ff14da0bdb043ebec3b89\",\"dweb:/ipfs/QmQeRi6AhaedtCzyQFhvjPwhxKX6xzAsykDzmxTn1MsL6Q\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol\":{\"keccak256\":\"0x5086bbbeff67771c169d3bb3133c9e8d52a2569e88f0cf813a67aa420f15f7eb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fe1c2576dd591e776f735aa0b91f7828dcf12d5e543cdaf218cc8c52ea06a3f5\",\"dweb:/ipfs/QmZ5a2sJahH4G5K2u75fv1KVwZbBubAqj76zTNZ5sVjDR9\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/SafeERC20.sol\":{\"keccak256\":\"0x30461b237459452c9714394c4d43b520eceeba24c61d16b36fa77d2aada9deda\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://88f9a954ac2273009ac8ae2236f88ab41b2ee185b305dbd7064c8d048143508b\",\"dweb:/ipfs/QmQrULe6ZYnb9V8EoBFZNiHm7rYHZZezmgFRZi7iindKRz\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/SafeMath.sol\":{\"keccak256\":\"0x20c89f191abb4a18d7def58583b644ddfef478476365fee0d033c0c174c3deed\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2ddae73fec9549e1433ba6bb5e775f56daed018d034adadfcd009da50b168dc1\",\"dweb:/ipfs/QmcTcnaKwHQS2z857YzAuVs91o6qPQXYrDqv38EzfMETqv\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/UniversalERC20.sol\":{\"keccak256\":\"0x86abc581f5ef5b60b34e574d0e5431f2a1de481d3d07f8107c44be21d490692a\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://cb0d974e6c90b67f0b210eac4a057dabc945f82bb85b70eae931624923ca3336\",\"dweb:/ipfs/QmbEejHGYDByDG9tvvKjnoapWuLTxR5ThUCgRHnqeCKB9o\"]}},\"version\":1}",
@@ -11210,9 +11219,17 @@
     "name": "solc",
     "version": "0.7.6+commit.7338295f.Emscripten.clang"
   },
-  "networks": {},
+  "networks": {
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0xF57B4013dd1665Bd0CF719bB4293eAfC9f580F10",
+      "transactionHash": "0x8fd42deaff23cfff6fe88b96cc4b82a4d2b59e96ea4818a56f7b9738d3a7a9e9"
+    }
+  },
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-05-09T01:06:55.005Z",
+  "updatedAt": "2021-05-09T21:47:43.146Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {

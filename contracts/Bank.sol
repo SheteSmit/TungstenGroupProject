@@ -505,6 +505,10 @@ contract Bank is Ownable {
     // Change loan status depending on how voting went
     // Give second wind to the loan depending on if its the first time
     // Reset voting but keep voters inside
+    // Update 1 ---
+    // -------- Add an address array to keep track of the users we owe interest to
+    // -------- No second-wind option for loans (being discussed)
+    // -------- Payout for voters occurs at the end but payment of interest is prioritized
 
     enum State {Created, Voting, Ended}
     State public state;
