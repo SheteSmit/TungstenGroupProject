@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Web3 from "web3";
-import Bank from "./abis/Bank 2.json";
+import Bank from "./abis/Bank.json";
 import CHC from "./abis/CHCToken.json";
 import Wood from "./abis/WoodToken.json";
 import Smit from "./abis/SmitCoin.json";

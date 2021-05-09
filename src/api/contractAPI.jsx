@@ -5,7 +5,7 @@ import Wood from "../abis/WoodToken.json";
 import Smit from "../abis/SmitCoin.json";
 import Slick from "../abis/Token.json";
 import Ham from "../abis/HAM.json";
-import Bank from "../abis/Bank 2.json";
+import Bank from "../abis/Bank.json";
 
 function ContractAPI() {
   const [contract, setContract] = useState([]);

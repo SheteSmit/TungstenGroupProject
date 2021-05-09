@@ -6,7 +6,6 @@ import CHC from '../abis/CHCToken.json';
 import Wood from '../abis/WoodToken.json';
 import Smit from '../abis/SmitCoin.json';
 import Slick from '../abis/Token.json';
-import './swap.css';
 import { useForm } from 'react-hook-form';
 import Chromium from '../abis/Chromium.json';
 import Web3 from 'web3';
