@@ -27,6 +27,7 @@ const SidebarItems = [
   { icon: <EnhancedEncryption />, text: 'Staking', link: '/staking' },
   { icon: <EnhancedEncryption />, text: 'Voting', link: '/voting' },
   { icon: <EnhancedEncryption />, text: 'Single Vote', link: '/singlevote' },
+  { icon: <Description />, text: 'NFT', link: '/nft' },
   { icon: <Description />, text: 'Chronicles', link: '/chronicles' },
   { icon: <Collections />, text: 'Cobalt Collections', link: '/cobaltcollections' },
 ];

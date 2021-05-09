@@ -4,11 +4,13 @@ import Bank from '../../pages/Bank/Bank';
 import DashBoardHome from '../../pages/dashboard';
 import Voting from '../../pages/Voting/Voting';
 import Singlevote from '../../pages/Voting/Singlevote';
+import NFT from '../../pages/NFT/NFT';
 
 export default function Router() {
   return (
     <>
       <Switch>
+        <Route exact path="/NFT" component={NFT}/> 
         <Route exact path="/singlevote" component={Singlevote}/> 
         <Route exact path="/voting" component={Voting}/> 
         <Route path="/chromium" component={Swap} />
