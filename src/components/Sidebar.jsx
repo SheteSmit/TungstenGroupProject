@@ -20,9 +20,9 @@ import { Link, useLocation } from "react-router-dom";
 
 const SidebarItems = [
   { icon: <Home />, text: 'Dashboard', link: '' },
-  { icon: <SwapHoriz />, text: 'Exchange', link: '/chromium' },
+  { icon: <SwapHoriz />, text: 'Chromium Exchange', link: '/chromium' },
   { icon: <SwapHoriz />, text: 'Treasury', link: '/treasury' },
-  { icon: <Work />, text: 'Catalyst', link: '/catalyst' },
+  { icon: <Work />, text: 'Cameo/Catalyst', link: '/cameo' },
   { icon: <Business />, text: 'CBLP', link: '/cblp' },
   { icon: <AccountBalance />, text: 'Borrow', link: '/lend' },
   { icon: <EnhancedEncryption />, text: 'Staking/Lending', link: '/staking' },

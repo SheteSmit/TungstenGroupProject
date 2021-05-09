@@ -9,7 +9,7 @@ const Treasury = () => {
     <div className="cobalt-card">
       <div className="box">
         <h3>Cobalt Treasury</h3>
-        <video className="logo-video" autoplay="autoplay" muted="muted" loop="loop">
+        <video className="treasury-logo-video" autoplay="autoplay" muted="muted" loop="loop">
           <source src={Logo} type="video/mp4"/>
         </video>
         <h2>Treasury Balance<br/><span>Crypto</span></h2>

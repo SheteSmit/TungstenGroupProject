@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import Swap from "./components/exchange";
 import Router from "./components/Router/Router";
 import { Link } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import NavBar from "./components/navBar";
