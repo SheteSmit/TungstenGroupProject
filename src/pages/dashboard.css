@@ -67,7 +67,7 @@
 }
 
 .logo-video {
-  width: 30%;
+  width: 60%;
   border-radius: 50%;
 }
 
@@ -75,4 +75,52 @@
   width: 50%;
   margin: 0 auto;
   margin-top: 5%;
+}
+
+.spacearound {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 4%;
+}
+
+.main-dashboard {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  margin: 2% auto;
+}
+
+.middle-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.left-dashboard,
+.right-dashboard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.left-dashboard .btn,
+.right-dashboard .btn,
+.middle-dashboard .btn {
+  margin: 4%;
+}
+
+.dashboard-title {
+  text-align: center;
+  font-size: 4rem;
+}
+
+.dashboard-main {
+  margin: 4%;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

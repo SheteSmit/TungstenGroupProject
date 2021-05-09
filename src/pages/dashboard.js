@@ -4,6 +4,8 @@ import { SpaceAroundRow, StyledCard, CobaltContainer, StyledCardHeightFit,
   Row, Col, Container, CobaltCard} from '../components/styled/Dashboard';
 import Activity from '../components/activity';
 import Wallet from '../components/wallet';
+import {Button, Badge} from 'react-bootstrap';
+import Logo from '../icons/MovingLogo.mp4'
 import './dashboard.css'
 
 export default function DashBoardHome() {
@@ -36,56 +38,32 @@ export default function DashBoardHome() {
 
   return (
     <Container>
-      {/* Stacking Snippet */}
-      <SpaceAroundRow>
-       <StyledCard elevation={3}>
-        <Col>
-          <h3>Staking</h3>
-        </Col>
-        <Col>
-          <p>ROI</p>
-        </Col>
-        <Col>
-          <p>Wallet</p>
-        </Col>
-        <button></button>
-      </StyledCard>
-      {/* CBLT Snippet */}
-      <StyledCard elevation={3}>
-        <Col>
-          <h3>CBLT</h3>
-        </Col>
-        <Col>
-          <p>Current Position</p>
-        </Col>
-        <Col>
-          <p>Increase Position</p>
-        </Col>
-        <button></button>
-      </StyledCard>
-      {/* CBLT Snippet */}
-      <StyledCard elevation={3}>
-        <Col>
-          <h3>CBLT</h3>
-        </Col>
-        <Col>
-          <p>Total CBLT Supply</p>
-        </Col>
-        <Col>
-          <p>Total CBLT Burned</p>
-        </Col>
-      </StyledCard>
-    </SpaceAroundRow>
-    <div className="card">
-    <div className="box">
-        <div className="img">
-            <img src="https://www.planwallpaper.com/static/images/cool-wallpaper-5_G6Qe1wU.jpg"/>
+      <StyledCard className="dashboard-main" elevation={3}>
+        <div className="spacearound">
+          <Button variant="outline-secondary">Scoring Token</Button>
+          <Button variant="outline-secondary">Connect Wallet</Button>
         </div>
-        <h2>Account Name<br/><span>Crypto</span></h2>
-        <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et.</p>
-    </div>
-</div>
+        <h2 className="dashboard-title">Cobalt Lend</h2>
+        <div className="main-dashboard">
+          <div className="left-dashboard">
+            <Button variant="light">Treasury Balance</Button>
+            <Button variant="light">Your Staking Rewards</Button>
+            <Button variant="light">Current Oustanding Loans</Button>
+            <Button variant="light">Loan Proposals Up for Vote</Button>
+          </div>
+          <div className="middle-dashboard">
+            <video className="logo-video" autoplay="autoplay" muted="muted" loop="loop">
+              <source src={Logo} type="video/mp4"/>
+            </video>
+            <Button variant="light">Current Cobalt Price</Button>
+          </div>
+          <div className="right-dashboard">
+            <Button variant="light">Loan Status</Button>
+            <Button variant="light">Outstanding Loan Balance</Button>
+          </div>
+        </div>
+      </StyledCard>
+
       {/* <CobaltContainer>
         <CobaltCard elevation={3}>
           <img

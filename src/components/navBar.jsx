@@ -15,7 +15,7 @@ export default function NavBar(props) {
             src="https://miro.medium.com/max/4800/1*-k-vtfVGvPYehueIfPRHEA.png"
           />
         </Navbar.Brand>
-        <Nav className="justify-content-end align-items-center">
+        <Nav className="justify-content-end align-items-center ml-auto">
           <Nav.Link href="#deets">
             <button className="navbtn tour" onClick={props.openTour}>
               Take A Tour
