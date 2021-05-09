@@ -1,6 +1,5 @@
 import React from 'react';
-import { SpaceAroundRow, StyledCard, CobaltContainer, StyledCardHeightFit,
-    Row, Col, StyledAvatar, CobaltCard} from '../styled/Dashboard';
+import { SpaceAroundRow, StyledCard} from '../styled/Dashboard';
 import './tiers.css';
 
 const Tiers = () => {

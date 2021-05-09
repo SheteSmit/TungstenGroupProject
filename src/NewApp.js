@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import Swap from "./components/exchange";
 import Router from "./components/Router/Router";
 import { Link } from "react-router-dom";
-import CustomDrawer from "./components/CustomDrawer";
+import Sidebar from "./components/Sidebar";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import NavBar from "./components/navBar";
@@ -172,7 +172,7 @@ export default function NewApp() {
       <BrowserRouter>
         {/* <DataProvider> */}
           <NavBar />
-          <CustomDrawer />
+          <Sidebar />
           <div style={{ marginLeft: "240px" }}>
             <SRouter />
           </div>
