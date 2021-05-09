@@ -170,13 +170,13 @@ export default function NewApp() {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        <DataProvider>
+        {/* <DataProvider> */}
           <NavBar />
           <CustomDrawer />
           <div style={{ marginLeft: "240px" }}>
             <SRouter />
           </div>
-        </DataProvider>
+        {/* </DataProvider> */}
       </BrowserRouter>
     </ThemeProvider>
   );

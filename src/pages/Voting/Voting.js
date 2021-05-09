@@ -1,4 +1,5 @@
 import { ListGroup, Badge, Container } from "react-bootstrap";
+import Tiers from "../../components/voting/tiers";
 
 const Voting = () => {
   return (
@@ -47,6 +48,8 @@ const Voting = () => {
           Vestibulum at eros
         </ListGroup.Item>
       </ListGroup>
+
+      <Tiers/>
     </Container>
   );
 };
