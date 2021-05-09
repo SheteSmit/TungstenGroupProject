@@ -15,42 +15,37 @@ export default function NavBar(props) {
             src="https://miro.medium.com/max/4800/1*-k-vtfVGvPYehueIfPRHEA.png"
           />
         </Navbar.Brand>
-          <Nav className="justify-content-end align-items-center">
-            <Nav.Link href="#deets">
-              <button className="navbtn tour" onClick={props.openTour}>
-                Take A Tour
-              </button>
-            </Nav.Link>
-            <Nav.Link href="#memes">
-              {" "}
-              <button className="cblt">
-                <span>{20000 + " CBLT"}</span>
-              </button>
-            </Nav.Link>
-            <Nav.Link href="#memes">
-              {" "}
-              <button className="navbtn ">
-                <span>
-                  {3000 +
-                    " " +
-                    " " +
-                    "ETH"}
-                </span>
-              </button>
-            </Nav.Link>
-            <NavDropdown
-              className="navbtn settings mr-2"
-              title="..."
-              id="collasible-nav-dropdown"
-            >
-              <NavDropdown.Item href="#action/3.2"></NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2"></NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">
-                Separated link
-              </NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
+        <Nav className="justify-content-end align-items-center ml-auto">
+          <Nav.Link href="#deets">
+            <button className="navbtn tour" onClick={props.openTour}>
+              Take A Tour
+            </button>
+          </Nav.Link>
+          <Nav.Link href="#memes">
+            {" "}
+            <button className="cblt">
+              <span>{20000 + " CBLT"}</span>
+            </button>
+          </Nav.Link>
+          <Nav.Link href="#memes">
+            {" "}
+            <button className="navbtn ">
+              <span>{3000 + " ETH"}</span>
+            </button>
+          </Nav.Link>
+          <NavDropdown
+            className="navbtn settings mr-2"
+            title="..."
+            id="collasible-nav-dropdown"
+          >
+            <NavDropdown.Item href="#action/3.2"></NavDropdown.Item>
+            <NavDropdown.Item href="#action/3.2"></NavDropdown.Item>
+            <NavDropdown.Divider />
+            <NavDropdown.Item href="#action/3.4">
+              Separated link
+            </NavDropdown.Item>
+          </NavDropdown>
+        </Nav>
       </Navbar>
     </header>
   );

@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Gear from '../icons/settings.svg';
 import Arrow from '../icons/arrow-down.svg';
-import Down from '../icons/chevron-down.svg';
+// import Down from '../icons/chevron-down.svg';
 import CHC from '../abis/CHCToken.json';
 import Wood from '../abis/WoodToken.json';
-import Smit from '../abis/SmitCoin.json';
+// import Smit from '../abis/SmitCoin.json';
 import Slick from '../abis/Token.json';
-import './swap.css';
 import { useForm } from 'react-hook-form';
 import Chromium from '../abis/Chromium.json';
 import Web3 from 'web3';
@@ -40,6 +39,21 @@ function Swap(props) {
       .then((x) => console.log(x));
     console.log(x);
   }
+
+  async function getToken(str) {
+    switch (str) {
+      case 'CHC':
+        return CHC;
+      case 'Wood':
+        return Wood;
+      case 'Slick':
+        return Slick;
+      default:
+        return console.log('Done')
+
+    }
+  }
+
   return (
     <>
       <form onSubmit={handleSubmit(submit)}>
@@ -105,13 +119,4 @@ function Swap(props) {
 
 export default Swap;
 
-async function getToken(str) {
-  switch (str) {
-    case 'CHC':
-      return CHC;
-    case 'Wood':
-      return Wood;
-    case 'Slick':
-      return Slick;
-  }
-}
+

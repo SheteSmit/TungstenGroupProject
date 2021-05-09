@@ -1,1 +1,1 @@
-const LoanNFT = artifacts.require("./LoanNFT.sol")
+const LoanNFT = artifacts.require("./NFTLoan.sol")

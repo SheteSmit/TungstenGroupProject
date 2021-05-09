@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { SpaceAroundRow, StyledCard, CobaltContainer, StyledCardHeightFit,
-  Row, Col, Container, CobaltCard} from '../components/styled/Dashboard';
-import Activity from '../components/activity';
-import Wallet from '../components/wallet';
+import { StyledCard, Container,
+  //  CobaltCard, CobaltContainer, StyledCardHeightFit, Row, Col
+ } from '../components/styled/Dashboard';
+// import Activity from '../components/activity';
+// import Wallet from '../components/wallet';
+import {Button} from 'react-bootstrap';
+import Logo from '../icons/MovingLogo.mp4'
 import './dashboard.css'
 
 export default function DashBoardHome() {
 
-  const [cryptos, setCryptoList] = useState([]);
-  const [crypto, setCrypto] = useState('');
+  const [cryptolist ,setCryptoList] = useState([]);
+  // const [crypto, setCrypto] = useState('');
 
-  const formatter = new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
+  // const formatter = new Intl.NumberFormat('en-US', {
+  //   minimumFractionDigits: 2,
+  //   maximumFractionDigits: 2,
+  // });
 
   const getCrypto = async () => {
     const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
@@ -27,65 +30,41 @@ export default function DashBoardHome() {
   }
   useEffect(() => {
     getCrypto()
-  }, [])
+  }, [cryptolist])
 
-  function handleChange(event) {
-    setCrypto(event.target.value);
-    console.log(crypto)
-  }
+  // function handleChange(event) {
+  //   setCrypto(event.target.value);
+  //   console.log(crypto)
+  // }
 
   return (
     <Container>
-      {/* Stacking Snippet */}
-      <SpaceAroundRow>
-       <StyledCard elevation={3}>
-        <Col>
-          <h3>Staking</h3>
-        </Col>
-        <Col>
-          <p>ROI</p>
-        </Col>
-        <Col>
-          <p>Wallet</p>
-        </Col>
-        <button></button>
-      </StyledCard>
-      {/* CBLT Snippet */}
-      <StyledCard elevation={3}>
-        <Col>
-          <h3>CBLT</h3>
-        </Col>
-        <Col>
-          <p>Current Position</p>
-        </Col>
-        <Col>
-          <p>Increase Position</p>
-        </Col>
-        <button></button>
-      </StyledCard>
-      {/* CBLT Snippet */}
-      <StyledCard elevation={3}>
-        <Col>
-          <h3>CBLT</h3>
-        </Col>
-        <Col>
-          <p>Total CBLT Supply</p>
-        </Col>
-        <Col>
-          <p>Total CBLT Burned</p>
-        </Col>
-      </StyledCard>
-    </SpaceAroundRow>
-    <div className="card">
-    <div className="box">
-        <div className="img">
-            <img src="https://www.planwallpaper.com/static/images/cool-wallpaper-5_G6Qe1wU.jpg"/>
+      <StyledCard className="dashboard-main" elevation={3}>
+        <div className="spacearound">
+          <Button variant="outline-secondary">Scoring Token</Button>
+          <Button variant="outline-secondary">Connect Wallet</Button>
         </div>
-        <h2>Account Name<br/><span>Crypto</span></h2>
-        <p> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                tempor incididunt ut labore et.</p>
-    </div>
-</div>
+        <h2 className="dashboard-title">Cobalt Lend</h2>
+        <div className="main-dashboard">
+          <div className="left-dashboard">
+            <Button variant="light">Treasury Balance</Button>
+            <Button variant="light">Your Staking Rewards</Button>
+            <Button variant="light">Current Oustanding Loans</Button>
+            <Button variant="light">Loan Proposals Up for Vote</Button>
+          </div>
+          <div className="middle-dashboard">
+            <video className="logo-video" autoPlay="autoplay" muted="muted" loop="loop">
+              <source src={Logo} type="video/mp4"/>
+            </video>
+            <Button variant="light">Current Cobalt Price</Button>
+          </div>
+          <div className="right-dashboard">
+            <Button variant="light">Loan Status</Button>
+            <Button variant="light">Outstanding Loan Balance</Button>
+          </div>
+        </div>
+      </StyledCard>
+
       {/* <CobaltContainer>
         <CobaltCard elevation={3}>
           <img
