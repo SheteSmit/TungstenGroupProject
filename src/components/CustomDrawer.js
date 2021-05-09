@@ -4,7 +4,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-} from '@material-ui/core';
+} from "@material-ui/core";
 import {
   Home,
   SwapHoriz,
@@ -14,9 +14,9 @@ import {
   Description,
   Collections,
   EnhancedEncryption,
-} from '@material-ui/icons';
-import styled from 'styled-components';
-import { Link, useLocation } from 'react-router-dom';
+} from "@material-ui/icons";
+import styled from "styled-components";
+import { Link, useLocation } from "react-router-dom";
 
 const SidebarItems = [
   { icon: <Home />, text: 'Dashboard', link: '' },
@@ -36,7 +36,6 @@ const StyledLink = styled(Link)`
   color: inherit;
 `;
 
-
 export default function CustomDrawer() {
   const location = useLocation();
   console.log(location.pathname.substr(1));
@@ -47,23 +46,26 @@ export default function CustomDrawer() {
         <StyledLink to={item.link} key={item.text}>
           <ListItem
             style={{
-              whiteSpace: 'normal',
+              whiteSpace: "normal",
               color:
-                location.pathname.substr(1) === item.link ? '#5664d2' : 'inherit',
-            }}>
+                location.pathname.substr(1) === item.link
+                  ? "#5664d2"
+                  : "inherit",
+            }}
+          >
             <ListItemIcon
               style={{
                 color:
                   location.pathname.substr(1) === item.link
-                    ? '#5664d2'
-                    : 'inherit',
-              }}>
+                    ? "#5664d2"
+                    : "inherit",
+              }}
+            >
               {item.icon}
             </ListItemIcon>
             <ListItemText primary={item.text} />
           </ListItem>
         </StyledLink>
-
       </>
     );
   });
