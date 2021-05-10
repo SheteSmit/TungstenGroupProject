@@ -3,10 +3,10 @@ import Gear from '../icons/settings.svg'
 import Arrow from '../icons/arrow-down.svg'
 import Down from '../icons/chevron-down.svg'
 import { MyVerticallyCenteredModal } from './tokenSelection';
-import './swap.css';
+import './exchange.css';
 
 const Swap = (props) => {
-  const [modalShow, setModalShow] = React.useState(false);
+  const [modalShow, setModalShow] = useState(false);
 
   return (
     <div className="swapwrapper mt-5">
