@@ -11,11 +11,10 @@ import { useState, useEffect } from "react";
 import Swap from "./components/exchange";
 import Router from "./components/Router/Router";
 import { Link } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/sidebar";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import styled, { ThemeProvider } from "styled-components";
 import NavBar from "./components/navBar";
-import { DataProvider } from "./GlobalState";
 
 const theme = {
   grayText: "#6b7774",
@@ -167,23 +166,10 @@ export default function NewApp() {
       console.log(error);
     }
   }
-  const loadWeb3 = async () => {
-    if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum)
-       const web3instance =  await window.ethereum.enable();
-       setUserWeb3(web3instance)
-    }
-    else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider)
-    }
-    else {
-        window.alert('Non-Ethereum browser detected. You should consider trying MetaMask!')
-    }
-}
+
 
 useEffect( async () => {
   // const fetchData = async () => {
-    await loadWeb3();
   // }
   // fetchData();
 }, []);
@@ -191,13 +177,11 @@ useEffect( async () => {
   return (
     <ThemeProvider theme={theme}>
       <BrowserRouter>
-        {/* <DataProvider> */}
         <NavBar />
         <Sidebar />
         <div style={{ marginLeft: "240px" }}>
           <SRouter />
         </div>
-        {/* </DataProvider> */}
       </BrowserRouter>
     </ThemeProvider>
   );
