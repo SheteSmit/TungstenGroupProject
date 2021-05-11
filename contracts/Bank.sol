@@ -4,6 +4,7 @@ import "./interfaces/Ownable.sol";
 import "./interfaces/IERC20.sol";
 import "./interfaces/SafeMath.sol";
 import "./interfaces/UniversalERC20.sol";
+import "./ExchangeOracle.sol";
 
 contract Bank is Ownable {
     using UniversalERC20 for IERC20;
@@ -636,7 +637,7 @@ contract Bank is Ownable {
 
     mapping(uint256 => mapping(uint256 => uint256)) stakingRewardRate;
 
-    mapping(address => User) userBook;
+    mapping(address => User) public userBook;
 
     uint256 CBLTReserve = 100000000000000000000000000000000000;
 
@@ -948,3 +949,37 @@ contract Bank is Ownable {
 //         // Decode bytes data
 //         (uint256 sellTokenValue, uint256 buyTokenValue) =
 //             abi.decode(data, (uint256, uint256));
+
+// Amount of CBLT present in wallet per tier
+
+// Tier 1 - 500  to  5k   USD
+// Tier 2 - 5k   to  20k  USD
+// Tier 3 - 20k  to  50k  USD
+// Tier 4 - 50k  to  100k USD
+// Tier 5 - 100k to  250k USD
+// Tier 6 - +250k         USD
+
+// Amount of votes allowed per tier
+
+// Tier 1 - 20
+// Tier 2 - 40
+// Tier 3 - 60-80
+// Tier 4 ''  '' '' Needs work
+
+// Information made public from the borrower
+// Name, eth account, email
+
+// Maximum period to pay loan per Tier
+// Tier 1 - 10k  to 25k  - 12 months
+// Tier 2 - 25k  to 50k  - 24 months
+// Tier 3 - 50k  to 100k - 36 months
+// Tier 4 - 100k to 250k - 48 months
+// Tier 5 - 250k to 1m   - 60 months
+// Tier 6 - 1m   to 5m   - 60 months
+// Tier 7 - 5m and above - 60 months
+
+// New contract logic needed to be added
+// Lending 50%
+// Long term stakers - 12
+// long term pool
+// staking - indebt
