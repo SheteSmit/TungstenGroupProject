@@ -5,7 +5,7 @@ const oneInchAPI = 'https://api.1inch.exchange/v3.0/1/quote'
 
 const fromOptions =
     <>
-        <option value={"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"}>ETH</option>
+        <option value={"0xc778417E063141139Fce010982780140Aa0cD5Ab"}>ETH</option>
         <option value={"0x111111111117dc0aa78b770fa6a738034120c302"}>One Inch</option>
         <option value={"0x55d398326f99059ff775485246999027b3197955"}>USDT</option>
         <option value={"0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"}>USDC</option>
@@ -17,16 +17,16 @@ const destOptions =
         <option value={"0xdac17f958d2ee523a2206206994597c13d831ec7"}>USDT</option>
         <option value={"0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"}>USDC</option>
         <option value={'0x6b175474e89094c44da98b954eedeac495271d0f'}>DIA</option>
-        <option value={"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"}>ETH</option>
+        <option value={"0xc778417E063141139Fce010982780140Aa0cD5Ab"}>ETH</option>
         <option value={"0x111111111117dc0aa78b770fa6a738034120c302"}>One Inch</option>
     </>
 
 
-class OneInchSwap extends Component {
+class Uniswap extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            fromToken: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
+            fromToken: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
             destToken: '0xdac17f958d2ee523a2206206994597c13d831ec7',
             fromTokenBalance: '',
             destTokenBalance: '',
@@ -152,4 +152,4 @@ class OneInchSwap extends Component {
     }
 }
 
-export default OneInchSwap;
+export default Uniswap;
