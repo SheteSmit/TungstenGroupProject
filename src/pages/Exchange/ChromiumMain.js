@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import OneInchSwap from './OneInchSwap'
+import Uniswap from './Uniswap'
 import ChromiumSwap from './ChromiumSwap'
 import Oracle from "./Oracle";
 
@@ -26,7 +26,7 @@ class Main extends Component {
                 cbltToken={this.props.cbltToken}
             />
         } else {
-            content = <OneInchSwap
+            content = <Uniswap
                 slippage={this.props.slippage}
                 driver={this.props.driver}
             />
@@ -48,10 +48,10 @@ class Main extends Component {
                     <button
                         className="btn btn-light"
                         onClick={(event) => {
-                            this.setState({currentForm: 'ONEINCH'})
+                            this.setState({currentForm: 'UNISWAP'})
                         }}
                     >
-                        ONE INCH
+                        Uniswap
                     </button>
                 </div>
 
