@@ -92,7 +92,7 @@ contract Chromium is Ownable{
     {
         require(cbltToken.universalBalanceOf(address(this)) >= returnAmount, "Not enough tokens in Treasury.");
 
-        fromToken.universalTransferFromSenderToThis(amount);
+        fromToken.universalTransferFrom(msg.sender, address(this), amount);
         cbltToken.universalTransfer(msg.sender, returnAmount);
         liquidityAmount[fromToken] = SafeMath.add(liquidityAmount[fromToken], amount);
 
