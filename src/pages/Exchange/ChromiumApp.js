@@ -4,7 +4,7 @@ import Chromium from '../../abis/Chromium.json'
 import Oracle from '../../abis/ExchangeOracle.json'
 import navBar from '../../components/navBar'
 import Main from './ChromiumMain'
-import {ChainId, Fetcher, WETH, Route, Trade, TokenAmount, TradeType} from '@uniswap/sdk'
+import {ChainId, Fetcher, Route, Trade, TokenAmount, TradeType} from '@uniswap/sdk'
 
 
 class App extends Component {
@@ -17,14 +17,15 @@ class App extends Component {
             chromium: {},
             oracle: {},
             chainId: '',
-            ethAddress: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-            cbltToken: '0x433c6e3d2def6e1fb414cf9448724efb0399b698',
+            ethAddress: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+            cbltToken: '0x433C6E3D2def6E1fb414cf9448724EFB0399b698',
             fromToken: null,
             destToken: null,
             amount: '',
             returnAmount: '',
             tokenBalance: '',
             ethBalance: '',
+            uniswapQuote: '',
             loading: true
         }
 
@@ -91,30 +92,41 @@ class App extends Component {
         console.log(name, value)
     };
 
-    async getCbltExchangeRate() {
+    getCbltExchangeRate() {
         this.setState({loading: true})
-        await this.state.chromium.methods.getCbltExchangeRate(this.state.fromToken, this.state.cbltToken, this.state.amount).call({from: this.state.account})
+        this.state.chromium.methods.getCbltExchangeRate(this.state.fromToken, this.state.amount).call({from: this.state.account})
             .then((results) => {
                 let res = results / 1000
-                this.setState({returnAmount: res.toString()})
+                this.setState({
+                    returnAmount: res.toString()
+                })
             })
         this.setState({loading: false})
     }
 
-    async swapForCblt() {
+    swapForCblt() {
         this.setState({loading: true})
+        let etherAmount, amountReturning
+        etherAmount = this.state.amount
+        etherAmount = window.web3.utils.toWei(etherAmount, "ether")
+        amountReturning = this.state.returnAmount
+        amountReturning = window.web3.utils.toWei(amountReturning, 'ether')
         if(this.state.fromToken === this.state.ethAddress) {
-            await this.state.chromium.methods.swapForCblt(this.state.fromToken, this.state.destToken, this.state.amount, this.state.returnAmount).send({
-                value: this.state.amount,
-                from: this.state.account
-            }).on('transactionHash', (hash) => {
-                this.setState({loading: false})
-            })
+            try{
+                this.state.chromium.methods.swapForCblt(this.state.fromToken, etherAmount, amountReturning).send({
+                    value: etherAmount,
+                    from: this.state.account
+                }).on('transactionHash', (hash) => {
+                    this.setState({loading: false})
+                })
+            } catch (e) {
+                console.log("Error, deposit: ", e);
+            }
         } else {
-            this.state.fromToken.methods.approve(this.state.chromium.address, this.state.amount).send({
+            this.state.fromToken.methods.approve(this.state.chromium.address, etherAmount).send({
                 from: this.state.account
             }).on('transactionHash', (hash) => {
-                this.state.chromium.methods.swapForCblt(this.state.fromToken, this.state.destToken, this.state.amount, this.state.returnAmount).send({
+                this.state.chromium.methods.swapForCblt(this.state.fromToken, etherAmount, amountReturning).send({
                     from: this.state.account
                 }).on('transactionHash', (hash) => {
                     this.setState({loading: false})
@@ -140,8 +152,12 @@ class App extends Component {
         const trade = new Trade(route, new TokenAmount(fToken, amount), TradeType.EXACT_INPUT)
         console.log(route.midPrice.toSignificant(6))
         console.log(trade.executionPrice.toSignificant(6))
-        let returnAmount = trade.executionPrice.toSignificant(6)
-        this.setState({returnAmount})
+        let uniswapQuote = trade.executionPrice.toSignificant(6)
+        this.setState({uniswapQuote})
+    }
+
+    async swapExactTokensForTokens() {
+
     }
 
     render() {
