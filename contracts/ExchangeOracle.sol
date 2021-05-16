@@ -26,11 +26,18 @@ contract ExchangeOracle is Ownable {
     );
 
     constructor() {
-        tokenData[0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE] = Token(
+        tokenData[0xc778417E063141139Fce010982780140Aa0cD5Ab] = Token(
             "Ethereum",
             "ETH",
             "url",
-            40000000000000,
+            1000000000000000000,
+            true
+        );
+        tokenData[0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2] = Token(
+            "Ethereum",
+            "ETH",
+            "url",
+            1000000000000000000,
             true
         );
     }
@@ -50,20 +57,20 @@ contract ExchangeOracle is Ownable {
     }
 
     function priceOfPair(address _sellTokenAddress, address _buyTokenAddress)
-        public
-        view
-        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    public
+    view
+    returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
     {
         return (
-            tokenData[_sellTokenAddress].value,
-            tokenData[_buyTokenAddress].value
+        tokenData[_sellTokenAddress].value,
+        tokenData[_buyTokenAddress].value
         );
     }
 
     function testConnection()
-        public
-        pure
-        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    public
+    pure
+    returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
     {
         return (2, 3);
     }
