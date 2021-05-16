@@ -25,11 +25,6 @@ class Main extends Component {
                 ethAddress={this.props.ethAddress}
                 cbltToken={this.props.cbltToken}
             />
-        } else {
-            content = <Uniswap
-                slippage={this.props.slippage}
-                driver={this.props.driver}
-            />
         }
 
         return (
@@ -45,14 +40,6 @@ class Main extends Component {
                         CBLT
                     </button>
                     <span className="text-muted">&lt; &nbsp; &gt;</span>
-                    <button
-                        className="btn btn-light"
-                        onClick={(event) => {
-                            this.setState({currentForm: 'UNISWAP'})
-                        }}
-                    >
-                        Uniswap
-                    </button>
                 </div>
 
                 <div className="card mb-4">
