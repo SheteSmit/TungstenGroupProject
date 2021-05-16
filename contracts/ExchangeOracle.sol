@@ -40,6 +40,13 @@ contract ExchangeOracle is Ownable {
             1000000000000000000,
             true
         );
+        tokenData[0x433C6E3D2def6E1fb414cf9448724EFB0399b698] = Token(
+            "Cobalt Rinkeby",
+            "CBLT",
+            "url",
+            500000000000000000,
+            true
+        );
     }
 
     function updateToken(
