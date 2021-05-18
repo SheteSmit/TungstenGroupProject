@@ -20,7 +20,7 @@ class App extends Component {
             oracle: {},
             chainId: '',
             ethAddress: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
-            cbltToken: '0x433C6E3D2def6E1fb414cf9448724EFB0399b698',
+            cbltToken: '0xAA9E1c266B6A62314A6f8c1EE347991Ceb8b6690',
             fromToken: null,
             destToken: null,
             amount: '0',
@@ -102,7 +102,7 @@ class App extends Component {
     getCbltExchangeRate() {
         this.setState({loading: true})
         if(this.state.fromToken !== null && this.state.amount !== 0 && this.state.amount !== '') {
-            this.state.chromium.methods.getCbltExchangeRate(this.state.fromToken, this.state.amount).call({from: this.state.account})
+            this.state.chromium.methods.getCbltExchangeRate(this.state.fromToken, this.state.cbltToken, this.state.amount).call({from: this.state.account})
                 .then((results) => {
                     let res = results / 1000000
                     this.setState({
