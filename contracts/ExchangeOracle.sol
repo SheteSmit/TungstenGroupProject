@@ -26,14 +26,7 @@ contract ExchangeOracle is Ownable {
     );
 
     constructor() {
-        tokenData[0xc778417E063141139Fce010982780140Aa0cD5Ab] = Token(
-            "Ethereum",
-            "ETH",
-            "url",
-            1000000000000000000,
-            true
-        );
-        tokenData[0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2] = Token(
+        tokenData[0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE] = Token(
             "Ethereum",
             "ETH",
             "url",
@@ -44,7 +37,7 @@ contract ExchangeOracle is Ownable {
             "Cobalt Rinkeby",
             "CBLT",
             "url",
-            500000000000000000,
+            27014488466940,
             true
         );
     }
