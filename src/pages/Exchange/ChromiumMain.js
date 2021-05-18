@@ -1,5 +1,4 @@
 import React, {Component} from 'react'
-import Uniswap from './Uniswap'
 import ChromiumSwap from './ChromiumSwap'
 import Oracle from "./Oracle";
 
