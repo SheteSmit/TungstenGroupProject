@@ -3,11 +3,10 @@ import React, {Component} from 'react'
 const fromOptions =
     <>
         <option>...</option>
-        <option value={"0xc778417E063141139Fce010982780140Aa0cD5Ab"}>ETH</option>
-        <option value={"0x111111111117dc0aa78b770fa6a738034120c302"}>One Inch</option>
+        <option value={"0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"}>ETH</option>
         <option value={"0xaf3c38a810670786d2fbd1a40adea7f9dc6e8746"}>USDT</option>
         <option value={"0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d"}>USDC</option>
-        <option value={'0x6b175474e89094c44da98b954eedeac495271d0f'}>DIA</option>
+        <option value={'0xcde5f4638c82ae3de3cfdf61f3a42327d694926f'}>HAM</option>
     </>
 
 
