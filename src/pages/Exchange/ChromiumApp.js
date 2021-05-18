@@ -19,7 +19,7 @@ class App extends Component {
             ierc20: {},
             oracle: {},
             chainId: '',
-            ethAddress: '0xc778417E063141139Fce010982780140Aa0cD5Ab',
+            ethAddress: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
             cbltToken: '0xAA9E1c266B6A62314A6f8c1EE347991Ceb8b6690',
             fromToken: null,
             destToken: null,
@@ -165,19 +165,7 @@ class App extends Component {
         })
     }
 
-    async quote(fromToken, destToken, amount) {
-        const fToken = await Fetcher.fetchTokenData(this.state.chainId,  fromToken)
-        const dToken = await Fetcher.fetchTokenData(this.state.chainId, destToken)
-        const pair = await Fetcher.fetchPairData(fToken, dToken)
-        const route = new Route([pair], fToken)
-        const trade = new Trade(route, new TokenAmount(fToken, amount), TradeType.EXACT_INPUT)
-        console.log(route.midPrice.toSignificant(6))
-        console.log(trade.executionPrice.toSignificant(6))
-        let uniswapQuote = trade.executionPrice.toSignificant(6)
-        this.setState({uniswapQuote})
-    }
-
-    async swapExactTokensForTokens() {
+    async swapCbltForToken() {
 
     }
 
