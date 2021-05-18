@@ -30,7 +30,14 @@ contract ExchangeOracle is Ownable {
             "Ethereum",
             "ETH",
             "url",
-            40000000000000,
+            1000000000000000000,
+            true
+        );
+        tokenData[0x433C6E3D2def6E1fb414cf9448724EFB0399b698] = Token(
+            "Cobalt Rinkeby",
+            "CBLT",
+            "url",
+            27014488466940,
             true
         );
     }
@@ -50,20 +57,20 @@ contract ExchangeOracle is Ownable {
     }
 
     function priceOfPair(address _sellTokenAddress, address _buyTokenAddress)
-        public
-        view
-        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    public
+    view
+    returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
     {
         return (
-            tokenData[_sellTokenAddress].value,
-            tokenData[_buyTokenAddress].value
+        tokenData[_sellTokenAddress].value,
+        tokenData[_buyTokenAddress].value
         );
     }
 
     function testConnection()
-        public
-        pure
-        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    public
+    pure
+    returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
     {
         return (2, 3);
     }
