@@ -11,7 +11,6 @@ contract Chromium is Ownable{
 
     // used to keep track of tokens in contract
     mapping(IERC20 => uint) public liquidityAmount;
-    mapping(IERC20 => uint) public feeTotal;
 
     // weth address that i am using for eth
     IERC20 private constant ETH_ADDRESS = IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
