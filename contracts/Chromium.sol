@@ -19,7 +19,7 @@ contract Chromium is Ownable{
 
     // initializing objects
     ExchangeOracle oracle;
-    IERC20 cblt_Token;
+    IERC20 cbltToken;
 
     // emits when chromium is used
     event ChromiumTrade(address indexed _from, address _fromToken, uint256 _fromAmount, uint _cbltAmount);
@@ -29,7 +29,7 @@ contract Chromium is Ownable{
      */
     constructor(address _oracle, address _cblt_token) {
         oracle = ExchangeOracle(_oracle);
-        cblt_Token = IERC20(_cblt_token);
+        cbltToken = IERC20(_cblt_token);
     }
 
     /** this sets the treasury, and oracle */
@@ -39,7 +39,7 @@ contract Chromium is Ownable{
 
     // sets CBLT token
     function setCbltToken(address _cblt) external onlyOwner {
-        cblt_Token = IERC20(_cblt);
+        cbltToken = IERC20(_cblt);
     }
 
     /************ chromium functions ************/
@@ -85,21 +85,21 @@ contract Chromium is Ownable{
             );
             amount = SafeMath.sub(amount, usdFee);
 
-            (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(fromToken), address(cblt_Token));
+            (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(fromToken), address(cbltToken));
             uint returnAmount = SafeMath.mul(amount,
                 SafeMath.findRate(sellTokenValue, buyTokenValue)
             );
 
             returnAmount = SafeMath.div(returnAmount, 1000000);
-            require(cblt_Token.universalBalanceOf(address(this)) >= returnAmount, "Not enough tokens in Treasury.");
+            require(cbltToken.universalBalanceOf(address(this)) >= returnAmount, "Not enough tokens in Treasury.");
 
-            cblt_Token.universalTransfer(msg.sender, returnAmount);
+            cbltToken.universalTransfer(msg.sender, returnAmount);
             feeTotal[fromToken] = SafeMath.add(feeTotal[fromToken], usdFee);
             liquidityAmount[fromToken] = SafeMath.add(liquidityAmount[fromToken], SafeMath.add(amount, usdFee));
             emit ChromiumTrade(msg.sender, address(fromToken), amount, returnAmount);
         } else {
 
-            (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(fromToken), address(cblt_Token));
+            (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(fromToken), address(cbltToken));
 
             uint256 usdFee =
             SafeMath.div(
@@ -113,9 +113,9 @@ contract Chromium is Ownable{
             );
 
             returnAmount = SafeMath.div(returnAmount, 1000000);
-            require(cblt_Token.universalBalanceOf(address(this)) >= returnAmount, "Not enough tokens in Treasury.");
+            require(cbltToken.universalBalanceOf(address(this)) >= returnAmount, "Not enough tokens in Treasury.");
 
-            cblt_Token.universalTransfer(msg.sender, returnAmount);
+            cbltToken.universalTransfer(msg.sender, returnAmount);
             feeTotal[fromToken] = SafeMath.add(feeTotal[fromToken], usdFee);
             liquidityAmount[fromToken] = SafeMath.add(liquidityAmount[fromToken], SafeMath.add(amount, usdFee));
             emit ChromiumTrade(msg.sender, address(fromToken), amount, returnAmount);
@@ -131,7 +131,7 @@ contract Chromium is Ownable{
     payable
     {
         if (destToken == ETH_ADDRESS) {
-            (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(cblt_Token), address(destToken));
+            (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(cbltToken), address(destToken));
             uint returnAmount = SafeMath.mul(amountOfCblt,
                 SafeMath.findRate(sellTokenValue, buyTokenValue)
             );
@@ -146,12 +146,12 @@ contract Chromium is Ownable{
             returnAmount = SafeMath.sub(returnAmount, usdFee);
             require(destToken.universalBalanceOf(address(this)) >= returnAmount, "Not enough tokens in Treasury.");
 
-            cblt_Token.universalTransferFrom(msg.sender, address(this), amountOfCblt);
+            cbltToken.universalTransferFrom(msg.sender, address(this), amountOfCblt);
             destToken.universalTransfer(msg.sender, returnAmount);
 
-            emit ChromiumTrade(msg.sender, address(cblt_Token), amountOfCblt, returnAmount);
+            emit ChromiumTrade(msg.sender, address(cbltToken), amountOfCblt, returnAmount);
         } else {
-            (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(cblt_Token), address(destToken));
+            (uint256 sellTokenValue, uint256 buyTokenValue) = oracle.priceOfPair(address(cbltToken), address(destToken));
             uint returnAmount = SafeMath.mul(amountOfCblt,
                 SafeMath.findRate(sellTokenValue, buyTokenValue)
             );
@@ -166,10 +166,10 @@ contract Chromium is Ownable{
             returnAmount = SafeMath.sub(returnAmount, usdFee);
             require(destToken.universalBalanceOf(address(this)) >= returnAmount, "Not enough tokens in Treasury.");
 
-            cblt_Token.universalTransferFrom(msg.sender, address(this), amountOfCblt);
+            cbltToken.universalTransferFrom(msg.sender, address(this), amountOfCblt);
             destToken.universalTransfer(msg.sender, returnAmount);
 
-            emit ChromiumTrade(msg.sender, address(cblt_Token), amountOfCblt, returnAmount);
+            emit ChromiumTrade(msg.sender, address(cbltToken), amountOfCblt, returnAmount);
         }
     }
 
