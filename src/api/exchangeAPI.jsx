@@ -15,9 +15,12 @@ function ExchangeAPI() {
     const [ethAddress, setEthAddress] = useState()
     const [tokenAddress, setTokenAddress] = useState();
 
-    useEffect( async () => {
-        await loadBlockchainData()
-    }, [])
+    useEffect(() => {
+        async function loadData() {
+            await loadBlockchainData()
+        }
+        loadData()
+    }, [account])
 
 
     const loadBlockchainData = async () => {

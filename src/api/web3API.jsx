@@ -5,10 +5,12 @@ function Web3API() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const [userWeb3, setUserWeb3] = useState()
 
-    useEffect( async () => {
-    
-        await loadWeb3()
-    }, [])
+    useEffect(() => {
+        async function loadData() {
+            await loadWeb3()
+        }
+        loadData();
+    }, [userWeb3])
 
 
     const loadWeb3 = async () => {

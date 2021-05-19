@@ -14,8 +14,10 @@ const Swap = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const setAmount= state.exchangeAPI.amount[1];
 
+  if(!state) {
+    console.log(metaMaskAddress)
+  }
   function handleInput(e) {
-    let name = e.target.name
     let value = e.target.value
     setAmount(value.toString());
   };

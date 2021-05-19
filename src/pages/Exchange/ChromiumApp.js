@@ -5,7 +5,6 @@ import Oracle from '../../abis/ExchangeOracle.json'
 import navBar from '../../components/navBar'
 import IERC20 from '../../abis/IERC20.json'
 import Main from './ChromiumMain'
-import {ChainId, Fetcher, Route, Trade, TokenAmount, TradeType} from '@uniswap/sdk'
 
 
 class App extends Component {

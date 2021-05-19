@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { StyledCard, Container} from '../components/styled/Dashboard';
 import {Button} from 'react-bootstrap';
@@ -8,10 +8,9 @@ import { GlobalState } from "../GlobalState.js";
 
 export default function DashBoardHome() {
   const state = useContext(GlobalState)
-  console.log(state)
- 
+  
   const [cryptolist ,setCryptoList] = useState([]);
-
+  
   const getCrypto = async () => {
     const url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
     try {
@@ -21,7 +20,9 @@ export default function DashBoardHome() {
       console.error(error);
     }
   }
-
+  if (!state) {
+    console.log(state + cryptolist + getCrypto) 
+  }
   return (
     <Container>
       <StyledCard className="dashboard-main" elevation={3}>
