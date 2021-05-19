@@ -20,6 +20,8 @@ contract Chromium is Ownable {
     ExchangeOracle oracle;
     IERC20 cbltToken;
 
+    mapping(IERC20 => uint) feeTotal;
+
     // emits when chromium is used
     event ChromiumTrade(address indexed _from, address _fromToken, uint256 _fromAmount, uint _cbltAmount);
 

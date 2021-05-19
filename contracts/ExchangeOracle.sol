@@ -57,20 +57,20 @@ contract ExchangeOracle is Ownable {
     }
 
     function priceOfPair(address _sellTokenAddress, address _buyTokenAddress)
-    public
-    view
-    returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+        public
+        view
+        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
     {
         return (
-        tokenData[_sellTokenAddress].value,
-        tokenData[_buyTokenAddress].value
+            tokenData[_sellTokenAddress].value,
+            tokenData[_buyTokenAddress].value
         );
     }
 
     function testConnection()
-    public
-    pure
-    returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+        public
+        pure
+        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
     {
         return (2, 3);
     }
