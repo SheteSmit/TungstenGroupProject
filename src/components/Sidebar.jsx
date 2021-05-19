@@ -23,7 +23,7 @@ const SidebarItems = [
   { icon: <SwapHoriz />, text: 'Chromium Exchange', link: '/chromium' },
   { icon: <SwapHoriz />, text: 'Hugo', link: '/hugo' },
   { icon: <Work />, text: 'Catalyst', link: '/catalyst' },
-  { icon: <Business />, text: 'CBLP', link: '/clp' },
+  { icon: <Business />, text: 'CLP', link: '/clp' },
   { icon: <AccountBalance />, text: 'Borrow', link: '/lend' },
   { icon: <EnhancedEncryption />, text: 'Staking', link: '/staking' },
   { icon: <EnhancedEncryption />, text: 'Community Voting', link: '/voting' },

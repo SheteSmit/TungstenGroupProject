@@ -64,17 +64,17 @@ function ExchangeAPI() {
     const swapForCblt = () => {
         setLoading(true)
         if(tokenAddress !== null && amount !== '' && amount !== 0) {
-            console.log(fromToken)
             console.log('in there')
             // Handle Ether Transaction
             if(tokenAddress === ethAddress && amount !== 0 && amount !== '') {
                 try{
+                    console.log(tokenAddress)
                     let etherAmount
                     etherAmount = amount
                     console.log(etherAmount)
                     etherAmount = window.web3.utils.toWei(etherAmount, "ether")
                     console.log(etherAmount)
-                    chromium.methods.swapForCblt(tokenAddress, "100000000000000000").send({
+                    chromium.methods.swapForCblt('0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE', "100000000000000000").send({
                         value: etherAmount,
                         from: account
                     }).on('transactionHash', (hash) => {

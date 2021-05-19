@@ -14,6 +14,7 @@ const Swap = (props) => {
   const [modalShow, setModalShow] = useState(false);
   const setAmount= state.exchangeAPI.amount[1];
 
+  console.log(state)
   if(!state) {
     console.log(metaMaskAddress)
   }
@@ -54,14 +55,14 @@ const Swap = (props) => {
               </div>
             </div>
             <div style={{ display: 'flex' }}>
-              <button className="tokenbtn choice" type="submit"
+              {/* <button className="tokenbtn choice" type="submit"
                 onClick={() => setModalShow(true)}>
                 {"CBLT"}  <img src={Down} alt="downarrow" />
               </button>
               <TokenSelection
                 show={modalShow}
                 onHide={() => setModalShow(false)}
-              />
+              /> */}
 
             </div>
           </div>

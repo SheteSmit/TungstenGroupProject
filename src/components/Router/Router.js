@@ -19,12 +19,12 @@ export default function Router() {
           <Route exact path="/NFT" component={NFT} />
           <Route exact path="/singlevote" component={Singlevote} />
           <Route exact path="/voting" component={Voting} />
-          <Route path="/chromium" component={Swap} />
-          <Route path="/hugo" component={ChromiumApp} />
-          <Route path="/catalyst" component={Catalyst} />
-          <Route path="/chronicles" component={Chronicles} />
-          <Route path="/collections" component={Collections} />
-          <Route path="/" component={DashBoardHome} />
+          <Route exact path="/chromium" component={Swap} />
+          <Route exact path="/hugo" component={ChromiumApp} />
+          <Route exact path="/catalyst" component={Catalyst} />
+          <Route exact path="/chronicles" component={Chronicles} />
+          <Route exact path="/collections" component={Collections} />
+          <Route exact  spath="/" component={DashBoardHome} />
         </DataProvider>
       </Switch>
     </>
