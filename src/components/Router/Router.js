@@ -24,7 +24,7 @@ export default function Router() {
           <Route exact path="/catalyst" component={Catalyst} />
           <Route exact path="/chronicles" component={Chronicles} />
           <Route exact path="/collections" component={Collections} />
-          <Route exact  spath="/" component={DashBoardHome} />
+          <Route exact path="/" component={DashBoardHome} />
         </DataProvider>
       </Switch>
     </>
