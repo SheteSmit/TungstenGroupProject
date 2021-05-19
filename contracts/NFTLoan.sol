@@ -17,6 +17,8 @@ contract NFTLoan {
     // Attaches the NFT id to a particular address
     mapping(uint256 => address) internal ownerId;
     
+    mapping(address => string) public data;
+    
     // Attaches the Nonce id to the address
     mapping(uint256 => address) internal ownerNonceId;
 
@@ -151,13 +153,13 @@ contract NFTLoan {
     function mintBorrower(
         address _to,
         uint256 _tokenId,
-        uint256 _nonceId,
-        string memory _uri
+        string memory _uri,
+        string memory _data
     ) public {
         nftName = _uri;
         _mint(_to, _tokenId);
-        _mintNonce(_to, _nonceId);
         _setTokenUri(_tokenId, _uri);
+        setEncrypted(_to, _data);
     }
     
     function mintVoter(
@@ -177,6 +179,13 @@ contract NFTLoan {
         _safeTransferFrom(_from, _to, _tokenId);
     }
  
+    function setEncrypted(address _to, string memory _data) internal {
+        data[_to] = _data;
+    } 
+    
+    function seeData(address _from) public view returns (string memory _data) {
+        return data[_from];
+    }
  
     // ------------------------ Future development ----------------------------
     // Encrypted data
