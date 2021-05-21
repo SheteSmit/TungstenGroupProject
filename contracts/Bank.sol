@@ -386,6 +386,7 @@ contract Bank is Ownable {
 
         uint256 userReserved = userBook[msg.sender].cbltReserved;
 
+        // Check if user has CBLT tokens reserved
         if (userReserved > 0) {
             // Calculate the new amount of cblt reserved for user at current market price
             uint256 newReserved =
@@ -404,24 +405,27 @@ contract Bank is Ownable {
                 );
 
             if (newReserved >= userReserved) {
+                // If CBLT price decrease, send all tokens reserved
                 userBook[msg.sender].rewardWallet = SafeMath.add(
                     userBook[msg.sender].rewardWallet,
                     userReserved
                 );
             } else {
-                // Calculate the difference between new and old amount
+                // If CBLT price increased, calculate the difference between new and old amount final
                 uint256 cbltDifference =
                     SafeMath.sub(userReserved, newReserved);
 
-                // Add lefover cblt tokens back into treasury
+                // Add lefover CBLT tokens back into treasury
                 CBLTReserve = SafeMath.add(CBLTReserve, cbltDifference);
 
+                // Save CBLT tokens in contract wallet
                 userBook[msg.sender].rewardWallet = SafeMath.add(
                     userBook[msg.sender].rewardWallet,
                     newReserved
                 );
             }
         }
+        // Calculate and return new CBLT reserved
         return
             SafeMath.div(
                 SafeMath.multiply(
@@ -439,9 +443,16 @@ contract Bank is Ownable {
         uint256 _timeStakedTier,
         uint256 _amountStakedTier
     ) internal returns (uint256) {
-        // Determining if user was sent CBLT tokens on initial staking
         uint256 percentBasedAmount = 100;
+        uint256 userReserved = userBook[msg.sender].cbltReserved;
 
+        (uint256 CBLTprice, uint256 ETHprice) =
+            oracle.priceOfPair(
+                address(token),
+                0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+            );
+
+        // Determining if user was sent CBLT tokens on initial staking
         if (
             _timeStakedTier == 4 &&
             (_amountStakedTier == 4 || _amountStakedTier == 5)
@@ -454,14 +465,7 @@ contract Bank is Ownable {
             percentBasedAmount = 50;
         }
 
-        (uint256 CBLTprice, uint256 ETHprice) =
-            oracle.priceOfPair(
-                address(token),
-                0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-            );
-
-        uint256 userReserved = userBook[msg.sender].cbltReserved;
-
+        // If user has CBLT tokens reserved on withdraw, calculate how much is owed to him
         if (userReserved > 0) {
             // Calculate the new amount of cblt reserved for user at current market price
             uint256 newReserved =
@@ -480,21 +484,28 @@ contract Bank is Ownable {
                 );
 
             if (newReserved >= userReserved) {
+                // If CBLT price decrease, send all tokens reserved
                 return userReserved;
             } else {
-                // Calculate the difference between new and old amount
+                // If CBLT price increased, calculate the difference between new and old amount final
                 uint256 cbltDifference =
                     SafeMath.sub(userReserved, newReserved);
 
                 // Add lefover cblt tokens back into treasury
                 CBLTReserve = SafeMath.add(CBLTReserve, cbltDifference);
 
+                // Return new amount of CBLT owed
                 return newReserved;
             }
         }
+        return 0;
     }
 
     function depositEth(uint32 _timeStakedTier) public payable {
+        uint256 amountStakedTier;
+        uint256 paidAdvanced = 0;
+        uint256 dueDate;
+
         // The tier input must be between 1 and 5
         require(
             _timeStakedTier >= 1 && _timeStakedTier <= 5,
@@ -508,9 +519,6 @@ contract Bank is Ownable {
         );
 
         // Check the amountStakedTier based on deposit
-        uint256 amountStakedTier;
-        uint256 paidAdvanced = 0;
-
         if (msg.value <= 4e17) {
             amountStakedTier = 1;
         } else if (msg.value <= 2e18) {
@@ -532,19 +540,17 @@ contract Bank is Ownable {
                 paidAdvanced = 50;
             }
         }
-
+        // Check if tier has not been depleted
         require(
             stakingRewardRate[_timeStakedTier][amountStakedTier]
                 .amountStakersLeft > 0,
             "Tier depleted, come back later"
         );
 
-        // Checking if user is restaking or this is his/her staking instance
+        // Checking if user is restaking or this is his/her first staking instance
         uint256 stakingPeriod = userBook[msg.sender].timeStakedTier;
 
         if (stakingPeriod > 0) {
-            uint256 dueDate;
-
             // Create due date based on deposite time and time Tier
             if (stakingPeriod == 1) {
                 dueDate = SafeMath.add(
@@ -617,13 +623,13 @@ contract Bank is Ownable {
         // Save amount of time staked
         userBook[msg.sender].timeStakedTier = _timeStakedTier;
 
-        // Substract CBLT tokens reserved for stake from treasury
+        // Substract CBLT tokens reserved for user from treasury
         CBLTReserve = SafeMath.sub(CBLTReserve, cbltReserved);
 
-        // Oracle call for current ETH price
+        // Oracle call for current ETH price in USD
         uint256 ETHprice = oracle.priceOfETH();
 
-        // Dollar fee based on current ETH price
+        // Dollar fee based
         uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
 
         // Save new eth deposit in user account
@@ -645,10 +651,12 @@ contract Bank is Ownable {
     }
 
     function withdrawEth(uint256 _amount) public {
-        // Calulate how many months since first staked
         uint256 dueDate;
         uint256 stakingPeriod = userBook[msg.sender].timeStakedTier;
+        uint256 _amountStakedTier;
+        uint256 userBalance = userBook[msg.sender].ethBalance;
 
+        // Calulate due date based on time staked tier and deposit time
         if (stakingPeriod == 1) {
             dueDate = SafeMath.add(userBook[msg.sender].depositTime, 2629743);
         } else if (stakingPeriod == 2) {
@@ -660,14 +668,10 @@ contract Bank is Ownable {
         } else {
             dueDate = SafeMath.add(userBook[msg.sender].depositTime, 31556916);
         }
+        // Staking period must be over before he withdraws ETH balance
+        require(block.timestamp >= dueDate, "Staking period is not over.");
 
-        // Make sure user staked for at least 1 month
-        // require(block.timestamp >= dueDate, "Staking period is not over.");
-
-        uint256 _amountStakedTier;
-
-        uint256 userBalance = userBook[msg.sender].ethBalance;
-
+        // Determine the amount staked tier based on ETH balance
         if (userBalance <= 4e17) {
             _amountStakedTier = 5;
         } else if (userBalance <= 2e18) {
@@ -679,7 +683,6 @@ contract Bank is Ownable {
         } else {
             _amountStakedTier = 1;
         }
-
         // Recalculate total CBLT tokens based on current token value
         uint256 stakingReward =
             calculateRewardWithdraw(
@@ -687,15 +690,13 @@ contract Bank is Ownable {
                 stakingPeriod,
                 _amountStakedTier
             );
-
         // Save reward in wallet
         userBook[msg.sender].rewardWallet = SafeMath.add(
             userBook[msg.sender].rewardWallet,
             stakingReward
         );
-
+        // Reset amount of CBLT reserved
         userBook[msg.sender].cbltReserved = 0;
-
         // Substract eth from user account
         userBook[msg.sender].ethBalance = SafeMath.sub(
             userBook[msg.sender].ethBalance,
@@ -752,11 +753,6 @@ contract Bank is Ownable {
         // Only devs
         stakingRewardRate[_timeStakedTier][_amountStakedTier]
             .interest = _newInterest;
-    }
-
-    function test(uint256 _num) public view returns (uint256) {
-        uint256 num = 1;
-        return SafeMath.subtract(num, _num);
     }
 }
 
