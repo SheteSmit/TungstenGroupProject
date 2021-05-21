@@ -11,9 +11,6 @@ const fromOptions =
 
 
 class ChromiumSwap extends Component {
-    constructor(props) {
-        super(props)
-    }
 
     handleChange = (e) => {
         e.preventDefault()

@@ -5,7 +5,6 @@ import Oracle from '../../abis/ExchangeOracle.json'
 import navBar from '../../components/navBar'
 import IERC20 from '../../abis/IERC20.json'
 import Main from './ChromiumMain'
-import {ChainId, Fetcher, Route, Trade, TokenAmount, TradeType} from '@uniswap/sdk'
 
 
 class App extends Component {
@@ -31,7 +30,7 @@ class App extends Component {
             loading: true
         }
 
-        this.quote = this.quote.bind(this)
+        // this.quote = this.quote.bind(this)
         this.swapForCblt = this.swapForCblt.bind(this)
         this.getCbltExchangeRate = this.getCbltExchangeRate.bind(this)
         this.updateToken = this.updateToken.bind(this)
@@ -67,7 +66,7 @@ class App extends Component {
         } else {
             window.alert('Chromium contract not deployed to detected network.')
         }
-
+        
         const oracleData = Oracle.networks[networkId]
         if(oracleData) {
             const oracle = new web3.eth.Contract(Oracle.abi, oracleData.address)
@@ -102,6 +101,7 @@ class App extends Component {
     getCbltExchangeRate() {
         this.setState({loading: true})
         if(this.state.fromToken !== null && this.state.amount !== 0 && this.state.amount !== '') {
+            console.log(this.state.fromToken)
             this.state.chromium.methods.getCbltExchangeRate(this.state.fromToken, this.state.cbltToken, this.state.amount).call({from: this.state.account})
                 .then((results) => {
                     let res = results / 1000000
@@ -116,13 +116,22 @@ class App extends Component {
     }
 
     swapForCblt() {
+        console.log('what')
         this.setState({loading: true})
         if(this.state.fromToken !== null && this.state.amount !== '' && this.state.amount !== 0) {
+            console.log(this.state.amount)
+            console.log(this.state.account)
+            console.log(this.state.fromToken)
+            console.log('in there')
+            // Handle Ether Transaction
             if(this.state.fromToken === this.state.ethAddress && this.state.amount !== 0 && this.state.amount !== '') {
                 try{
                     let etherAmount
                     etherAmount = this.state.amount
+                    console.log(etherAmount)
                     etherAmount = window.web3.utils.toWei(etherAmount, "ether")
+                    console.log(etherAmount)
+                    console.log(this.state.chromium)
                     this.state.chromium.methods.swapForCblt(this.state.fromToken, "100000000000000000").send({
                         value: etherAmount,
                         from: this.state.account
@@ -133,10 +142,15 @@ class App extends Component {
                     console.log("Error, deposit: ", e);
                 }
             } else {
+                console.log('in there there')
                 try {
                     let etherAmount
                     etherAmount = this.state.amount
+                    console.log('ether')
+                    console.log(etherAmount)
                     etherAmount = window.web3.utils.toWei(etherAmount, "ether")
+                    console.log('ether convert')
+                    console.log(etherAmount)
                     this.state.chromium.methods.swapForCblt(this.state.fromToken, etherAmount).send({
                         from: this.state.account
                     }).on('transactionHash', (hash) => {

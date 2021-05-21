@@ -1,16 +1,16 @@
 import React from 'react';
 import {Container, Row, Col, Button} from 'react-bootstrap'
-import Posting from '../../components/cameo/posting';
-import './Cameo.css';
+import Posting from '../../components/Catalyst/posting';
+import './Catalyst.css';
 
-const Cameo = () => {
+const Catalyst = () => {
     return (
         <>
         <Container>
             <Row className="justify-content-md-center">
                  <Col mx="auto" mb={4} lg={10}>
                     <div className="section-title text-center ">
-                        <h3 className="cameo-title">Cameo</h3>
+                        <h3 className="cameo-title">Catalyst</h3>
                         <p className="cameo-info">List your services here in exchange for crypto. </p>
                     </div>
                 </Col>
@@ -57,4 +57,4 @@ const Cameo = () => {
     )
 }
 
-export default Cameo;
+export default Catalyst;
