@@ -109,7 +109,7 @@ contract Bank is Ownable {
      * @dev Informstion from previously fullfilled loans are stored into the blockchain
      * before being permanently deleted
      */
-    mapping(uint256 => Loan) loanRecords;
+    mapping(address => Loan[]) loanRecords;
 
     /**
      * @dev struct to access information on tier structure
@@ -127,12 +127,14 @@ contract Bank is Ownable {
      */
     struct Loan {
         address borrower; // Address of wallet
+        uint256 amountBorrowed; // Initial loan balance
         uint256 remainingBalance; // Remaining balance
         uint256 minimumPayment; // MinimumPayment // Can be calculated off total amount
+        uint256 collateral; // Amount owed back to borrower after loan is paid in full
         bool active; // Is the current loan active (Voted yes)
         bool initialized; // Does the borrower have a current loan application
-        uint256 dueDate; // Time of contract ending
         uint256 timeCreated; // Time of loan application also epoch in days
+        uint256 dueDate; // Time of contract ending
         uint256 totalVote; // Total amount determined by tier
         uint256 yes; // Amount of votes for yes
     }
@@ -200,8 +202,10 @@ contract Bank is Ownable {
 
         loanBook[msg.sender] = Loan(
             msg.sender,
+            _principal,
             finalPrincipal,
             monthlyPayment,
+            collateralInCBLT,
             false,
             true,
             SafeMath.add(block.timestamp, 2629743),
@@ -212,123 +216,64 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Recalculates interest and also conducts check and balances
-     *
+     * @dev
      */
-    function calculateComponents(uint256 amount)
-        internal
-        view
-        returns (uint256 interest, uint256 principal)
-    {
-        // interest = multiply(
-        //     loanBook[msg.sender].remainingBalance,
-        //     loanBook[msg.sender].interestRate
-        // );
-        require(amount >= interest);
-        principal = amount - interest;
-        return (interest, principal);
+
+    function processPeriod(uint256 _payment, bool _missedPayment) internal {
+        loanBook[msg.sender].remainingBalance = SafeMath.sub(
+            loanBook[msg.sender].remainingBalance,
+            _payment
+        );
+
+        loanBook[msg.sender].dueDate = SafeMath.add(block.timestamp, 2629743);
+
+        if (_missedPayment) {
+            // Needs to interact with the NFT
+            uint256 daysMissed =
+                SafeMath.div(
+                    SafeMath.sub(block.timestamp, loanBook[msg.sender].dueDate),
+                    86400
+                );
+        }
     }
 
     /**
-     * @dev a symmetry between accepting loan payments and handling missed payments.
-     * In both cases, there is an adjustment to the remaining principal balance and a
-     * corresponding transfer of tokens. The only difference is that the tokens are
-     * returned to the borrower after a payment, but they are forfeited to the lender
-     * after a missed payment
-     *
-     *Additional Note: the code above does the token transfer last, which follows the
-     * Checks-Effects-Interactions pattern to avoid potential reentrancy vulnerabilities
+     * @dev
      */
-
-    function processPeriod(
-        uint256 interest,
-        uint256 principal,
-        address recipient
-    ) internal {
-        if (recipient == 0x0000000000000000000000000000000000000000) {
-            // uint256 units = calculateCollateral(interest + principal);
-
-            loanBook[msg.sender].remainingBalance -= principal;
-
-            loanBook[msg.sender].dueDate += 30; // days
-        } else {
-            // uint256 units = calculateCollateral(interest + principal);
-
-            loanBook[msg.sender].remainingBalance -= principal;
-
-            loanBook[msg.sender].dueDate += 30; // days
-        }
-    }
+    function validate() public {} // Only devs
 
     /**
      * @dev Function for the user to make a payment with ETH
      *
      */
     function makePayment() public payable {
-        require(block.timestamp <= loanBook[msg.sender].dueDate);
+        require(msg.value >= loanBook[msg.sender].minimumPayment);
 
-        uint256 interest;
-        uint256 principal;
-        (interest, principal) = calculateComponents(msg.value);
-
-        require(principal <= loanBook[msg.sender].remainingBalance);
-        require(
-            msg.value >= loanBook[msg.sender].minimumPayment ||
-                principal == loanBook[msg.sender].remainingBalance
-        );
-
-        processPeriod(interest, principal, msg.sender);
-    }
-
-    /**
-     * @dev  computes the principal component of the missed payment.
-     * This assumes the payment was the minimum amount, which is true
-     * for all but, possibly, the last payment. The conditional handles
-     * the boundary condition when the principal remaining is less than
-     * the principal component of a minimum payment.
-     *
-     */
-    function missedPayment() public {
-        require(block.timestamp > loanBook[msg.sender].dueDate);
-
-        uint256 interest;
-        uint256 principal;
-        (interest, principal) = calculateComponents(
-            loanBook[msg.sender].minimumPayment
-        );
-
-        if (principal > loanBook[msg.sender].remainingBalance) {
-            principal = loanBook[msg.sender].remainingBalance;
+        if (block.timestamp <= loanBook[msg.sender].dueDate) {
+            processPeriod(msg.value, false);
+        } else {
+            processPeriod(msg.value, true);
         }
-
-        processPeriod(
-            interest,
-            principal,
-            0x0000000000000000000000000000000000000000
-        );
     }
 
     /**
-     * @dev  smart contract allows borrowers to pay more than the minimum,
-     * which will ultimately lead to less total paid because of avoided interest.
-     * If used, this feature will lead to excess collateral owned by the loan contract
-     * after it’s been fully paid off. This collateral belongs to the borrower.
-     * The simplest way to handle that is to allow excess tokens to be claimed when the remainingBalance is zero:
-     *
+     * @dev
      */
-
     function returnCollateral() public {
         require(loanBook[msg.sender].remainingBalance == 0);
 
-        uint256 amount = token.balanceOf(address(this));
+        uint256 amount = loanBook[msg.sender].collateral;
         require(token.transfer(msg.sender, amount));
+
+        loanBook[msg.sender].collateral = 0;
     }
 
     /**
-     * @dev Deletes loan instance once the user has paid his first loan in full
+     * @dev Deletes loan instance once the user has paid his active loan in full
      */
     function cleanSlate() public {
         require(loanBook[msg.sender].remainingBalance == 0);
+        loanRecords[msg.sender].push(loanBook[msg.sender]);
         delete loanBook[msg.sender];
     }
 
@@ -355,6 +300,7 @@ contract Bank is Ownable {
         uint256 timeStakedTier;
     }
 
+    // BROKEN MUST FIX
     function calculateRewardDeposit(
         uint256 _amount,
         uint256 _timeStakedTier,
@@ -408,6 +354,7 @@ contract Bank is Ownable {
                 );
             }
         }
+        // BROKEN MUST FIX
         // Calculate and return new CBLT reserved
         return
             SafeMath.div(
