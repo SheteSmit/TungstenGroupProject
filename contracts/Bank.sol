@@ -212,6 +212,10 @@ contract Bank is Ownable {
                 true,
             "Payment was not approved."
         );
+        uint256 num1 = 120;
+        uint64 num2 = 120;
+
+        uint256 num = SafeMath.add(num1, num2);
 
         loanBook[msg.sender] = Loan(
             msg.sender,
