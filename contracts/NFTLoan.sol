@@ -7,11 +7,22 @@ contract NFTLoan {
 
     mapping(uint256 => address) internal ownerId;
 
-    mapping(address => string) public data;
+    mapping(address => Data) private userData;
 
     mapping(address => uint256) private ownerToNFTokenCount;
 
     mapping(uint256 => string) public idToUri;
+
+    address Oracle;
+    address Treasury;
+
+    struct Data {
+        uint256 flatfee;
+        uint64 riskScore;
+        uint64 riskFactor;
+        uint64 interestRate;
+        uint64 userMaxTier;
+    }
 
     modifier canTransfer(uint256 _tokenId) {
         address tokenOwner = ownerId[_tokenId];
@@ -24,6 +35,11 @@ contract NFTLoan {
         _;
     }
 
+    modifier validEntry() {
+        require(msg.sender == Oracle || msg.sender == Treasury);
+        _;
+    }
+
     event Transfer(
         address indexed _from,
         address indexed _to,
@@ -32,6 +48,8 @@ contract NFTLoan {
 
     constructor() {
         nftName = "CNFT";
+        Oracle = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+        Treasury = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
     }
 
     function balanceOf(address _owner) external view returns (uint256) {
@@ -85,14 +103,25 @@ contract NFTLoan {
     }
 
     function mintBorrower(
+        // Only Oracle
         address _to,
         uint256 _tokenId,
-        string memory _uri,
-        string memory _data
+        uint64 _riskScore,
+        uint64 _riskFactor,
+        uint64 _interestRate,
+        uint64 _userMaxTier,
+        uint256 _flatfee,
+        string memory _uri
     ) public {
         _mint(_to, _tokenId);
         _setTokenUri(_tokenId, _uri);
-        setEncrypted(_to, _data);
+        userData[_to] = Data(
+            _flatfee,
+            _riskScore,
+            _riskFactor,
+            _interestRate,
+            _userMaxTier
+        );
     }
 
     function _addNFToken(address _to, uint256 _tokenId) internal {
@@ -108,20 +137,36 @@ contract NFTLoan {
         delete ownerId[_tokenId];
     }
 
-    function _getOwnerNFTCount(address _owner)
-        internal
-        view
-        virtual
-        returns (uint256)
-    {
+    function _getOwnerNFTCount(address _owner) internal view returns (uint256) {
         return ownerToNFTokenCount[_owner];
     }
 
-    function setEncrypted(address _to, string memory _data) internal {
-        data[_to] = _data;
+    function getUser(address _from)
+        public
+        view
+        validEntry
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        return (
+            userData[_from].riskScore,
+            userData[_from].riskScore,
+            userData[_from].riskScore,
+            userData[_from].riskScore,
+            userData[_from].riskScore
+        );
     }
 
-    function seeData(address _from) public view returns (string memory _data) {
-        return data[_from];
+    function setOracle(address _newOracle) public validEntry {
+        Oracle = _newOracle;
+    }
+
+    function setTreasury(address _newTreasury) public validEntry {
+        Treasury = _newTreasury;
     }
 }

@@ -156,14 +156,13 @@ contract Bank is Ownable {
         public
         payable
     {
-        require(loanBook[msg.sender].initialized == false);
-
         uint256 riskScore = 20; // NFT ENTRY!!!!
         uint256 riskFactor = 15; // NFT ENTRY!!!!
         uint256 interestRate = 2; // NFT ENTRY!!!!
         uint256 userMaxTier = 5; // NFT ENTRY!!!!
-        // uint256 flatfee = 400; // NFT ENTRY!!!!
+        uint256 flatfee = 400; // NFT ENTRY!!!!
 
+        require(loanBook[msg.sender].initialized == false);
         require(
             _paymentPeriod <= loanTiers[userMaxTier].maximumPaymentPeriod,
             "Payment period exceeds that of the tier, pleas try again"
@@ -212,10 +211,6 @@ contract Bank is Ownable {
                 true,
             "Payment was not approved."
         );
-        uint256 num1 = 120;
-        uint64 num2 = 120;
-
-        uint256 num = SafeMath.add(num1, num2);
 
         loanBook[msg.sender] = Loan(
             msg.sender,
