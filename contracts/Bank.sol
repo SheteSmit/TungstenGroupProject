@@ -6,19 +6,24 @@ import "./interfaces/SafeMath.sol";
 import "./interfaces/UniversalERC20.sol";
 import "./ExchangeOracle.sol";
 
+// 0x433C6E3D2def6E1fb414cf9448724EFB0399b698
+
 contract Bank is Ownable {
     using UniversalERC20 for IERC20;
 
     /**
      * @dev storing CBLT token in ERC20 type
      */
-    // 0x433C6E3D2def6E1fb414cf9448724EFB0399b698
     IERC20 token;
+
+    bool internal stakingStatus = true;
 
     /**
      * @dev Creating oracle instance
      */
     ExchangeOracle oracle;
+
+    address currentWinner;
 
     /**
      * @dev CobaltLend oracle for scoring and CBLT price
@@ -28,6 +33,10 @@ contract Bank is Ownable {
     constructor(address _CBLT, address _oracle) {
         oracle = ExchangeOracle(_oracle);
         token = IERC20(_CBLT);
+
+        loanTiers[5].maxVoters = 100;
+        loanTiers[5].maximumPaymentPeriod = 60;
+        loanTiers[5].principalLimit = 500000;
 
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
@@ -39,7 +48,7 @@ contract Bank is Ownable {
         stakingRewardRate[1][4].interest = 4;
         stakingRewardRate[1][4].amountStakersLeft = 0;
         stakingRewardRate[1][5].interest = 4;
-        stakingRewardRate[1][5].amountStakersLeft = 1000;
+        stakingRewardRate[1][5].amountStakersLeft = 0;
         //
         stakingRewardRate[2][1].interest = 1;
         stakingRewardRate[2][1].amountStakersLeft = 0;
@@ -103,13 +112,13 @@ contract Bank is Ownable {
      * @dev mapping used to store all loan information with the key of borrower address
      *  and value of Loan struct with all loan information
      */
-    mapping(address => Loan) loanBook;
+    mapping(address => Loan) public loanBook;
 
     /**
      * @dev Informstion from previously fullfilled loans are stored into the blockchain
      * before being permanently deleted
      */
-    mapping(address => Loan[]) loanRecords;
+    mapping(address => Loan[]) public loanRecords;
 
     /**
      * @dev struct to access information on tier structure
@@ -153,6 +162,7 @@ contract Bank is Ownable {
         uint256 riskFactor = 15; // NFT ENTRY!!!!
         uint256 interestRate = 2; // NFT ENTRY!!!!
         uint256 userMaxTier = 5; // NFT ENTRY!!!!
+        // uint256 flatfee = 400; // NFT ENTRY!!!!
 
         require(
             _paymentPeriod <= loanTiers[userMaxTier].maximumPaymentPeriod,
@@ -167,6 +177,9 @@ contract Bank is Ownable {
         // Calculate how much is being borrowed in USD - must be within limits of the tier
         uint256 amountBorrowed = SafeMath.div(_principal, oneUSDinETH);
         require(amountBorrowed <= loanTiers[userMaxTier].principalLimit);
+
+        // Pay loan application lee to cover for fees
+        // require(msg.value >= SafeMath.mul(oneUSDinETH,flatfee)); // Needs change based on current prices
 
         (uint256 CBLTprice, uint256 ETHprice) =
             oracle.priceOfPair(
@@ -229,11 +242,16 @@ contract Bank is Ownable {
 
         if (_missedPayment) {
             // Needs to interact with the NFT
+            // Collateral is substracted
+            // Strike system // Connected to NFT
             uint256 daysMissed =
                 SafeMath.div(
                     SafeMath.sub(block.timestamp, loanBook[msg.sender].dueDate),
                     86400
                 );
+            if (daysMissed > 7) {
+                // Suspend loan
+            }
         }
     }
 
@@ -284,13 +302,13 @@ contract Bank is Ownable {
         uint256 amountStakersLeft;
     }
 
-    mapping(uint256 => mapping(uint256 => crossTier)) stakingRewardRate;
+    mapping(uint256 => mapping(uint256 => crossTier)) public stakingRewardRate;
 
     mapping(address => User) public userBook;
 
     uint256 CBLTReserve = 6000000000000000000000000000;
 
-    uint256 borrowingPool; // 25% use for lending
+    uint256 borrowingPool;
 
     struct User {
         uint256 rewardWallet;
@@ -300,12 +318,10 @@ contract Bank is Ownable {
         uint256 timeStakedTier;
     }
 
-    // BROKEN MUST FIX
     function calculateRewardDeposit(
         uint256 _amount,
         uint256 _timeStakedTier,
-        uint256 _amountStakedTier,
-        uint256 percentBasedAmount
+        uint256 _amountStakedTier
     ) internal returns (uint256) {
         (uint256 CBLTprice, uint256 ETHprice) =
             oracle.priceOfPair(
@@ -317,12 +333,40 @@ contract Bank is Ownable {
 
         // Check if user has CBLT tokens reserved
         if (userReserved > 0) {
+            uint256 amountStakedPreviously = userBook[msg.sender].ethBalance;
+            uint256 previousAmountTier;
+            uint256 percentBasedAmount;
+            uint256 tierStakedPreviously = userBook[msg.sender].timeStakedTier;
+
+            // Determine the amount staked tier based on ETH balance
+            if (amountStakedPreviously <= 4e17) {
+                previousAmountTier = 1;
+            } else if (amountStakedPreviously <= 2e18) {
+                previousAmountTier = 2;
+            } else if (amountStakedPreviously <= 5e18) {
+                previousAmountTier = 3;
+            } else if (amountStakedPreviously <= 25e18) {
+                previousAmountTier = 4;
+                if (tierStakedPreviously == 4) {
+                    percentBasedAmount = 75;
+                } else if (tierStakedPreviously == 5) {
+                    percentBasedAmount = 50;
+                }
+            } else {
+                previousAmountTier = 5;
+                if (tierStakedPreviously == 4) {
+                    percentBasedAmount = 75;
+                } else if (tierStakedPreviously == 5) {
+                    percentBasedAmount = 50;
+                }
+            }
+
             // Calculate the new amount of cblt reserved for user at current market price
             uint256 newReserved =
                 SafeMath.div(
                     SafeMath.multiply(
                         SafeMath.multiply(
-                            userBook[msg.sender].ethBalance,
+                            amountStakedPreviously,
                             percentBasedAmount,
                             100
                         ),
@@ -339,6 +383,7 @@ contract Bank is Ownable {
                     userBook[msg.sender].rewardWallet,
                     userReserved
                 );
+                userBook[msg.sender].cbltReserved = 0;
             } else {
                 // If CBLT price increased, calculate the difference between new and old amount final
                 uint256 cbltDifference =
@@ -352,9 +397,10 @@ contract Bank is Ownable {
                     userBook[msg.sender].rewardWallet,
                     newReserved
                 );
+
+                userBook[msg.sender].cbltReserved = 0;
             }
         }
-        // BROKEN MUST FIX
         // Calculate and return new CBLT reserved
         return
             SafeMath.div(
@@ -432,9 +478,12 @@ contract Bank is Ownable {
     }
 
     function depositEth(uint32 _timeStakedTier) public payable {
+        require(stakingStatus == true, "Staking is currently offline");
+
         uint256 amountStakedTier;
         uint256 paidAdvanced = 0;
         uint256 dueDate;
+        uint256 cbltReserved;
 
         // The tier input must be between 1 and 5
         require(
@@ -470,12 +519,15 @@ contract Bank is Ownable {
                 paidAdvanced = 50;
             }
         }
-        // Check if tier has not been depleted
-        require(
-            stakingRewardRate[_timeStakedTier][amountStakedTier]
-                .amountStakersLeft > 0,
-            "Tier depleted, come back later"
-        );
+
+        if (msg.sender == currentWinner) {} else {
+            // Check if tier has not been depleted
+            require(
+                stakingRewardRate[_timeStakedTier][amountStakedTier]
+                    .amountStakersLeft > 0,
+                "Tier depleted, come back later"
+            );
+        }
 
         // Checking if user is restaking or this is his/her first staking instance
         uint256 stakingPeriod = userBook[msg.sender].timeStakedTier;
@@ -510,19 +562,24 @@ contract Bank is Ownable {
             }
             // Revert if staking period is not over
             require(
-                block.timestamp > dueDate,
+                block.timestamp > 1,
                 "Current staking period is not over yet"
             );
-        }
 
-        // Checks the amount of CBLT tokens that need to be reserved
-        uint256 cbltReserved =
-            calculateRewardDeposit(
+            // Checks the amount of CBLT tokens that need to be reserved
+            cbltReserved = calculateRewardDeposit(
+                SafeMath.add(msg.value, userBook[msg.sender].ethBalance),
+                _timeStakedTier,
+                amountStakedTier
+            );
+        } else {
+            // Checks the amount of CBLT tokens that need to be reserved
+            cbltReserved = calculateRewardDeposit(
                 msg.value,
                 _timeStakedTier,
-                amountStakedTier,
-                SafeMath.sub(100, paidAdvanced)
+                amountStakedTier
             );
+        }
 
         // Treasury must have that amount open
         require(cbltReserved <= CBLTReserve, "Treasury is currently depleted");
@@ -599,7 +656,7 @@ contract Bank is Ownable {
             dueDate = SafeMath.add(userBook[msg.sender].depositTime, 31556916);
         }
         // Staking period must be over before he withdraws ETH balance
-        require(block.timestamp >= dueDate, "Staking period is not over.");
+        // require(block.timestamp >= dueDate, "Staking period is not over.");
 
         // Determine the amount staked tier based on ETH balance
         if (userBalance <= 4e17) {
@@ -639,40 +696,27 @@ contract Bank is Ownable {
     }
 
     function withdrawStaking(uint256 _amount) public payable {
-        // Pull token price from oracle
-        (bool call1, bytes memory tokenPriceEncoded) =
-            oracleAddress.call(
-                abi.encodeWithSignature(
-                    "getValue(address)",
-                    0x29a99c126596c0Dc96b02A88a9EAab44EcCf511e
-                )
-            );
-        require(call1 == true, "Oracle is down.");
-
-        // Pull ETH price in USD
-        (bool call2, bytes memory ethPriceUSD) =
-            oracleAddress.call(abi.encodeWithSignature("getETHinUSD()"));
-
-        require(call2 == true, "Oracle is down.");
-
-        // Decode bytes data
-        uint256 tokenPrice = abi.decode(tokenPriceEncoded, (uint256));
-        uint256 ETHinUSD = abi.decode(ethPriceUSD, (uint256));
+        (uint256 CBLTprice, uint256 ETHprice) =
+            oracle.priceOfETHandCBLT(address(token));
 
         uint256 USDtoCBLT =
-            SafeMath.div(
-                100000000000000000000,
-                SafeMath.mul(tokenPrice, ETHinUSD) // A and B coming from oracle
+            SafeMath.multiply(
+                SafeMath.div(1000000000000000000, CBLTprice),
+                SafeMath.div(100000000000000000000, ETHprice),
+                1000000000000000000
             );
 
         require(
-            userBook[msg.sender].rewardWallet >= SafeMath.mul(USDtoCBLT, 50),
-            "Reward wallet does not have 50$"
+            SafeMath.mul(USDtoCBLT, 5) > 50,
+            "Amount in CBLT must be higher than 50 total worth in value."
         );
 
-        userBook[msg.sender].rewardWallet = 0;
+        userBook[msg.sender].rewardWallet = SafeMath.sub(
+            userBook[msg.sender].rewardWallet,
+            _amount
+        );
 
-        // token.transfer(address(this), msg.sender, _amount);
+        // token.transfer
     }
 
     function changeInterest(
@@ -683,6 +727,20 @@ contract Bank is Ownable {
         // Only devs
         stakingRewardRate[_timeStakedTier][_amountStakedTier]
             .interest = _newInterest;
+    }
+
+    function modifyTiers(
+        uint256 _new,
+        uint256 _amountTier,
+        uint256 _timeTier
+    ) public {
+        // only devs
+        stakingRewardRate[_timeTier][_amountTier].amountStakersLeft = _new;
+    }
+
+    function stakingControl(bool _status) public {
+        // only devs
+        stakingStatus = _status;
     }
 }
 

@@ -78,6 +78,14 @@ contract ExchangeOracle is Ownable {
         );
     }
 
+    function priceOfETHandCBLT(address _cbltToken)
+        public
+        view
+        returns (uint256, uint256)
+    {
+        return (USDpriceETH, tokenData[_cbltToken].value);
+    }
+
     function priceOfETH() public view returns (uint256) {
         return (USDpriceETH);
     }
