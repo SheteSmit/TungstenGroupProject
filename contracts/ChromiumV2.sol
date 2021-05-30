@@ -53,10 +53,10 @@ contract Chromium is Ownable {
 
     /************ chromium functions ************/
     /*
-     * @dev this function will get the exchagne rate for the token being exchanged for cblt token
-     * it will call on the oracle to make the calculation. the returnAmount is going to be
-     * three times larger than the actual amount (so that we can get decimals) which means the returnAmount
-     * will need to be divided by 1000 by the frontend to get the correct amount that will be swapped
+     * Pools that i created on rinkeby uniswap
+     * eth (0xc778417E063141139Fce010982780140Aa0cD5Ab) / cblt (0xd39E2AD90DbEFaE11da028B19890d0eE45713780)
+     * cblt (0xd39E2AD90DbEFaE11da028B19890d0eE45713780) / ham (0x1e22E4F74DB4BC6745486Ee3D7ADF2584980DCb2)
+     * if you want to test the call, those pairs will work
     */
     function getExchangeRate(
         uint256 amountIn,
