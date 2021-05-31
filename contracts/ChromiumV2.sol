@@ -5,7 +5,7 @@ import "./interfaces/UniversalERC20.sol";
 import './interfaces/Ownable.sol';
 import './interfaces/IUniswap.sol';
 
-contract Chromium is Ownable {
+contract ChromiumV2 is Ownable {
     using UniversalERC20 for IERC20;
 
     struct TokenInfo {
@@ -14,6 +14,8 @@ contract Chromium is Ownable {
     }
 
     // used to keep track of tokens in contract
+    mapping(address => uint) tokenLiquidity;
+    mapping(uint => uint) cbltLiquidity;
     mapping(address => TokenInfo) tokenApproval;
 
     // eth contract address
@@ -56,7 +58,7 @@ contract Chromium is Ownable {
      * Pools that i created on rinkeby uniswap
      * eth (0xc778417E063141139Fce010982780140Aa0cD5Ab) / cblt (0xd39E2AD90DbEFaE11da028B19890d0eE45713780)
      * cblt (0xd39E2AD90DbEFaE11da028B19890d0eE45713780) / ham (0x1e22E4F74DB4BC6745486Ee3D7ADF2584980DCb2)
-     * if you want to test the call, those pairs will work
+     * if you want to test the call, those pairs will work on rinkeby network
     */
     function getExchangeRate(
         uint256 amountIn,
@@ -86,6 +88,7 @@ contract Chromium is Ownable {
     returns(uint)
     {
         IERC20(path[0]).universalTransferFromSenderToThis(amount);
+        tokenLiquidity[path[0]] = SafeMath.add(tokenLiquidity[path[0]], amount);
         uint[] memory amounts = getExchangeRate(amount, path);
 
         if (IERC20(path[0]) == ETH_ADDRESS) {
@@ -93,6 +96,7 @@ contract Chromium is Ownable {
             require(IERC20(path[1]).universalBalanceOf(address(this)) >= amounts[1], "Not enough tokens in Treasury.");
 
             IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);
+            tokenLiquidity[path[1]] = SafeMath.sub(tokenLiquidity[path[1]], amounts[1]);
             emit ChromiumTrade(msg.sender,path[0], path[1], amount, amounts[1]);
             return amounts[1];
         } else {
@@ -103,6 +107,95 @@ contract Chromium is Ownable {
             return amounts[1];
         }
 
+    }
+
+    function swapCblt(
+        address[] calldata path,
+        uint256 amount
+    )
+    external
+    payable
+    returns(uint)
+    {
+        require(path[0] == address(cbltToken), "Chromium:: fromToken needs to be cbltToken.");
+        cbltToken.universalTransferFromSenderToThis(amount);
+        uint temp = getCbltPool(amount);
+        cbltLiquidity[temp] = SafeMath.add(cbltLiquidity[temp], amount);
+        uint[] memory amounts = getExchangeRate(amount, path);
+
+        require(IERC20(path[1]).universalBalanceOf(address(this)) >= amounts[1], "Not enough tokens in treasury.");
+
+        IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);
+        tokenLiquidity[path[1]] = SafeMath.sub(tokenLiquidity[path[1]], amounts[1]);
+        emit ChromiumTrade(msg.sender,path[0], path[1], amount, amounts[1]);
+        return amounts[1];
+    }
+
+    function swapForCblt(
+        address[] calldata path,
+        uint256 amount
+    )
+    external
+    payable
+    returns(uint)
+    {
+        require(path[1] == address(cbltToken), "Chromium:: destToken needs to be cbltToken.");
+        IERC20(path[0]).universalTransferFromSenderToThis(amount);
+        uint[] memory amounts = getExchangeRate(amount, path);
+        uint temp = getCbltPool(amounts[1]);
+
+        if (IERC20(path[0]) == ETH_ADDRESS) {
+            require(msg.value != 0, "Chromium:: msg.value can not equal 0");
+            require(cbltLiquidity[temp] >= amounts[1], "Not enough cblt tokens in pool for 1000 and up in Treasury.");
+
+            cbltLiquidity[temp] = SafeMath.sub(cbltLiquidity[temp], amounts[1]);
+            cbltToken.universalTransfer(msg.sender, amounts[1]);
+            emit ChromiumTrade(msg.sender,path[0], path[1], amount, amounts[1]);
+            return amounts[1];
+        } else {
+            require(cbltLiquidity[temp] >= amounts[1], "Not enough cblt tokens in pool for 1000 and down in Treasury.");
+
+            cbltLiquidity[temp] = SafeMath.sub(cbltLiquidity[temp], amounts[1]);
+            cbltToken.universalTransfer(msg.sender, amounts[1]);
+            emit ChromiumTrade(msg.sender,path[0], path[1], amount, amounts[1]);
+            return amounts[1];
+        }
+    }
+
+    function addCbltToPool(
+        uint _poolNumber,
+        uint _amount
+    )
+    external
+    onlyOwner
+    {
+        cbltToken.universalTransferFromSenderToThis(_amount);
+        cbltLiquidity[_poolNumber] = SafeMath.add(cbltLiquidity[_poolNumber], _amount);
+    }
+
+    function retrieveTokens(
+        IERC20 _token,
+        uint amount
+    )
+    external
+    onlyOwner
+    {
+        require(amount <= tokenLiquidity[address(_token)], "Chromium:: not enough tokens in exchange.");
+        _token.universalTransfer(msg.sender, amount);
+    }
+
+    function getCbltPool(
+        uint amount
+    )
+    internal
+    pure
+    returns (uint)
+    {
+        if(amount > 1000000000000000000000) {
+            return 1;
+        } else {
+            return 2;
+        }
     }
 
     // fallback function
