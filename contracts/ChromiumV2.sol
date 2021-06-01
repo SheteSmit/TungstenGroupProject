@@ -14,8 +14,8 @@ contract ChromiumV2 is Ownable {
     }
 
     // used to keep track of tokens in contract
-    mapping(address => uint) tokenLiquidity;
-    mapping(uint => uint) cbltLiquidity;
+    mapping(address => uint) public tokenLiquidity;
+    mapping(uint => uint) public cbltLiquidity;
     mapping(address => TokenInfo) tokenApproval;
 
     // eth contract address
@@ -85,7 +85,7 @@ contract ChromiumV2 is Ownable {
     )
     external
     payable
-    returns(uint)
+    returns (uint)
     {
         IERC20(path[0]).universalTransferFromSenderToThis(amount);
         tokenLiquidity[path[0]] = SafeMath.add(tokenLiquidity[path[0]], amount);
@@ -93,14 +93,14 @@ contract ChromiumV2 is Ownable {
 
         if (IERC20(path[0]) == ETH_ADDRESS) {
             require(msg.value != 0, "Chromium:: msg.value can not equal 0");
-            require(IERC20(path[1]).universalBalanceOf(address(this)) >= amounts[1], "Not enough tokens in Treasury.");
+            require(tokenLiquidity[path[1]] >= amounts[1], "Not enough tokens in Treasury.");
 
             IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);
             tokenLiquidity[path[1]] = SafeMath.sub(tokenLiquidity[path[1]], amounts[1]);
-            emit ChromiumTrade(msg.sender,path[0], path[1], amount, amounts[1]);
+            emit ChromiumTrade(msg.sender, path[0], path[1], amount, amounts[1]);
             return amounts[1];
         } else {
-            require(IERC20(path[1]).universalBalanceOf(address(this)) >= amounts[1], "Chromium:: Not enough tokens in Treasury.");
+            require(tokenLiquidity[path[1]] >= amounts[1], "Chromium:: Not enough tokens in Treasury.");
 
             IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);
             emit ChromiumTrade(msg.sender, path[0], path[1], amount, amounts[1]);
@@ -115,7 +115,7 @@ contract ChromiumV2 is Ownable {
     )
     external
     payable
-    returns(uint)
+    returns (uint)
     {
         require(path[0] == address(cbltToken), "Chromium:: fromToken needs to be cbltToken.");
         cbltToken.universalTransferFromSenderToThis(amount);
@@ -123,11 +123,11 @@ contract ChromiumV2 is Ownable {
         cbltLiquidity[temp] = SafeMath.add(cbltLiquidity[temp], amount);
         uint[] memory amounts = getExchangeRate(amount, path);
 
-        require(IERC20(path[1]).universalBalanceOf(address(this)) >= amounts[1], "Not enough tokens in treasury.");
+        require(tokenLiquidity[path[1]] >= amounts[1], "Not enough tokens in treasury.");
 
         IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);
         tokenLiquidity[path[1]] = SafeMath.sub(tokenLiquidity[path[1]], amounts[1]);
-        emit ChromiumTrade(msg.sender,path[0], path[1], amount, amounts[1]);
+        emit ChromiumTrade(msg.sender, path[0], path[1], amount, amounts[1]);
         return amounts[1];
     }
 
@@ -137,10 +137,11 @@ contract ChromiumV2 is Ownable {
     )
     external
     payable
-    returns(uint)
+    returns (uint)
     {
         require(path[1] == address(cbltToken), "Chromium:: destToken needs to be cbltToken.");
         IERC20(path[0]).universalTransferFromSenderToThis(amount);
+        tokenLiquidity[path[0]] = SafeMath.add(tokenLiquidity[path[0]], amount);
         uint[] memory amounts = getExchangeRate(amount, path);
         uint temp = getCbltPool(amounts[1]);
 
@@ -150,14 +151,14 @@ contract ChromiumV2 is Ownable {
 
             cbltLiquidity[temp] = SafeMath.sub(cbltLiquidity[temp], amounts[1]);
             cbltToken.universalTransfer(msg.sender, amounts[1]);
-            emit ChromiumTrade(msg.sender,path[0], path[1], amount, amounts[1]);
+            emit ChromiumTrade(msg.sender, path[0], path[1], amount, amounts[1]);
             return amounts[1];
         } else {
             require(cbltLiquidity[temp] >= amounts[1], "Not enough cblt tokens in pool for 1000 and down in Treasury.");
 
             cbltLiquidity[temp] = SafeMath.sub(cbltLiquidity[temp], amounts[1]);
             cbltToken.universalTransfer(msg.sender, amounts[1]);
-            emit ChromiumTrade(msg.sender,path[0], path[1], amount, amounts[1]);
+            emit ChromiumTrade(msg.sender, path[0], path[1], amount, amounts[1]);
             return amounts[1];
         }
     }
@@ -191,7 +192,7 @@ contract ChromiumV2 is Ownable {
     pure
     returns (uint)
     {
-        if(amount > 1000000000000000000000) {
+        if (amount >= 1000000000000000000000) {
             return 1;
         } else {
             return 2;
