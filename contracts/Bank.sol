@@ -146,6 +146,7 @@ contract Bank is Ownable {
         uint256 dueDate; // Time of contract ending
         uint256 totalVote; // Total amount determined by tier
         uint256 yes; // Amount of votes for yes
+        // address currentCoin; // Address of collateral coin
     }
 
     /**
@@ -156,13 +157,14 @@ contract Bank is Ownable {
         public
         payable
     {
+        require(loanBook[msg.sender].initialized == false);
+
         uint256 riskScore = 20; // NFT ENTRY!!!!
         uint256 riskFactor = 15; // NFT ENTRY!!!!
         uint256 interestRate = 2; // NFT ENTRY!!!!
         uint256 userMaxTier = 5; // NFT ENTRY!!!!
-        uint256 flatfee = 400; // NFT ENTRY!!!!
+        // uint256 flatfee = 400; // NFT ENTRY!!!!
 
-        require(loanBook[msg.sender].initialized == false);
         require(
             _paymentPeriod <= loanTiers[userMaxTier].maximumPaymentPeriod,
             "Payment period exceeds that of the tier, pleas try again"
@@ -651,9 +653,10 @@ contract Bank is Ownable {
             dueDate = SafeMath.add(userBook[msg.sender].depositTime, 7889229);
         } else if (stakingPeriod == 4) {
             dueDate = SafeMath.add(userBook[msg.sender].depositTime, 15778458);
-        } else {
+        } else if (stakingPeriod == 5) {
             dueDate = SafeMath.add(userBook[msg.sender].depositTime, 31556916);
         }
+
         // Staking period must be over before he withdraws ETH balance
         // require(block.timestamp >= dueDate, "Staking period is not over.");
 
@@ -742,6 +745,9 @@ contract Bank is Ownable {
         stakingStatus = _status;
     }
 }
+
+// Points of entry
+// Recalculating reward wallet and any time cblt or old token goes back to the system.
 
 // Voting
 // Lending
