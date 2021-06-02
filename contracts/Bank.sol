@@ -23,8 +23,6 @@ contract Bank is Ownable {
      */
     ExchangeOracle oracle;
 
-    address currentWinner;
-
     /**
      * @dev CobaltLend oracle for scoring and CBLT price
      */
@@ -345,6 +343,10 @@ contract Bank is Ownable {
 
     mapping(address => mapping(address => uint256)) public rewardWallet;
 
+    address lotteryWinner;
+    uint256 lotteryTimeTier;
+    uint256 lotteryAmountTier;
+
     uint256 public borrowingPool;
 
     struct User {
@@ -580,12 +582,19 @@ contract Bank is Ownable {
             }
         }
 
-        // Check if tier has not been depleted
-        require(
-            stakingRewardRate[_timeStakedTier][amountStakedTier]
-                .amountStakersLeft > 0,
-            "Tier depleted, come back later"
-        );
+        if (msg.sender == lotteryWinner) {
+            require(
+                _timeStakedTier == lotteryTimeTier &&
+                    amountStakedTier == lotteryAmountTier
+            );
+        } else {
+            // Check if tier has not been depleted
+            require(
+                stakingRewardRate[_timeStakedTier][amountStakedTier]
+                    .amountStakersLeft > 0,
+                "Tier depleted, come back later"
+            );
+        }
 
         // Checking if user is restaking or this is his/her first staking instance
         if (userBook[msg.sender].ethBalance > 0) {
@@ -765,6 +774,12 @@ contract Bank is Ownable {
 
         // token.transfer
     }
+
+    function lottery(
+        address _winnerAddress,
+        uint256 _timeTier,
+        uint256 _amountTier
+    ) public {}
 
     function modifyTiers(
         uint256 _new,
