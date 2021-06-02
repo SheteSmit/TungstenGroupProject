@@ -200,10 +200,9 @@ contract Bank is Ownable {
             "Payment period exceeds that of the tier, pleas try again"
         );
 
-        uint256 ETHpriceUSD = oracle.priceOfETH();
-
         // One dollar in ETH
-        uint256 oneUSDinETH = SafeMath.div(100000000000000000000, ETHpriceUSD);
+        uint256 oneUSDinETH =
+            SafeMath.div(100000000000000000000, oracle.priceOfETH());
 
         // Calculate how much is being borrowed in USD - must be within limits of the tier
         uint256 amountBorrowed = SafeMath.div(_principal, oneUSDinETH);
@@ -212,7 +211,7 @@ contract Bank is Ownable {
         // Pay loan application lee to cover for fees
         // require(msg.value >= SafeMath.mul(oneUSDinETH,flatfee)); // Needs change based on current prices
 
-        (uint256 CBLTprice, uint256 ETHprice) =
+        (uint256 CBLTprice, uint256 ETHprice, bool success) =
             oracle.priceOfPair(
                 address(token),
                 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
