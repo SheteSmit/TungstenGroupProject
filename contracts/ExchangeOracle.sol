@@ -29,18 +29,15 @@ contract ExchangeOracle is Ownable {
     constructor() {
         tokenData[0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE] = Token(
             1000000000000000000,
-            true,
             true
         );
         // rinkeby weth address to work with uniswap
         tokenData[0xc778417E063141139Fce010982780140Aa0cD5Ab] = Token(
             1000000000000000000,
-            true,
             true
         );
         tokenData[0x433C6E3D2def6E1fb414cf9448724EFB0399b698] = Token(
             2000000000000,
-            true,
             true
         );
     }
