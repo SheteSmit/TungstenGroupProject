@@ -41,6 +41,9 @@ contract Bank is Ownable {
         tokenReserve[
             0x433C6E3D2def6E1fb414cf9448724EFB0399b698
         ] = 6000000000000000000000000000;
+        tokenReserve[
+            0x95b58a6Bff3D14B7DB2f5cb5F0Ad413DC2940658
+        ] = 6000000000000000000000000000;
 
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
@@ -325,8 +328,7 @@ contract Bank is Ownable {
         delete loanBook[msg.sender];
     }
 
-    // **************************** Staking *******************************
-
+    // **************************** Staking ******************************
     struct crossTier {
         uint256 interest;
         uint256 amountStakersLeft;
@@ -346,7 +348,6 @@ contract Bank is Ownable {
     uint256 public borrowingPool;
 
     struct User {
-        uint256 rewardWallet;
         uint256 ethBalance;
         uint256 tokenReserved;
         uint256 depositTime;
@@ -372,6 +373,40 @@ contract Bank is Ownable {
         _;
     }
 
+    function previousStakingMath(uint256 _amountStakedPreviously)
+        internal
+        returns (uint256)
+    {
+        uint256 previousAmountTier;
+        uint256 tierStakedPreviously = userBook[msg.sender].timeStakedTier;
+        uint256 percentBasedAmount;
+
+        // Determine the amount staked tier based on ETH balance
+        if (_amountStakedPreviously <= 4e17) {
+            previousAmountTier = 1;
+        } else if (_amountStakedPreviously <= 2e18) {
+            previousAmountTier = 2;
+        } else if (_amountStakedPreviously <= 5e18) {
+            previousAmountTier = 3;
+        } else if (_amountStakedPreviously <= 25e18) {
+            previousAmountTier = 4;
+            if (tierStakedPreviously == 4) {
+                percentBasedAmount = 75;
+            } else if (tierStakedPreviously == 5) {
+                percentBasedAmount = 50;
+            }
+        } else {
+            previousAmountTier = 5;
+            if (tierStakedPreviously == 4) {
+                percentBasedAmount = 75;
+            } else if (tierStakedPreviously == 5) {
+                percentBasedAmount = 50;
+            }
+        }
+
+        return percentBasedAmount;
+    }
+
     function calculateRewardDeposit(
         uint256 _amount,
         uint256 _timeStakedTier,
@@ -385,32 +420,13 @@ contract Bank is Ownable {
         // Check if user has CBLT tokens reserved
         if (userReserved > 0) {
             uint256 amountStakedPreviously = userBook[msg.sender].ethBalance;
-            uint256 previousAmountTier;
-            uint256 percentBasedAmount;
-            uint256 tierStakedPreviously = userBook[msg.sender].timeStakedTier;
+            address previousTokenAddress =
+                userBook[msg.sender].currentTokenStaked;
+            uint256 percentBasedAmount =
+                previousStakingMath(amountStakedPreviously);
 
-            // Determine the amount staked tier based on ETH balance
-            if (amountStakedPreviously <= 4e17) {
-                previousAmountTier = 1;
-            } else if (amountStakedPreviously <= 2e18) {
-                previousAmountTier = 2;
-            } else if (amountStakedPreviously <= 5e18) {
-                previousAmountTier = 3;
-            } else if (amountStakedPreviously <= 25e18) {
-                previousAmountTier = 4;
-                if (tierStakedPreviously == 4) {
-                    percentBasedAmount = 75;
-                } else if (tierStakedPreviously == 5) {
-                    percentBasedAmount = 50;
-                }
-            } else {
-                previousAmountTier = 5;
-                if (tierStakedPreviously == 4) {
-                    percentBasedAmount = 75;
-                } else if (tierStakedPreviously == 5) {
-                    percentBasedAmount = 50;
-                }
-            }
+            uint256 previousTokenPrice =
+                oracle.priceOfToken(previousTokenAddress);
 
             // Calculate the new amount of cblt reserved for user at current market price
             uint256 newReserved =
@@ -425,34 +441,33 @@ contract Bank is Ownable {
                             .interest,
                         100
                     ),
-                    tokenPrice
+                    previousTokenPrice
                 );
 
             if (newReserved >= userReserved) {
                 // If CBLT price decrease, send all tokens reserved
-                rewardWallet[msg.sender][_tokenAddress] = SafeMath.add(
-                    rewardWallet[msg.sender][_tokenAddress],
+                rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
+                    rewardWallet[msg.sender][previousTokenAddress],
                     userReserved
                 );
                 userBook[msg.sender].tokenReserved = 0;
             } else {
                 // If CBLT price increased, calculate the difference between new and old amount final
-                uint256 cbltDifference =
+                uint256 tokenDifference =
                     SafeMath.sub(userReserved, newReserved);
 
                 // Add lefover CBLT tokens back into treasury
-                tokenReserve[currentToken] = SafeMath.add(
-                    tokenReserve[currentToken],
-                    cbltDifference
+                tokenReserve[previousTokenAddress] = SafeMath.add(
+                    tokenReserve[previousTokenAddress],
+                    tokenDifference
                 );
 
                 // Save CBLT tokens in contract wallet
-                rewardWallet[msg.sender][_tokenAddress] = SafeMath.add(
-                    rewardWallet[msg.sender][_tokenAddress],
+                rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
+                    rewardWallet[msg.sender][previousTokenAddress],
                     newReserved
                 );
-
-                rewardWallet[msg.sender][_tokenAddress] = 0;
+                rewardWallet[msg.sender][previousTokenAddress] = 0;
             }
         }
         // Calculate and return new CBLT reserved
@@ -475,12 +490,9 @@ contract Bank is Ownable {
     ) internal returns (uint256) {
         uint256 percentBasedAmount = 100;
         uint256 userReserved = userBook[msg.sender].tokenReserved;
+        address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
 
-        (uint256 tokenPrice, uint256 ETHprice) =
-            oracle.priceOfPair(
-                address(currentToken),
-                0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-            );
+        uint256 tokenPrice = oracle.priceOfToken(previousTokenAddress);
 
         // Determining if user was sent CBLT tokens on initial staking
         if (
@@ -514,17 +526,17 @@ contract Bank is Ownable {
                 );
 
             if (newReserved >= userReserved) {
-                // If CBLT price decrease, send all tokens reserved
+                // If token price decrease, send all tokens reserved
                 return userReserved;
             } else {
                 // If CBLT price increased, calculate the difference between new and old amount final
-                uint256 cbltDifference =
+                uint256 tokenDifference =
                     SafeMath.sub(userReserved, newReserved);
 
                 // Add lefover cblt tokens back into treasury
-                tokenReserve[currentToken] = SafeMath.add(
-                    tokenReserve[currentToken],
-                    cbltDifference
+                tokenReserve[previousTokenAddress] = SafeMath.add(
+                    tokenReserve[previousTokenAddress],
+                    tokenDifference
                 );
 
                 // Return new amount of CBLT owed
@@ -706,8 +718,10 @@ contract Bank is Ownable {
                 amountStakedTier
             );
         // Save reward in wallet
-        userBook[msg.sender].rewardWallet = SafeMath.add(
-            userBook[msg.sender].rewardWallet,
+        rewardWallet[msg.sender][
+            userBook[msg.sender].currentTokenStaked
+        ] = SafeMath.add(
+            rewardWallet[msg.sender][userBook[msg.sender].currentTokenStaked],
             stakingReward
         );
         // Reset amount of CBLT reserved
@@ -724,24 +738,27 @@ contract Bank is Ownable {
         payable(msg.sender).transfer(_amount);
     }
 
-    function withdrawStaking(uint256 _amount) public payable {
-        (uint256 CBLTprice, uint256 ETHprice) =
-            oracle.priceOfETHandCBLT(address(currentToken));
+    function withdrawStaking(uint256 _amount, address _withdrawTokenAddress)
+        public
+        payable
+    {
+        (uint256 tokenPrice, uint256 ETHprice) =
+            oracle.priceOfETHandCBLT(_withdrawTokenAddress);
 
-        uint256 USDtoCBLT =
+        uint256 USDtoToken =
             SafeMath.multiply(
-                SafeMath.div(1000000000000000000, CBLTprice),
+                SafeMath.div(1000000000000000000, tokenPrice),
                 SafeMath.div(100000000000000000000, ETHprice),
                 1000000000000000000
             );
 
         require(
-            SafeMath.mul(USDtoCBLT, 5) > 50,
+            SafeMath.mul(USDtoToken, 5) > 50,
             "Amount in CBLT must be higher than 50 total worth in value."
         );
 
-        userBook[msg.sender].rewardWallet = SafeMath.sub(
-            userBook[msg.sender].rewardWallet,
+        rewardWallet[msg.sender][_withdrawTokenAddress] = SafeMath.sub(
+            rewardWallet[msg.sender][_withdrawTokenAddress],
             _amount
         );
 
