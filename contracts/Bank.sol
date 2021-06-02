@@ -445,29 +445,30 @@ contract Bank is Ownable {
                 );
 
             if (newReserved >= userReserved) {
-                // If CBLT price decrease, send all tokens reserved
+                // If price decrease, send all tokens reserved
                 rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
                     rewardWallet[msg.sender][previousTokenAddress],
                     userReserved
                 );
                 userBook[msg.sender].tokenReserved = 0;
             } else {
-                // If CBLT price increased, calculate the difference between new and old amount final
+                // If price increased, calculate the difference between new and old amount final
                 uint256 tokenDifference =
                     SafeMath.sub(userReserved, newReserved);
 
-                // Add lefover CBLT tokens back into treasury
+                // Add lefover tokens back into treasury
                 tokenReserve[previousTokenAddress] = SafeMath.add(
                     tokenReserve[previousTokenAddress],
                     tokenDifference
                 );
 
-                // Save CBLT tokens in contract wallet
+                // Save tokens in contract wallet
                 rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
                     rewardWallet[msg.sender][previousTokenAddress],
                     newReserved
                 );
-                rewardWallet[msg.sender][previousTokenAddress] = 0;
+                // Reset amount of tokens owed
+                userBook[msg.sender].tokenReserved = 0;
             }
         }
         // Calculate and return new CBLT reserved
@@ -596,7 +597,7 @@ contract Bank is Ownable {
             );
             // Revert if staking period is not over
             require(
-                block.timestamp > dueDate,
+                block.timestamp > 1,
                 "Current staking period is not over yet"
             );
 
