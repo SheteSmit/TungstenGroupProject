@@ -10,7 +10,8 @@ contract ExchangeOracle is Ownable {
     // Struct saving token data
     struct Token {
         uint256 value;
-        bool active;
+        bool fromActive;
+        bool destActive;
     }
 
     // Events
@@ -21,10 +22,18 @@ contract ExchangeOracle is Ownable {
     constructor() {
         tokenData[0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE] = Token(
             1000000000000000000,
+            true,
+            true
+        );
+        // rinkeby weth address to work with uniswap
+        tokenData[0xc778417E063141139Fce010982780140Aa0cD5Ab] = Token(
+            1000000000000000000,
+            true,
             true
         );
         tokenData[0x433C6E3D2def6E1fb414cf9448724EFB0399b698] = Token(
             2000000000000,
+            true,
             true
         );
     }
@@ -32,29 +41,39 @@ contract ExchangeOracle is Ownable {
     function updateToken(
         address _tokenAddress,
         uint256 _value,
-        bool _active
+        bool _fromActive,
+        bool _destActive
     ) public {
         // Update token data
-        tokenData[_tokenAddress] = Token(_value, _active);
+        tokenData[_tokenAddress] = Token(_value, _fromActive, _destActive);
         // Emit event with new token information
         emit tokenUpdatedData(_value);
     }
 
     function priceOfPair(address _sellTokenAddress, address _buyTokenAddress)
-        public
-        view
-        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    public
+    view
+    returns (uint256 sellTokenPrice, uint256 buyTokenPrice, bool success)
     {
-        return (
+        if(tokenData[_sellTokenAddress].fromActive == true && tokenData[_buyTokenAddress].destActive == true) {
+            return (
             tokenData[_sellTokenAddress].value,
-            tokenData[_buyTokenAddress].value
-        );
+            tokenData[_buyTokenAddress].value,
+            true
+            );
+        } else {
+            return (
+            0,
+            0,
+            false
+            );
+        }
     }
 
     function testConnection()
-        public
-        pure
-        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    public
+    pure
+    returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
     {
         return (1, 1);
     }
@@ -63,25 +82,25 @@ contract ExchangeOracle is Ownable {
         address _sellTokenAddress,
         address _buyTokenAddress
     )
-        public
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256
-        )
+    public
+    view
+    returns (
+        uint256,
+        uint256,
+        uint256
+    )
     {
         return (
-            tokenData[_sellTokenAddress].value,
-            tokenData[_buyTokenAddress].value,
-            USDpriceETH
+        tokenData[_sellTokenAddress].value,
+        tokenData[_buyTokenAddress].value,
+        USDpriceETH
         );
     }
 
     function priceOfETHandCBLT(address _cbltToken)
-        public
-        view
-        returns (uint256, uint256)
+    public
+    view
+    returns (uint256, uint256)
     {
         return (USDpriceETH, tokenData[_cbltToken].value);
     }
