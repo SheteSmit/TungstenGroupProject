@@ -38,61 +38,90 @@ contract Bank is Ownable {
         loanTiers[5].maximumPaymentPeriod = 60;
         loanTiers[5].principalLimit = 500000;
 
+        tokenReserve[
+            0x433C6E3D2def6E1fb414cf9448724EFB0399b698
+        ] = 6000000000000000000000000000;
+
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
         stakingRewardRate[1][1].amountStakersLeft = 0;
+        stakingRewardRate[1][1].tierDuration = 2629743;
         stakingRewardRate[1][2].interest = 2;
         stakingRewardRate[1][2].amountStakersLeft = 0;
+        stakingRewardRate[1][2].tierDuration = 2629743;
         stakingRewardRate[1][3].interest = 3;
         stakingRewardRate[1][3].amountStakersLeft = 0;
+        stakingRewardRate[1][3].tierDuration = 2629743;
         stakingRewardRate[1][4].interest = 4;
         stakingRewardRate[1][4].amountStakersLeft = 0;
+        stakingRewardRate[1][4].tierDuration = 2629743;
         stakingRewardRate[1][5].interest = 4;
         stakingRewardRate[1][5].amountStakersLeft = 0;
+        stakingRewardRate[1][5].tierDuration = 2629743;
         //
         stakingRewardRate[2][1].interest = 1;
         stakingRewardRate[2][1].amountStakersLeft = 0;
+        stakingRewardRate[2][1].tierDuration = 5259486;
         stakingRewardRate[2][2].interest = 2;
         stakingRewardRate[2][2].amountStakersLeft = 0;
+        stakingRewardRate[2][2].tierDuration = 5259486;
         stakingRewardRate[2][3].interest = 3;
         stakingRewardRate[2][3].amountStakersLeft = 0;
+        stakingRewardRate[2][3].tierDuration = 5259486;
         stakingRewardRate[2][4].interest = 4;
         stakingRewardRate[2][4].amountStakersLeft = 0;
+        stakingRewardRate[2][4].tierDuration = 5259486;
         stakingRewardRate[2][5].interest = 4;
         stakingRewardRate[2][5].amountStakersLeft = 0;
+        stakingRewardRate[2][5].tierDuration = 5259486;
         //
         stakingRewardRate[3][1].interest = 1;
         stakingRewardRate[3][1].amountStakersLeft = 0;
+        stakingRewardRate[3][1].tierDuration = 7889229;
         stakingRewardRate[3][2].interest = 2;
         stakingRewardRate[3][2].amountStakersLeft = 0;
+        stakingRewardRate[3][2].tierDuration = 7889229;
         stakingRewardRate[3][3].interest = 3;
         stakingRewardRate[3][3].amountStakersLeft = 0;
+        stakingRewardRate[3][3].tierDuration = 7889229;
         stakingRewardRate[3][4].interest = 4;
         stakingRewardRate[3][4].amountStakersLeft = 0;
+        stakingRewardRate[3][4].tierDuration = 7889229;
         stakingRewardRate[3][5].interest = 4;
         stakingRewardRate[3][5].amountStakersLeft = 0;
+        stakingRewardRate[3][5].tierDuration = 7889229;
         //
         stakingRewardRate[4][1].interest = 3;
         stakingRewardRate[4][1].amountStakersLeft = 500;
+        stakingRewardRate[4][1].tierDuration = 15778458;
         stakingRewardRate[4][2].interest = 5;
         stakingRewardRate[4][2].amountStakersLeft = 500;
+        stakingRewardRate[4][2].tierDuration = 15778458;
         stakingRewardRate[4][3].interest = 5;
         stakingRewardRate[4][3].amountStakersLeft = 500;
+        stakingRewardRate[4][3].tierDuration = 15778458;
         stakingRewardRate[4][4].interest = 5;
         stakingRewardRate[4][4].amountStakersLeft = 1000;
+        stakingRewardRate[4][4].tierDuration = 15778458;
         stakingRewardRate[4][5].interest = 5;
         stakingRewardRate[4][5].amountStakersLeft = 1000;
+        stakingRewardRate[4][5].tierDuration = 15778458;
         //
         stakingRewardRate[5][1].interest = 4;
         stakingRewardRate[5][1].amountStakersLeft = 500;
+        stakingRewardRate[5][1].tierDuration = 31556916;
         stakingRewardRate[5][2].interest = 5;
         stakingRewardRate[5][2].amountStakersLeft = 500;
+        stakingRewardRate[5][2].tierDuration = 31556916;
         stakingRewardRate[5][3].interest = 5;
         stakingRewardRate[5][3].amountStakersLeft = 500;
+        stakingRewardRate[5][3].tierDuration = 31556916;
         stakingRewardRate[5][4].interest = 6;
         stakingRewardRate[5][4].amountStakersLeft = 1000;
+        stakingRewardRate[5][4].tierDuration = 31556916;
         stakingRewardRate[5][5].interest = 7;
         stakingRewardRate[5][5].amountStakersLeft = 1000;
+        stakingRewardRate[5][5].tierDuration = 31556916;
     }
 
     /**
@@ -301,36 +330,57 @@ contract Bank is Ownable {
     struct crossTier {
         uint256 interest;
         uint256 amountStakersLeft;
+        uint256 tierDuration;
     }
+
+    address currentToken;
 
     mapping(uint256 => mapping(uint256 => crossTier)) public stakingRewardRate;
 
     mapping(address => User) public userBook;
 
-    uint256 CBLTReserve = 6000000000000000000000000000;
+    mapping(address => uint256) public tokenReserve;
 
-    uint256 borrowingPool;
+    mapping(address => mapping(address => uint256)) public rewardWallet;
+
+    uint256 public borrowingPool;
 
     struct User {
         uint256 rewardWallet;
         uint256 ethBalance;
-        uint256 cbltReserved;
+        uint256 tokenReserved;
         uint256 depositTime;
         uint256 timeStakedTier;
+        address currentTokenStaked;
+    }
+
+    modifier isValidStake(uint256 _timeStakedTier) {
+        // Checks if staking is currently online
+        require(stakingStatus == true, "Staking is currently offline");
+
+        // Minimum deposit of 0.015 ETH
+        require(
+            msg.value > 15e16,
+            "Error, deposit must be higher than 0.015 ETH"
+        );
+
+        // The tier input must be between 1 and 5
+        require(
+            _timeStakedTier >= 1 && _timeStakedTier <= 5, // needs to be variable
+            "Tier number must be a number between 1 and 5."
+        );
+        _;
     }
 
     function calculateRewardDeposit(
         uint256 _amount,
         uint256 _timeStakedTier,
-        uint256 _amountStakedTier
+        uint256 _amountStakedTier,
+        address _tokenAddress
     ) internal returns (uint256) {
-        (uint256 CBLTprice, uint256 ETHprice) =
-            oracle.priceOfPair(
-                address(token),
-                0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-            );
+        uint256 tokenPrice = oracle.priceOfToken(address(token));
 
-        uint256 userReserved = userBook[msg.sender].cbltReserved;
+        uint256 userReserved = userBook[msg.sender].tokenReserved;
 
         // Check if user has CBLT tokens reserved
         if (userReserved > 0) {
@@ -375,31 +425,34 @@ contract Bank is Ownable {
                             .interest,
                         100
                     ),
-                    CBLTprice
+                    tokenPrice
                 );
 
             if (newReserved >= userReserved) {
                 // If CBLT price decrease, send all tokens reserved
-                userBook[msg.sender].rewardWallet = SafeMath.add(
-                    userBook[msg.sender].rewardWallet,
+                rewardWallet[msg.sender][_tokenAddress] = SafeMath.add(
+                    rewardWallet[msg.sender][_tokenAddress],
                     userReserved
                 );
-                userBook[msg.sender].cbltReserved = 0;
+                userBook[msg.sender].tokenReserved = 0;
             } else {
                 // If CBLT price increased, calculate the difference between new and old amount final
                 uint256 cbltDifference =
                     SafeMath.sub(userReserved, newReserved);
 
                 // Add lefover CBLT tokens back into treasury
-                CBLTReserve = SafeMath.add(CBLTReserve, cbltDifference);
+                tokenReserve[currentToken] = SafeMath.add(
+                    tokenReserve[currentToken],
+                    cbltDifference
+                );
 
                 // Save CBLT tokens in contract wallet
-                userBook[msg.sender].rewardWallet = SafeMath.add(
-                    userBook[msg.sender].rewardWallet,
+                rewardWallet[msg.sender][_tokenAddress] = SafeMath.add(
+                    rewardWallet[msg.sender][_tokenAddress],
                     newReserved
                 );
 
-                userBook[msg.sender].cbltReserved = 0;
+                rewardWallet[msg.sender][_tokenAddress] = 0;
             }
         }
         // Calculate and return new CBLT reserved
@@ -411,7 +464,7 @@ contract Bank is Ownable {
                         .interest,
                     100
                 ),
-                CBLTprice
+                tokenPrice
             );
     }
 
@@ -421,11 +474,11 @@ contract Bank is Ownable {
         uint256 _amountStakedTier
     ) internal returns (uint256) {
         uint256 percentBasedAmount = 100;
-        uint256 userReserved = userBook[msg.sender].cbltReserved;
+        uint256 userReserved = userBook[msg.sender].tokenReserved;
 
-        (uint256 CBLTprice, uint256 ETHprice) =
+        (uint256 tokenPrice, uint256 ETHprice) =
             oracle.priceOfPair(
-                address(token),
+                address(currentToken),
                 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
             );
 
@@ -457,7 +510,7 @@ contract Bank is Ownable {
                             .interest,
                         100
                     ),
-                    CBLTprice
+                    tokenPrice
                 );
 
             if (newReserved >= userReserved) {
@@ -469,7 +522,10 @@ contract Bank is Ownable {
                     SafeMath.sub(userReserved, newReserved);
 
                 // Add lefover cblt tokens back into treasury
-                CBLTReserve = SafeMath.add(CBLTReserve, cbltDifference);
+                tokenReserve[currentToken] = SafeMath.add(
+                    tokenReserve[currentToken],
+                    cbltDifference
+                );
 
                 // Return new amount of CBLT owed
                 return newReserved;
@@ -478,25 +534,15 @@ contract Bank is Ownable {
         return 0;
     }
 
-    function depositEth(uint32 _timeStakedTier) public payable {
-        require(stakingStatus == true, "Staking is currently offline");
-
+    function depositEth(uint32 _timeStakedTier, address _tokenAddress)
+        public
+        payable
+        isValidStake(_timeStakedTier)
+    {
         uint256 amountStakedTier;
         uint256 paidAdvanced = 0;
         uint256 dueDate;
-        uint256 cbltReserved;
-
-        // The tier input must be between 1 and 5
-        require(
-            _timeStakedTier >= 1 && _timeStakedTier <= 5,
-            "Tier number must be a number between 1 and 5."
-        );
-
-        // Minimum deposit of 0.015 ETH
-        require(
-            msg.value > 15e16,
-            "Error, deposit must be higher than 0.015 ETH"
-        );
+        uint256 tokensReserved;
 
         // Check the amountStakedTier based on deposit
         if (msg.value <= 4e17) {
@@ -521,90 +567,70 @@ contract Bank is Ownable {
             }
         }
 
-        if (msg.sender == currentWinner) {} else {
-            // Check if tier has not been depleted
-            require(
-                stakingRewardRate[_timeStakedTier][amountStakedTier]
-                    .amountStakersLeft > 0,
-                "Tier depleted, come back later"
-            );
-        }
+        // Check if tier has not been depleted
+        require(
+            stakingRewardRate[_timeStakedTier][amountStakedTier]
+                .amountStakersLeft > 0,
+            "Tier depleted, come back later"
+        );
 
         // Checking if user is restaking or this is his/her first staking instance
-        uint256 stakingPeriod = userBook[msg.sender].timeStakedTier;
-
-        if (stakingPeriod > 0) {
-            // Create due date based on deposite time and time Tier
-            if (stakingPeriod == 1) {
-                dueDate = SafeMath.add(
-                    userBook[msg.sender].depositTime,
-                    2629743
-                );
-            } else if (stakingPeriod == 2) {
-                dueDate = SafeMath.add(
-                    userBook[msg.sender].depositTime,
-                    5259486
-                );
-            } else if (stakingPeriod == 3) {
-                dueDate = SafeMath.add(
-                    userBook[msg.sender].depositTime,
-                    7889229
-                );
-            } else if (stakingPeriod == 4) {
-                dueDate = SafeMath.add(
-                    userBook[msg.sender].depositTime,
-                    15778458
-                );
-            } else {
-                dueDate = SafeMath.add(
-                    userBook[msg.sender].depositTime,
-                    31556916
-                );
-            }
+        if (userBook[msg.sender].ethBalance > 0) {
+            // Creates a due date for current staking period
+            dueDate = SafeMath.add(
+                stakingRewardRate[_timeStakedTier][amountStakedTier]
+                    .tierDuration,
+                userBook[msg.sender].depositTime
+            );
             // Revert if staking period is not over
             require(
-                block.timestamp > 1,
+                block.timestamp > dueDate,
                 "Current staking period is not over yet"
             );
 
-            // Checks the amount of CBLT tokens that need to be reserved
-            cbltReserved = calculateRewardDeposit(
+            // Checks the amount of CBLT tokens that need to be reserved plus existing balance
+            tokensReserved = calculateRewardDeposit(
                 SafeMath.add(msg.value, userBook[msg.sender].ethBalance),
                 _timeStakedTier,
-                amountStakedTier
+                amountStakedTier,
+                _tokenAddress
             );
         } else {
             // Checks the amount of CBLT tokens that need to be reserved
-            cbltReserved = calculateRewardDeposit(
+            tokensReserved = calculateRewardDeposit(
                 msg.value,
                 _timeStakedTier,
-                amountStakedTier
+                amountStakedTier,
+                _tokenAddress
             );
         }
 
         // Treasury must have that amount open
-        require(cbltReserved <= CBLTReserve, "Treasury is currently depleted");
+        require(
+            tokensReserved <= tokenReserve[_tokenAddress],
+            "Treasury is currently depleted"
+        );
 
         // Check if we are sending CBLT based on time staked
         if (paidAdvanced > 0) {
-            uint256 cbltSent =
-                SafeMath.multiply(cbltReserved, paidAdvanced, 100);
+            uint256 tokensSent =
+                SafeMath.multiply(tokensReserved, paidAdvanced, 100);
             // require( token.transfer(msg.sender, cbltSent), "Transaction was not successful" );
 
             // Saves the amount of CBLT tokens reserved minus the amount sent in advanced
-            userBook[msg.sender].cbltReserved = SafeMath.add(
-                userBook[msg.sender].cbltReserved,
+            userBook[msg.sender].tokenReserved = SafeMath.add(
+                userBook[msg.sender].tokenReserved,
                 SafeMath.multiply(
-                    cbltReserved,
+                    tokensReserved,
                     SafeMath.sub(100, paidAdvanced),
                     100
                 )
             );
         } else {
             // Saves the amount of CBLT tokens reserved in user struct
-            userBook[msg.sender].cbltReserved = SafeMath.add(
-                userBook[msg.sender].cbltReserved,
-                cbltReserved
+            userBook[msg.sender].tokenReserved = SafeMath.add(
+                userBook[msg.sender].tokenReserved,
+                tokensReserved
             );
         }
 
@@ -612,7 +638,10 @@ contract Bank is Ownable {
         userBook[msg.sender].timeStakedTier = _timeStakedTier;
 
         // Substract CBLT tokens reserved for user from treasury
-        CBLTReserve = SafeMath.sub(CBLTReserve, cbltReserved);
+        tokenReserve[_tokenAddress] = SafeMath.sub(
+            tokenReserve[_tokenAddress],
+            tokensReserved
+        );
 
         // Oracle call for current ETH price in USD
         uint256 ETHprice = oracle.priceOfETH();
@@ -634,6 +663,9 @@ contract Bank is Ownable {
             1
         );
 
+        // Save token address for user
+        userBook[msg.sender].currentTokenStaked = _tokenAddress;
+
         // Change the time of deposit
         userBook[msg.sender].depositTime = block.timestamp;
     }
@@ -641,43 +673,37 @@ contract Bank is Ownable {
     function withdrawEth(uint256 _amount) public {
         uint256 dueDate;
         uint256 stakingPeriod = userBook[msg.sender].timeStakedTier;
-        uint256 _amountStakedTier;
+        uint256 amountStakedTier;
         uint256 userBalance = userBook[msg.sender].ethBalance;
 
-        // Calulate due date based on time staked tier and deposit time
-        if (stakingPeriod == 1) {
-            dueDate = SafeMath.add(userBook[msg.sender].depositTime, 2629743);
-        } else if (stakingPeriod == 2) {
-            dueDate = SafeMath.add(userBook[msg.sender].depositTime, 5259486);
-        } else if (stakingPeriod == 3) {
-            dueDate = SafeMath.add(userBook[msg.sender].depositTime, 7889229);
-        } else if (stakingPeriod == 4) {
-            dueDate = SafeMath.add(userBook[msg.sender].depositTime, 15778458);
-        } else if (stakingPeriod == 5) {
-            dueDate = SafeMath.add(userBook[msg.sender].depositTime, 31556916);
+        // Determine the amount staked tier based on ETH balance
+        if (userBalance <= 4e17) {
+            amountStakedTier = 5;
+        } else if (userBalance <= 2e18) {
+            amountStakedTier = 4;
+        } else if (userBalance <= 5e18) {
+            amountStakedTier = 3;
+        } else if (userBalance <= 25e18) {
+            amountStakedTier = 2;
+        } else {
+            amountStakedTier = 1;
         }
+
+        // Calulate due date based on time staked tier and deposit time
+        dueDate = SafeMath.add(
+            stakingRewardRate[stakingPeriod][amountStakedTier].tierDuration,
+            userBook[msg.sender].depositTime
+        );
 
         // Staking period must be over before he withdraws ETH balance
         // require(block.timestamp >= dueDate, "Staking period is not over.");
 
-        // Determine the amount staked tier based on ETH balance
-        if (userBalance <= 4e17) {
-            _amountStakedTier = 5;
-        } else if (userBalance <= 2e18) {
-            _amountStakedTier = 4;
-        } else if (userBalance <= 5e18) {
-            _amountStakedTier = 3;
-        } else if (userBalance <= 25e18) {
-            _amountStakedTier = 2;
-        } else {
-            _amountStakedTier = 1;
-        }
-        // Recalculate total CBLT tokens based on current token value
+        // Recalculate tokens based on current token value
         uint256 stakingReward =
             calculateRewardWithdraw(
                 userBook[msg.sender].ethBalance,
                 stakingPeriod,
-                _amountStakedTier
+                amountStakedTier
             );
         // Save reward in wallet
         userBook[msg.sender].rewardWallet = SafeMath.add(
@@ -685,7 +711,8 @@ contract Bank is Ownable {
             stakingReward
         );
         // Reset amount of CBLT reserved
-        userBook[msg.sender].cbltReserved = 0;
+        userBook[msg.sender].tokenReserved = 0;
+
         // Substract eth from user account
         userBook[msg.sender].ethBalance = SafeMath.sub(
             userBook[msg.sender].ethBalance,
@@ -699,7 +726,7 @@ contract Bank is Ownable {
 
     function withdrawStaking(uint256 _amount) public payable {
         (uint256 CBLTprice, uint256 ETHprice) =
-            oracle.priceOfETHandCBLT(address(token));
+            oracle.priceOfETHandCBLT(address(currentToken));
 
         uint256 USDtoCBLT =
             SafeMath.multiply(
@@ -719,16 +746,6 @@ contract Bank is Ownable {
         );
 
         // token.transfer
-    }
-
-    function changeInterest(
-        uint256 _timeStakedTier,
-        uint256 _amountStakedTier,
-        uint256 _newInterest
-    ) public {
-        // Only devs
-        stakingRewardRate[_timeStakedTier][_amountStakedTier]
-            .interest = _newInterest;
     }
 
     function modifyTiers(
