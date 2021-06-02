@@ -10,8 +10,15 @@ contract ExchangeOracle is Ownable {
     // Struct saving token data
     struct Token {
         uint256 value;
-        bool fromActive;
-        bool destActive;
+        bool active;
+    }
+
+    modifier activeToken(address _tokenAddress) {
+        require(
+            tokenData[_tokenAddress].active == true,
+            "Token not currently supported."
+        );
+        _;
     }
 
     // Events
@@ -41,71 +48,60 @@ contract ExchangeOracle is Ownable {
     function updateToken(
         address _tokenAddress,
         uint256 _value,
-        bool _fromActive,
-        bool _destActive
+        bool _status
     ) public {
         // Update token data
-        tokenData[_tokenAddress] = Token(_value, _fromActive, _destActive);
+        tokenData[_tokenAddress] = Token(_value, _status);
         // Emit event with new token information
         emit tokenUpdatedData(_value);
     }
 
     function priceOfPair(address _sellTokenAddress, address _buyTokenAddress)
-    public
-    view
-    returns (uint256 sellTokenPrice, uint256 buyTokenPrice, bool success)
+        public
+        view
+        returns (
+            uint256 sellTokenPrice,
+            uint256 buyTokenPrice,
+            bool success
+        )
     {
-        if(tokenData[_sellTokenAddress].fromActive == true && tokenData[_buyTokenAddress].destActive == true) {
+        if (tokenData[_sellTokenAddress].active) {
             return (
-            tokenData[_sellTokenAddress].value,
-            tokenData[_buyTokenAddress].value,
-            true
+                tokenData[_sellTokenAddress].value,
+                tokenData[_buyTokenAddress].value,
+                true
             );
         } else {
-            return (
-            0,
-            0,
-            false
-            );
+            return (0, 0, false);
         }
     }
 
-    function testConnection()
-    public
-    pure
-    returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
-    {
-        return (1, 1);
-    }
-
-    function priceOfPairWithETH(
-        address _sellTokenAddress,
-        address _buyTokenAddress
-    )
-    public
-    view
-    returns (
-        uint256,
-        uint256,
-        uint256
-    )
-    {
-        return (
-        tokenData[_sellTokenAddress].value,
-        tokenData[_buyTokenAddress].value,
-        USDpriceETH
-        );
-    }
-
     function priceOfETHandCBLT(address _cbltToken)
-    public
-    view
-    returns (uint256, uint256)
+        public
+        view
+        returns (uint256, uint256)
     {
-        return (USDpriceETH, tokenData[_cbltToken].value);
+        return (tokenData[_cbltToken].value, USDpriceETH);
     }
 
     function priceOfETH() public view returns (uint256) {
         return (USDpriceETH);
+    }
+
+    function priceOfToken(address _tokenAddress)
+        public
+        view
+        activeToken(_tokenAddress)
+        returns (uint256)
+    {
+        return (tokenData[_tokenAddress].value);
+    }
+
+    function testConnection()
+        public
+        pure
+        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
+    {
+        return (1, 1);
     }
 }
