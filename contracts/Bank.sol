@@ -188,7 +188,6 @@ contract Bank is Ownable {
         payable
     {
         require(loanBook[msg.sender].initialized == false);
-
         uint256 riskScore = 20; // NFT ENTRY!!!!
         uint256 riskFactor = 15; // NFT ENTRY!!!!
         uint256 interestRate = 2; // NFT ENTRY!!!!
@@ -793,6 +792,58 @@ contract Bank is Ownable {
         // only devs
         stakingStatus = _status;
     }
+
+    // **************************************** DEV VOTE ************************************************
+
+    mapping(address => bool) devBook;
+    address[] devArray;
+    string proposedChange;
+    uint256 intProposed;
+    address addressProposed;
+    bool boolProposed;
+
+    modifier clearedAction(
+        uint256 percentage,
+        string memory _currentChange,
+        string memory _proposedChange
+    ) {
+        uint256 votes;
+        uint256 totalVotes = devArray.length;
+
+        for (uint256 i = 0; i < devArray.length; i++) {
+            if (devBook[devArray[i]] == true) {
+                votes++;
+            }
+        }
+
+        require(SafeMath.multiply(votes, totalVotes, 100) >= percentage);
+        require(bytes(_proposedChange).length == bytes(_currentChange).length);
+
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]] = false;
+        }
+        _;
+    }
+
+    function proposeNumberChange(uint256 _num) public {
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]] = false;
+        }
+        intProposed = _num;
+        proposedChange = "number";
+    }
+
+    // proposeBoolChange(bool _bool)  proposedChange = "bool"
+    // proposeAddressChange(address _address)  proposedChange = "string"
+    // addDevTeam
+    // deleteDevTeam
+
+    // function changeInterest()
+    //     public
+    //     clearedAction(75, "number", proposedChange)
+    // {
+    //     uint256 interest = intProposed;
+    // }
 }
 
 // Points of entry
