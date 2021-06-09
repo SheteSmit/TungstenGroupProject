@@ -16,8 +16,6 @@ contract Bank is Ownable {
      */
     IERC20 token;
 
-    bool internal stakingStatus = true;
-
     /**
      * @dev Creating oracle instance
      */
@@ -42,6 +40,9 @@ contract Bank is Ownable {
         tokenReserve[
             0x95b58a6Bff3D14B7DB2f5cb5F0Ad413DC2940658
         ] = 6000000000000000000000000000;
+
+        // Time tier at launch is 5
+        tierMax = 5;
 
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
@@ -191,7 +192,7 @@ contract Bank is Ownable {
     // ****************************** Lending **********************************
 
     /**
-     * @dev mapping used to store all loan information with the key of borrower address
+     * @dev Mapping with key to store all loan information with the key of borrower address
      *  and value of Loan struct with all loan information
      */
     mapping(address => Loan) public loanBook;
@@ -378,32 +379,96 @@ contract Bank is Ownable {
     }
 
     // **************************** Staking ******************************
+    /**
+     * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
+     */
+    uint256 public borrowingPool;
+
+    /**
+     * @dev Variable displaying the maximum time tier supported.
+     * @notice This action can only be perform under dev vote
+     */
+    uint256 public tierMax;
+
+    /**
+     * @dev Variable to turn staking off and on
+     * @notice This action can only be perform under dev vote
+     */
+    bool public stakingStatus;
+
+    /**
+     * @dev Struct saves tier interest, monitor amount of stakers allowed per tier and
+     * tier duration used to calculate due dates.
+     */
     struct crossTier {
         uint256 interest;
         uint256 amountStakersLeft;
         uint256 tierDuration;
-        uint256 tierAmount;
     }
 
-    address currentToken;
-
+    /**
+     * @dev Nested mappings with key value uint (time tier) leads to submapping with key value uint
+     * (amount tier) that leads the crossTier combination to pull the combination's interest amount of stakers
+     * avaliable and the tier duration used to calculate due date period.
+     */
     mapping(uint256 => mapping(uint256 => crossTier)) public stakingRewardRate;
 
-    mapping(address => User) public userBook;
-
-    mapping(address => uint256) public tokenReserve;
-
-    mapping(address => mapping(address => uint256)) public rewardWallet;
-
-    mapping(uint256 => LotteryTicket) lotteryBook;
-
-    uint256 public borrowingPool;
-
-    struct LotteryTicket {
-        uint256 lotteryTimeTier;
-        uint256 lotteryAmountTier;
+    /**
+     * @dev Getter function pulls current tier information.
+     * @param _amountTier key tier amount value used to access tier combination.
+     * @param _timeTier key tier time value used to access tier combination.
+     * @return Returns the interest under time and amount tier combination, amount of stakers avaliable.
+     * and the tierDuration or period staked in EPOCH.
+     */
+    function getTierInformation(uint256 _amountTier, uint256 _timeTier)
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        return (
+            stakingRewardRate[_timeTier][_amountTier].interest,
+            stakingRewardRate[_timeTier][_amountTier].amountStakersLeft,
+            stakingRewardRate[_timeTier][_amountTier].tierDuration
+        );
     }
 
+    /**
+     * @dev Setter function to modify interests based on time and amount
+     * @notice Function is used to modify existing tiers or create new tiers if new
+     * tier key values are passed, creating new tier combinations.If time tier used
+     * is higher than current tier max, new tier combination was just created and
+     * tierMax should change to new cap
+     * @notice This action can only be perform under dev vote
+     * @param _amountTier key tier amount value used to access tier combination.
+     * @param _timeTier key tier time value used to access tier combination.
+     * @param _interest new interest to be modified.
+     * @param _amountStakersLeft new interest to be modified.
+     * @param _tierDuration new tier duration to be modified.
+     */
+    function setTierInformation(
+        uint256 _amountTier,
+        uint256 _timeTier,
+        uint256 _interest,
+        uint256 _amountStakersLeft,
+        uint256 _tierDuration
+    ) public {
+        stakingRewardRate[_timeTier][_amountTier].interest = _interest;
+        stakingRewardRate[_timeTier][_amountTier]
+            .amountStakersLeft = _amountStakersLeft;
+        stakingRewardRate[_timeTier][_amountTier].tierDuration = _tierDuration;
+        // Check if time tier modified increases the tierMax cap
+        if (_timeTier > tierMax) {
+            tierMax = _timeTier; // Save new tierMax if so
+        }
+    }
+
+    /**
+     * @dev Struct saves user data for ongoing staking and lottery results.
+     */
     struct User {
         uint256 ethBalance;
         uint256 tokenReserved;
@@ -414,6 +479,71 @@ contract Bank is Ownable {
         bool withdrawReady;
     }
 
+    /**
+     * @dev Mapping with key value address(the user's address) leads to the struct with the user's
+     * staking and lottery information.
+     */
+    mapping(address => User) public userBook;
+
+    /**
+     * @dev Getter function to pull information from the user.
+     * @param _userAddress address of the queried user.
+     */
+    function getUser(address _userAddress)
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            address,
+            uint256,
+            bool
+        )
+    {
+        return (
+            userBook[_userAddress].ethBalance,
+            userBook[_userAddress].tokenReserved,
+            userBook[_userAddress].depositTime,
+            userBook[_userAddress].timeStakedTier,
+            userBook[_userAddress].currentTokenStaked,
+            userBook[_userAddress].lotteryTicket,
+            userBook[_userAddress].withdrawReady
+        );
+    }
+
+    /**
+     * @dev Mapping with key value address (token address) leads the current reserves avaliable for tokens
+     * being currently offered to stake on.
+     */
+    mapping(address => uint256) public tokenReserve;
+
+    /**
+     * @dev Mapping with key value address (user address) leads to submapping with key value address
+     * (token address) to pull the current balance rewarded to that user in the tokens
+     */
+    mapping(address => mapping(address => uint256)) public rewardWallet;
+
+    /**
+     * @dev Struct saves information on previous lottery tickets. Saves information on the time and amount
+     * tier the user is allowed to stake to redeem his x2 staking reward.
+     */
+    struct LotteryTicket {
+        uint256 lotteryTimeTier;
+        uint256 lotteryAmountTier;
+    }
+
+    /**
+     * @dev Mapping with key value uint (lottery ticket) leads to the information on ticket amount and time
+     * tier for the user to redeem his reward staking.
+     */
+    mapping(uint256 => LotteryTicket) lotteryBook;
+
+    /**
+     * @dev Modifier checks if staking is currently online, the deposit is higher
+     * than 0.015 ETH and tier value falls under the supported amount
+     */
     modifier isValidStake(uint256 _timeStakedTier) {
         // Checks if staking is currently online
         require(stakingStatus == true, "Staking is currently offline");
@@ -424,9 +554,9 @@ contract Bank is Ownable {
             "Error, deposit must be higher than 0.015 ETH"
         );
 
-        // The tier input must be between 1 and 5
+        // The tier input must be between 1 and tierMax
         require(
-            _timeStakedTier >= 1 && _timeStakedTier <= 5, // needs to be variable
+            _timeStakedTier >= 1 && _timeStakedTier <= tierMax,
             "Tier number must be a number between 1 and 5."
         );
         _;
@@ -434,6 +564,7 @@ contract Bank is Ownable {
 
     function previousStakingMath(uint256 _amountStakedPreviously)
         internal
+        view
         returns (uint256, uint256)
     {
         uint256 previousAmountTier;
@@ -899,19 +1030,6 @@ contract Bank is Ownable {
         stakingStatus = _status;
     }
 }
-
-// Points of entry
-// Recalculating reward wallet and any time cblt or old token goes back to the system.
-
-// Voting
-// Lending
-// Cobalt tokens saved on amount staked
-// Wallet only updated when user deposits or withdraws
-// Fixed period loans
-// Functions check the current balance the treasury has avaliable to stake
-// Tier system in place
-// Function to recalculate amount of cblt tokens reserved based on amount staked
-// 30 60 90 180 365
 
 // 7 days
 // 3 missed payments back to back

@@ -62,7 +62,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -75,7 +76,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -145,7 +147,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -169,7 +172,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -182,7 +186,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -201,7 +206,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -219,7 +225,8 @@
         }
       ],
       "stateMutability": "pure",
-      "type": "function"
+      "type": "function",
+      "constant": true
     }
   ],
   "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"_previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"token\",\"type\":\"address\"}],\"name\":\"deletedToken\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"tokenUpdatedData\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"_owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isOwner\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"priceOfETH\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_cbltToken\",\"type\":\"address\"}],\"name\":\"priceOfETHandCBLT\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_sellTokenAddress\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_buyTokenAddress\",\"type\":\"address\"}],\"name\":\"priceOfPair\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"sellTokenPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"buyTokenPrice\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"success\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"}],\"name\":\"priceOfToken\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"testConnection\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"sellTokenPrice\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"buyTokenPrice\",\"type\":\"uint256\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_status\",\"type\":\"bool\"}],\"name\":\"updateToken\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExchangeOracle.sol\":\"ExchangeOracle\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExchangeOracle.sol\":{\"keccak256\":\"0xbddba0d3dc452941fd8ca2c71f8958bcd62da529c098a628d1c44c092e8616d8\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://72e3d2db00c438e8e93b501ccca93748b19173d888591c18c3459623be0b5786\",\"dweb:/ipfs/QmX7rwzK2XFchpVWFAtsbBYzouhFcekzSjs8RqUUo95s2E\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol\":{\"keccak256\":\"0x5086bbbeff67771c169d3bb3133c9e8d52a2569e88f0cf813a67aa420f15f7eb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fe1c2576dd591e776f735aa0b91f7828dcf12d5e543cdaf218cc8c52ea06a3f5\",\"dweb:/ipfs/QmZ5a2sJahH4G5K2u75fv1KVwZbBubAqj76zTNZ5sVjDR9\"]}},\"version\":1}",
@@ -236,18 +243,18 @@
     "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExchangeOracle.sol",
     "exportedSymbols": {
       "ExchangeOracle": [
-        3960
+        4314
       ],
       "Ownable": [
-        7455
+        7809
       ]
     },
-    "id": 3961,
+    "id": 4315,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3774,
+        "id": 4128,
         "literals": [
           "solidity",
           ">=",
@@ -263,10 +270,10 @@
       {
         "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol",
         "file": "./interfaces/Ownable.sol",
-        "id": 3775,
+        "id": 4129,
         "nodeType": "ImportDirective",
-        "scope": 3961,
-        "sourceUnit": 7456,
+        "scope": 4315,
+        "sourceUnit": 7810,
         "src": "66:34:4",
         "symbolAliases": [],
         "unitAlias": ""
@@ -276,41 +283,41 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 3776,
+              "id": 4130,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 7455,
+              "referencedDeclaration": 7809,
               "src": "129:7:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$7455",
+                "typeIdentifier": "t_contract$_Ownable_$7809",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 3777,
+            "id": 4131,
             "nodeType": "InheritanceSpecifier",
             "src": "129:7:4"
           }
         ],
         "contractDependencies": [
-          7455
+          7809
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 3960,
+        "id": 4314,
         "linearizedBaseContracts": [
-          3960,
-          7455
+          4314,
+          7809
         ],
         "name": "ExchangeOracle",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 3780,
+            "id": 4134,
             "mutability": "mutable",
             "name": "USDpriceETH",
             "nodeType": "VariableDeclaration",
-            "scope": 3960,
+            "scope": 4314,
             "src": "143:28:4",
             "stateVariable": true,
             "storageLocation": "default",
@@ -319,7 +326,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 3778,
+              "id": 4132,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "143:7:4",
@@ -330,7 +337,7 @@
             },
             "value": {
               "hexValue": "343030303030",
-              "id": 3779,
+              "id": 4133,
               "isConstant": false,
               "isLValue": false,
               "isPure": true,
@@ -348,22 +355,22 @@
           },
           {
             "constant": false,
-            "id": 3784,
+            "id": 4138,
             "mutability": "mutable",
             "name": "tokenData",
             "nodeType": "VariableDeclaration",
-            "scope": 3960,
+            "scope": 4314,
             "src": "177:35:4",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
               "typeString": "mapping(address => struct ExchangeOracle.Token)"
             },
             "typeName": {
-              "id": 3783,
+              "id": 4137,
               "keyType": {
-                "id": 3781,
+                "id": 4135,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "185:7:4",
@@ -375,17 +382,17 @@
               "nodeType": "Mapping",
               "src": "177:25:4",
               "typeDescriptions": {
-                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                 "typeString": "mapping(address => struct ExchangeOracle.Token)"
               },
               "valueType": {
-                "id": 3782,
+                "id": 4136,
                 "name": "Token",
                 "nodeType": "UserDefinedTypeName",
-                "referencedDeclaration": 3789,
+                "referencedDeclaration": 4143,
                 "src": "196:5:4",
                 "typeDescriptions": {
-                  "typeIdentifier": "t_struct$_Token_$3789_storage_ptr",
+                  "typeIdentifier": "t_struct$_Token_$4143_storage_ptr",
                   "typeString": "struct ExchangeOracle.Token"
                 }
               }
@@ -394,15 +401,15 @@
           },
           {
             "canonicalName": "ExchangeOracle.Token",
-            "id": 3789,
+            "id": 4143,
             "members": [
               {
                 "constant": false,
-                "id": 3786,
+                "id": 4140,
                 "mutability": "mutable",
                 "name": "value",
                 "nodeType": "VariableDeclaration",
-                "scope": 3789,
+                "scope": 4143,
                 "src": "321:13:4",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -411,7 +418,7 @@
                   "typeString": "uint256"
                 },
                 "typeName": {
-                  "id": 3785,
+                  "id": 4139,
                   "name": "uint256",
                   "nodeType": "ElementaryTypeName",
                   "src": "321:7:4",
@@ -424,11 +431,11 @@
               },
               {
                 "constant": false,
-                "id": 3788,
+                "id": 4142,
                 "mutability": "mutable",
                 "name": "active",
                 "nodeType": "VariableDeclaration",
-                "scope": 3789,
+                "scope": 4143,
                 "src": "344:11:4",
                 "stateVariable": false,
                 "storageLocation": "default",
@@ -437,7 +444,7 @@
                   "typeString": "bool"
                 },
                 "typeName": {
-                  "id": 3787,
+                  "id": 4141,
                   "name": "bool",
                   "nodeType": "ElementaryTypeName",
                   "src": "344:4:4",
@@ -451,13 +458,13 @@
             ],
             "name": "Token",
             "nodeType": "StructDefinition",
-            "scope": 3960,
+            "scope": 4314,
             "src": "298:64:4",
             "visibility": "public"
           },
           {
             "body": {
-              "id": 3804,
+              "id": 4158,
               "nodeType": "Block",
               "src": "412:144:4",
               "statements": [
@@ -469,7 +476,7 @@
                           "typeIdentifier": "t_bool",
                           "typeString": "bool"
                         },
-                        "id": 3799,
+                        "id": 4153,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": false,
@@ -477,24 +484,24 @@
                         "leftExpression": {
                           "expression": {
                             "baseExpression": {
-                              "id": 3794,
+                              "id": 4148,
                               "name": "tokenData",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3784,
+                              "referencedDeclaration": 4138,
                               "src": "443:9:4",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                                 "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                               }
                             },
-                            "id": 3796,
+                            "id": 4150,
                             "indexExpression": {
-                              "id": 3795,
+                              "id": 4149,
                               "name": "_tokenAddress",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 3791,
+                              "referencedDeclaration": 4145,
                               "src": "453:13:4",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_address",
@@ -508,18 +515,18 @@
                             "nodeType": "IndexAccess",
                             "src": "443:24:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_struct$_Token_$3789_storage",
+                              "typeIdentifier": "t_struct$_Token_$4143_storage",
                               "typeString": "struct ExchangeOracle.Token storage ref"
                             }
                           },
-                          "id": 3797,
+                          "id": 4151,
                           "isConstant": false,
                           "isLValue": true,
                           "isPure": false,
                           "lValueRequested": false,
                           "memberName": "active",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 3788,
+                          "referencedDeclaration": 4142,
                           "src": "443:31:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
@@ -530,7 +537,7 @@
                         "operator": "==",
                         "rightExpression": {
                           "hexValue": "74727565",
-                          "id": 3798,
+                          "id": 4152,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -552,7 +559,7 @@
                       },
                       {
                         "hexValue": "546f6b656e206e6f742063757272656e746c7920737570706f727465642e",
-                        "id": 3800,
+                        "id": 4154,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -578,7 +585,7 @@
                           "typeString": "literal_string \"Token not currently supported.\""
                         }
                       ],
-                      "id": 3793,
+                      "id": 4147,
                       "name": "require",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [
@@ -592,7 +599,7 @@
                         "typeString": "function (bool,string memory) pure"
                       }
                     },
-                    "id": 3801,
+                    "id": 4155,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -607,31 +614,31 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3802,
+                  "id": 4156,
                   "nodeType": "ExpressionStatement",
                   "src": "422:116:4"
                 },
                 {
-                  "id": 3803,
+                  "id": 4157,
                   "nodeType": "PlaceholderStatement",
                   "src": "548:1:4"
                 }
               ]
             },
-            "id": 3805,
+            "id": 4159,
             "name": "activeToken",
             "nodeType": "ModifierDefinition",
             "parameters": {
-              "id": 3792,
+              "id": 4146,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3791,
+                  "id": 4145,
                   "mutability": "mutable",
                   "name": "_tokenAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3805,
+                  "scope": 4159,
                   "src": "389:21:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -640,7 +647,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3790,
+                    "id": 4144,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "389:7:4",
@@ -661,21 +668,21 @@
           },
           {
             "anonymous": false,
-            "id": 3809,
+            "id": 4163,
             "name": "deletedToken",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3808,
+              "id": 4162,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3807,
+                  "id": 4161,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "token",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3809,
+                  "scope": 4163,
                   "src": "595:13:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -684,7 +691,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3806,
+                    "id": 4160,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "595:7:4",
@@ -703,21 +710,21 @@
           },
           {
             "anonymous": false,
-            "id": 3813,
+            "id": 4167,
             "name": "tokenUpdatedData",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 3812,
+              "id": 4166,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3811,
+                  "id": 4165,
                   "indexed": false,
                   "mutability": "mutable",
                   "name": "_value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3813,
+                  "scope": 4167,
                   "src": "639:14:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -726,7 +733,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3810,
+                    "id": 4164,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "639:7:4",
@@ -744,34 +751,34 @@
           },
           {
             "body": {
-              "id": 3843,
+              "id": 4197,
               "nodeType": "Block",
               "src": "675:450:4",
               "statements": [
                 {
                   "expression": {
-                    "id": 3823,
+                    "id": 4177,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "baseExpression": {
-                        "id": 3816,
+                        "id": 4170,
                         "name": "tokenData",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3784,
+                        "referencedDeclaration": 4138,
                         "src": "685:9:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                           "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                         }
                       },
-                      "id": 3818,
+                      "id": 4172,
                       "indexExpression": {
                         "hexValue": "307845656565654565656545654565654565456545656545454565656565456565656565656545456545",
-                        "id": 3817,
+                        "id": 4171,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -792,7 +799,7 @@
                       "nodeType": "IndexAccess",
                       "src": "685:53:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_storage",
+                        "typeIdentifier": "t_struct$_Token_$4143_storage",
                         "typeString": "struct ExchangeOracle.Token storage ref"
                       }
                     },
@@ -802,7 +809,7 @@
                       "arguments": [
                         {
                           "hexValue": "31303030303030303030303030303030303030",
-                          "id": 3820,
+                          "id": 4174,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -818,7 +825,7 @@
                         },
                         {
                           "hexValue": "74727565",
-                          "id": 3821,
+                          "id": 4175,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -844,18 +851,18 @@
                             "typeString": "bool"
                           }
                         ],
-                        "id": 3819,
+                        "id": 4173,
                         "name": "Token",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3789,
+                        "referencedDeclaration": 4143,
                         "src": "741:5:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_struct$_Token_$3789_storage_ptr_$",
+                          "typeIdentifier": "t_type$_t_struct$_Token_$4143_storage_ptr_$",
                           "typeString": "type(struct ExchangeOracle.Token storage pointer)"
                         }
                       },
-                      "id": 3822,
+                      "id": 4176,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -866,44 +873,44 @@
                       "src": "741:66:4",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_memory_ptr",
+                        "typeIdentifier": "t_struct$_Token_$4143_memory_ptr",
                         "typeString": "struct ExchangeOracle.Token memory"
                       }
                     },
                     "src": "685:122:4",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Token_$3789_storage",
+                      "typeIdentifier": "t_struct$_Token_$4143_storage",
                       "typeString": "struct ExchangeOracle.Token storage ref"
                     }
                   },
-                  "id": 3824,
+                  "id": 4178,
                   "nodeType": "ExpressionStatement",
                   "src": "685:122:4"
                 },
                 {
                   "expression": {
-                    "id": 3832,
+                    "id": 4186,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "baseExpression": {
-                        "id": 3825,
+                        "id": 4179,
                         "name": "tokenData",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3784,
+                        "referencedDeclaration": 4138,
                         "src": "870:9:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                           "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                         }
                       },
-                      "id": 3827,
+                      "id": 4181,
                       "indexExpression": {
                         "hexValue": "307863373738343137453036333134313133394663653031303938323738303134304161306344354162",
-                        "id": 3826,
+                        "id": 4180,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -924,7 +931,7 @@
                       "nodeType": "IndexAccess",
                       "src": "870:53:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_storage",
+                        "typeIdentifier": "t_struct$_Token_$4143_storage",
                         "typeString": "struct ExchangeOracle.Token storage ref"
                       }
                     },
@@ -934,7 +941,7 @@
                       "arguments": [
                         {
                           "hexValue": "31303030303030303030303030303030303030",
-                          "id": 3829,
+                          "id": 4183,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -950,7 +957,7 @@
                         },
                         {
                           "hexValue": "74727565",
-                          "id": 3830,
+                          "id": 4184,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -976,18 +983,18 @@
                             "typeString": "bool"
                           }
                         ],
-                        "id": 3828,
+                        "id": 4182,
                         "name": "Token",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3789,
+                        "referencedDeclaration": 4143,
                         "src": "926:5:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_struct$_Token_$3789_storage_ptr_$",
+                          "typeIdentifier": "t_type$_t_struct$_Token_$4143_storage_ptr_$",
                           "typeString": "type(struct ExchangeOracle.Token storage pointer)"
                         }
                       },
-                      "id": 3831,
+                      "id": 4185,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -998,44 +1005,44 @@
                       "src": "926:66:4",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_memory_ptr",
+                        "typeIdentifier": "t_struct$_Token_$4143_memory_ptr",
                         "typeString": "struct ExchangeOracle.Token memory"
                       }
                     },
                     "src": "870:122:4",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Token_$3789_storage",
+                      "typeIdentifier": "t_struct$_Token_$4143_storage",
                       "typeString": "struct ExchangeOracle.Token storage ref"
                     }
                   },
-                  "id": 3833,
+                  "id": 4187,
                   "nodeType": "ExpressionStatement",
                   "src": "870:122:4"
                 },
                 {
                   "expression": {
-                    "id": 3841,
+                    "id": 4195,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "baseExpression": {
-                        "id": 3834,
+                        "id": 4188,
                         "name": "tokenData",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3784,
+                        "referencedDeclaration": 4138,
                         "src": "1002:9:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                           "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                         }
                       },
-                      "id": 3836,
+                      "id": 4190,
                       "indexExpression": {
                         "hexValue": "307834333343364533443264656636453166623431346366393434383732344546423033393962363938",
-                        "id": 3835,
+                        "id": 4189,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1056,7 +1063,7 @@
                       "nodeType": "IndexAccess",
                       "src": "1002:53:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_storage",
+                        "typeIdentifier": "t_struct$_Token_$4143_storage",
                         "typeString": "struct ExchangeOracle.Token storage ref"
                       }
                     },
@@ -1066,7 +1073,7 @@
                       "arguments": [
                         {
                           "hexValue": "32303030303030303030303030",
-                          "id": 3838,
+                          "id": 4192,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1082,7 +1089,7 @@
                         },
                         {
                           "hexValue": "74727565",
-                          "id": 3839,
+                          "id": 4193,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": true,
@@ -1108,18 +1115,18 @@
                             "typeString": "bool"
                           }
                         ],
-                        "id": 3837,
+                        "id": 4191,
                         "name": "Token",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3789,
+                        "referencedDeclaration": 4143,
                         "src": "1058:5:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_struct$_Token_$3789_storage_ptr_$",
+                          "typeIdentifier": "t_type$_t_struct$_Token_$4143_storage_ptr_$",
                           "typeString": "type(struct ExchangeOracle.Token storage pointer)"
                         }
                       },
-                      "id": 3840,
+                      "id": 4194,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1130,41 +1137,41 @@
                       "src": "1058:60:4",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_memory_ptr",
+                        "typeIdentifier": "t_struct$_Token_$4143_memory_ptr",
                         "typeString": "struct ExchangeOracle.Token memory"
                       }
                     },
                     "src": "1002:116:4",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Token_$3789_storage",
+                      "typeIdentifier": "t_struct$_Token_$4143_storage",
                       "typeString": "struct ExchangeOracle.Token storage ref"
                     }
                   },
-                  "id": 3842,
+                  "id": 4196,
                   "nodeType": "ExpressionStatement",
                   "src": "1002:116:4"
                 }
               ]
             },
-            "id": 3844,
+            "id": 4198,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3814,
+              "id": 4168,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "672:2:4"
             },
             "returnParameters": {
-              "id": 3815,
+              "id": 4169,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "675:0:4"
             },
-            "scope": 3960,
+            "scope": 4314,
             "src": "661:464:4",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1172,37 +1179,37 @@
           },
           {
             "body": {
-              "id": 3866,
+              "id": 4220,
               "nodeType": "Block",
               "src": "1242:183:4",
               "statements": [
                 {
                   "expression": {
-                    "id": 3860,
+                    "id": 4214,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "baseExpression": {
-                        "id": 3853,
+                        "id": 4207,
                         "name": "tokenData",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3784,
+                        "referencedDeclaration": 4138,
                         "src": "1281:9:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                           "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                         }
                       },
-                      "id": 3855,
+                      "id": 4209,
                       "indexExpression": {
-                        "id": 3854,
+                        "id": 4208,
                         "name": "_tokenAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3846,
+                        "referencedDeclaration": 4200,
                         "src": "1291:13:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1216,7 +1223,7 @@
                       "nodeType": "IndexAccess",
                       "src": "1281:24:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_storage",
+                        "typeIdentifier": "t_struct$_Token_$4143_storage",
                         "typeString": "struct ExchangeOracle.Token storage ref"
                       }
                     },
@@ -1225,11 +1232,11 @@
                     "rightHandSide": {
                       "arguments": [
                         {
-                          "id": 3857,
+                          "id": 4211,
                           "name": "_value",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3848,
+                          "referencedDeclaration": 4202,
                           "src": "1314:6:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_uint256",
@@ -1237,11 +1244,11 @@
                           }
                         },
                         {
-                          "id": 3858,
+                          "id": 4212,
                           "name": "_status",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 3850,
+                          "referencedDeclaration": 4204,
                           "src": "1322:7:4",
                           "typeDescriptions": {
                             "typeIdentifier": "t_bool",
@@ -1260,18 +1267,18 @@
                             "typeString": "bool"
                           }
                         ],
-                        "id": 3856,
+                        "id": 4210,
                         "name": "Token",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3789,
+                        "referencedDeclaration": 4143,
                         "src": "1308:5:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_struct$_Token_$3789_storage_ptr_$",
+                          "typeIdentifier": "t_type$_t_struct$_Token_$4143_storage_ptr_$",
                           "typeString": "type(struct ExchangeOracle.Token storage pointer)"
                         }
                       },
-                      "id": 3859,
+                      "id": 4213,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1282,17 +1289,17 @@
                       "src": "1308:22:4",
                       "tryCall": false,
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_memory_ptr",
+                        "typeIdentifier": "t_struct$_Token_$4143_memory_ptr",
                         "typeString": "struct ExchangeOracle.Token memory"
                       }
                     },
                     "src": "1281:49:4",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_Token_$3789_storage",
+                      "typeIdentifier": "t_struct$_Token_$4143_storage",
                       "typeString": "struct ExchangeOracle.Token storage ref"
                     }
                   },
-                  "id": 3861,
+                  "id": 4215,
                   "nodeType": "ExpressionStatement",
                   "src": "1281:49:4"
                 },
@@ -1300,11 +1307,11 @@
                   "eventCall": {
                     "arguments": [
                       {
-                        "id": 3863,
+                        "id": 4217,
                         "name": "_value",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3848,
+                        "referencedDeclaration": 4202,
                         "src": "1411:6:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1319,18 +1326,18 @@
                           "typeString": "uint256"
                         }
                       ],
-                      "id": 3862,
+                      "id": 4216,
                       "name": "tokenUpdatedData",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 3813,
+                      "referencedDeclaration": 4167,
                       "src": "1394:16:4",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_uint256_$returns$__$",
                         "typeString": "function (uint256)"
                       }
                     },
-                    "id": 3864,
+                    "id": 4218,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1345,30 +1352,30 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 3865,
+                  "id": 4219,
                   "nodeType": "EmitStatement",
                   "src": "1389:29:4"
                 }
               ]
             },
             "functionSelector": "cedfbff2",
-            "id": 3867,
+            "id": 4221,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "updateToken",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3851,
+              "id": 4205,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3846,
+                  "id": 4200,
                   "mutability": "mutable",
                   "name": "_tokenAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3867,
+                  "scope": 4221,
                   "src": "1161:21:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1377,7 +1384,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3845,
+                    "id": 4199,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1161:7:4",
@@ -1391,11 +1398,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3848,
+                  "id": 4202,
                   "mutability": "mutable",
                   "name": "_value",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3867,
+                  "scope": 4221,
                   "src": "1192:14:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1404,7 +1411,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3847,
+                    "id": 4201,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1192:7:4",
@@ -1417,11 +1424,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3850,
+                  "id": 4204,
                   "mutability": "mutable",
                   "name": "_status",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3867,
+                  "scope": 4221,
                   "src": "1216:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1430,7 +1437,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 3849,
+                    "id": 4203,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1216:4:4",
@@ -1445,12 +1452,12 @@
               "src": "1151:83:4"
             },
             "returnParameters": {
-              "id": 3852,
+              "id": 4206,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1242:0:4"
             },
-            "scope": 3960,
+            "scope": 4314,
             "src": "1131:294:4",
             "stateMutability": "nonpayable",
             "virtual": false,
@@ -1458,7 +1465,7 @@
           },
           {
             "body": {
-              "id": 3903,
+              "id": 4257,
               "nodeType": "Block",
               "src": "1661:279:4",
               "statements": [
@@ -1466,24 +1473,24 @@
                   "condition": {
                     "expression": {
                       "baseExpression": {
-                        "id": 3880,
+                        "id": 4234,
                         "name": "tokenData",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3784,
+                        "referencedDeclaration": 4138,
                         "src": "1675:9:4",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                          "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                           "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                         }
                       },
-                      "id": 3882,
+                      "id": 4236,
                       "indexExpression": {
-                        "id": 3881,
+                        "id": 4235,
                         "name": "_sellTokenAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3869,
+                        "referencedDeclaration": 4223,
                         "src": "1685:17:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1497,18 +1504,18 @@
                       "nodeType": "IndexAccess",
                       "src": "1675:28:4",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_Token_$3789_storage",
+                        "typeIdentifier": "t_struct$_Token_$4143_storage",
                         "typeString": "struct ExchangeOracle.Token storage ref"
                       }
                     },
-                    "id": 3883,
+                    "id": 4237,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "active",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 3788,
+                    "referencedDeclaration": 4142,
                     "src": "1675:35:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_bool",
@@ -1516,7 +1523,7 @@
                     }
                   },
                   "falseBody": {
-                    "id": 3901,
+                    "id": 4255,
                     "nodeType": "Block",
                     "src": "1889:45:4",
                     "statements": [
@@ -1525,7 +1532,7 @@
                           "components": [
                             {
                               "hexValue": "30",
-                              "id": 3896,
+                              "id": 4250,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1541,7 +1548,7 @@
                             },
                             {
                               "hexValue": "30",
-                              "id": 3897,
+                              "id": 4251,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1557,7 +1564,7 @@
                             },
                             {
                               "hexValue": "66616c7365",
-                              "id": 3898,
+                              "id": 4252,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1572,7 +1579,7 @@
                               "value": "false"
                             }
                           ],
-                          "id": 3899,
+                          "id": 4253,
                           "isConstant": false,
                           "isInlineArray": false,
                           "isLValue": false,
@@ -1585,18 +1592,18 @@
                             "typeString": "tuple(int_const 0,int_const 0,bool)"
                           }
                         },
-                        "functionReturnParameters": 3879,
-                        "id": 3900,
+                        "functionReturnParameters": 4233,
+                        "id": 4254,
                         "nodeType": "Return",
                         "src": "1903:20:4"
                       }
                     ]
                   },
-                  "id": 3902,
+                  "id": 4256,
                   "nodeType": "IfStatement",
                   "src": "1671:263:4",
                   "trueBody": {
-                    "id": 3895,
+                    "id": 4249,
                     "nodeType": "Block",
                     "src": "1712:171:4",
                     "statements": [
@@ -1606,24 +1613,24 @@
                             {
                               "expression": {
                                 "baseExpression": {
-                                  "id": 3884,
+                                  "id": 4238,
                                   "name": "tokenData",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 3784,
+                                  "referencedDeclaration": 4138,
                                   "src": "1751:9:4",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                                    "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                                     "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                                   }
                                 },
-                                "id": 3886,
+                                "id": 4240,
                                 "indexExpression": {
-                                  "id": 3885,
+                                  "id": 4239,
                                   "name": "_sellTokenAddress",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 3869,
+                                  "referencedDeclaration": 4223,
                                   "src": "1761:17:4",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_address",
@@ -1637,18 +1644,18 @@
                                 "nodeType": "IndexAccess",
                                 "src": "1751:28:4",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_Token_$3789_storage",
+                                  "typeIdentifier": "t_struct$_Token_$4143_storage",
                                   "typeString": "struct ExchangeOracle.Token storage ref"
                                 }
                               },
-                              "id": 3887,
+                              "id": 4241,
                               "isConstant": false,
                               "isLValue": true,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "value",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 3786,
+                              "referencedDeclaration": 4140,
                               "src": "1751:34:4",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
@@ -1658,24 +1665,24 @@
                             {
                               "expression": {
                                 "baseExpression": {
-                                  "id": 3888,
+                                  "id": 4242,
                                   "name": "tokenData",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 3784,
+                                  "referencedDeclaration": 4138,
                                   "src": "1803:9:4",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                                    "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                                     "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                                   }
                                 },
-                                "id": 3890,
+                                "id": 4244,
                                 "indexExpression": {
-                                  "id": 3889,
+                                  "id": 4243,
                                   "name": "_buyTokenAddress",
                                   "nodeType": "Identifier",
                                   "overloadedDeclarations": [],
-                                  "referencedDeclaration": 3871,
+                                  "referencedDeclaration": 4225,
                                   "src": "1813:16:4",
                                   "typeDescriptions": {
                                     "typeIdentifier": "t_address",
@@ -1689,18 +1696,18 @@
                                 "nodeType": "IndexAccess",
                                 "src": "1803:27:4",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_Token_$3789_storage",
+                                  "typeIdentifier": "t_struct$_Token_$4143_storage",
                                   "typeString": "struct ExchangeOracle.Token storage ref"
                                 }
                               },
-                              "id": 3891,
+                              "id": 4245,
                               "isConstant": false,
                               "isLValue": true,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "value",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 3786,
+                              "referencedDeclaration": 4140,
                               "src": "1803:33:4",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_uint256",
@@ -1709,7 +1716,7 @@
                             },
                             {
                               "hexValue": "74727565",
-                              "id": 3892,
+                              "id": 4246,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1724,7 +1731,7 @@
                               "value": "true"
                             }
                           ],
-                          "id": 3893,
+                          "id": 4247,
                           "isConstant": false,
                           "isInlineArray": false,
                           "isLValue": false,
@@ -1737,8 +1744,8 @@
                             "typeString": "tuple(uint256,uint256,bool)"
                           }
                         },
-                        "functionReturnParameters": 3879,
-                        "id": 3894,
+                        "functionReturnParameters": 4233,
+                        "id": 4248,
                         "nodeType": "Return",
                         "src": "1726:146:4"
                       }
@@ -1748,23 +1755,23 @@
               ]
             },
             "functionSelector": "3a7a2a06",
-            "id": 3904,
+            "id": 4258,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "priceOfPair",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3872,
+              "id": 4226,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3869,
+                  "id": 4223,
                   "mutability": "mutable",
                   "name": "_sellTokenAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3904,
+                  "scope": 4258,
                   "src": "1452:25:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1773,7 +1780,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3868,
+                    "id": 4222,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1452:7:4",
@@ -1787,11 +1794,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3871,
+                  "id": 4225,
                   "mutability": "mutable",
                   "name": "_buyTokenAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3904,
+                  "scope": 4258,
                   "src": "1479:24:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1800,7 +1807,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3870,
+                    "id": 4224,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1479:7:4",
@@ -1816,16 +1823,16 @@
               "src": "1451:53:4"
             },
             "returnParameters": {
-              "id": 3879,
+              "id": 4233,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3874,
+                  "id": 4228,
                   "mutability": "mutable",
                   "name": "sellTokenPrice",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3904,
+                  "scope": 4258,
                   "src": "1563:22:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1834,7 +1841,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3873,
+                    "id": 4227,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1563:7:4",
@@ -1847,11 +1854,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3876,
+                  "id": 4230,
                   "mutability": "mutable",
                   "name": "buyTokenPrice",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3904,
+                  "scope": 4258,
                   "src": "1599:21:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1860,7 +1867,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3875,
+                    "id": 4229,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "1599:7:4",
@@ -1873,11 +1880,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3878,
+                  "id": 4232,
                   "mutability": "mutable",
                   "name": "success",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3904,
+                  "scope": 4258,
                   "src": "1634:12:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1886,7 +1893,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 3877,
+                    "id": 4231,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "1634:4:4",
@@ -1900,7 +1907,7 @@
               ],
               "src": "1549:107:4"
             },
-            "scope": 3960,
+            "scope": 4314,
             "src": "1431:509:4",
             "stateMutability": "view",
             "virtual": false,
@@ -1908,7 +1915,7 @@
           },
           {
             "body": {
-              "id": 3920,
+              "id": 4274,
               "nodeType": "Block",
               "src": "2060:66:4",
               "statements": [
@@ -1918,24 +1925,24 @@
                       {
                         "expression": {
                           "baseExpression": {
-                            "id": 3913,
+                            "id": 4267,
                             "name": "tokenData",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3784,
+                            "referencedDeclaration": 4138,
                             "src": "2078:9:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                               "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                             }
                           },
-                          "id": 3915,
+                          "id": 4269,
                           "indexExpression": {
-                            "id": 3914,
+                            "id": 4268,
                             "name": "_cbltToken",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3906,
+                            "referencedDeclaration": 4260,
                             "src": "2088:10:4",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -1949,18 +1956,18 @@
                           "nodeType": "IndexAccess",
                           "src": "2078:21:4",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Token_$3789_storage",
+                            "typeIdentifier": "t_struct$_Token_$4143_storage",
                             "typeString": "struct ExchangeOracle.Token storage ref"
                           }
                         },
-                        "id": 3916,
+                        "id": 4270,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "value",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 3786,
+                        "referencedDeclaration": 4140,
                         "src": "2078:27:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1968,11 +1975,11 @@
                         }
                       },
                       {
-                        "id": 3917,
+                        "id": 4271,
                         "name": "USDpriceETH",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3780,
+                        "referencedDeclaration": 4134,
                         "src": "2107:11:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1980,7 +1987,7 @@
                         }
                       }
                     ],
-                    "id": 3918,
+                    "id": 4272,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
@@ -1993,31 +2000,31 @@
                       "typeString": "tuple(uint256,uint256)"
                     }
                   },
-                  "functionReturnParameters": 3912,
-                  "id": 3919,
+                  "functionReturnParameters": 4266,
+                  "id": 4273,
                   "nodeType": "Return",
                   "src": "2070:49:4"
                 }
               ]
             },
             "functionSelector": "45266697",
-            "id": 3921,
+            "id": 4275,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "priceOfETHandCBLT",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3907,
+              "id": 4261,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3906,
+                  "id": 4260,
                   "mutability": "mutable",
                   "name": "_cbltToken",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3921,
+                  "scope": 4275,
                   "src": "1973:18:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2026,7 +2033,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3905,
+                    "id": 4259,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1973:7:4",
@@ -2042,16 +2049,16 @@
               "src": "1972:20:4"
             },
             "returnParameters": {
-              "id": 3912,
+              "id": 4266,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3909,
+                  "id": 4263,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3921,
+                  "scope": 4275,
                   "src": "2038:7:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2060,7 +2067,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3908,
+                    "id": 4262,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2038:7:4",
@@ -2073,11 +2080,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3911,
+                  "id": 4265,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3921,
+                  "scope": 4275,
                   "src": "2047:7:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2086,7 +2093,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3910,
+                    "id": 4264,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2047:7:4",
@@ -2100,7 +2107,7 @@
               ],
               "src": "2037:18:4"
             },
-            "scope": 3960,
+            "scope": 4314,
             "src": "1946:180:4",
             "stateMutability": "view",
             "virtual": false,
@@ -2108,7 +2115,7 @@
           },
           {
             "body": {
-              "id": 3929,
+              "id": 4283,
               "nodeType": "Block",
               "src": "2184:37:4",
               "statements": [
@@ -2116,11 +2123,11 @@
                   "expression": {
                     "components": [
                       {
-                        "id": 3926,
+                        "id": 4280,
                         "name": "USDpriceETH",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 3780,
+                        "referencedDeclaration": 4134,
                         "src": "2202:11:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2128,7 +2135,7 @@
                         }
                       }
                     ],
-                    "id": 3927,
+                    "id": 4281,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
@@ -2141,37 +2148,37 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 3925,
-                  "id": 3928,
+                  "functionReturnParameters": 4279,
+                  "id": 4282,
                   "nodeType": "Return",
                   "src": "2194:20:4"
                 }
               ]
             },
             "functionSelector": "858b033d",
-            "id": 3930,
+            "id": 4284,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "priceOfETH",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3922,
+              "id": 4276,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2151:2:4"
             },
             "returnParameters": {
-              "id": 3925,
+              "id": 4279,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3924,
+                  "id": 4278,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3930,
+                  "scope": 4284,
                   "src": "2175:7:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2180,7 +2187,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3923,
+                    "id": 4277,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2175:7:4",
@@ -2194,7 +2201,7 @@
               ],
               "src": "2174:9:4"
             },
-            "scope": 3960,
+            "scope": 4314,
             "src": "2132:89:4",
             "stateMutability": "view",
             "virtual": false,
@@ -2202,7 +2209,7 @@
           },
           {
             "body": {
-              "id": 3946,
+              "id": 4300,
               "nodeType": "Block",
               "src": "2365:56:4",
               "statements": [
@@ -2212,24 +2219,24 @@
                       {
                         "expression": {
                           "baseExpression": {
-                            "id": 3940,
+                            "id": 4294,
                             "name": "tokenData",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3784,
+                            "referencedDeclaration": 4138,
                             "src": "2383:9:4",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$3789_storage_$",
+                              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Token_$4143_storage_$",
                               "typeString": "mapping(address => struct ExchangeOracle.Token storage ref)"
                             }
                           },
-                          "id": 3942,
+                          "id": 4296,
                           "indexExpression": {
-                            "id": 3941,
+                            "id": 4295,
                             "name": "_tokenAddress",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 3932,
+                            "referencedDeclaration": 4286,
                             "src": "2393:13:4",
                             "typeDescriptions": {
                               "typeIdentifier": "t_address",
@@ -2243,18 +2250,18 @@
                           "nodeType": "IndexAccess",
                           "src": "2383:24:4",
                           "typeDescriptions": {
-                            "typeIdentifier": "t_struct$_Token_$3789_storage",
+                            "typeIdentifier": "t_struct$_Token_$4143_storage",
                             "typeString": "struct ExchangeOracle.Token storage ref"
                           }
                         },
-                        "id": 3943,
+                        "id": 4297,
                         "isConstant": false,
                         "isLValue": true,
                         "isPure": false,
                         "lValueRequested": false,
                         "memberName": "value",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 3786,
+                        "referencedDeclaration": 4140,
                         "src": "2383:30:4",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -2262,7 +2269,7 @@
                         }
                       }
                     ],
-                    "id": 3944,
+                    "id": 4298,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
@@ -2275,26 +2282,26 @@
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 3939,
-                  "id": 3945,
+                  "functionReturnParameters": 4293,
+                  "id": 4299,
                   "nodeType": "Return",
                   "src": "2375:39:4"
                 }
               ]
             },
             "functionSelector": "f3167c05",
-            "id": 3947,
+            "id": 4301,
             "implemented": true,
             "kind": "function",
             "modifiers": [
               {
                 "arguments": [
                   {
-                    "id": 3935,
+                    "id": 4289,
                     "name": "_tokenAddress",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 3932,
+                    "referencedDeclaration": 4286,
                     "src": "2320:13:4",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -2302,13 +2309,13 @@
                     }
                   }
                 ],
-                "id": 3936,
+                "id": 4290,
                 "modifierName": {
-                  "id": 3934,
+                  "id": 4288,
                   "name": "activeToken",
                   "nodeType": "Identifier",
                   "overloadedDeclarations": [],
-                  "referencedDeclaration": 3805,
+                  "referencedDeclaration": 4159,
                   "src": "2308:11:4",
                   "typeDescriptions": {
                     "typeIdentifier": "t_modifier$_t_address_$",
@@ -2322,16 +2329,16 @@
             "name": "priceOfToken",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3933,
+              "id": 4287,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3932,
+                  "id": 4286,
                   "mutability": "mutable",
                   "name": "_tokenAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3947,
+                  "scope": 4301,
                   "src": "2249:21:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2340,7 +2347,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 3931,
+                    "id": 4285,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "2249:7:4",
@@ -2356,16 +2363,16 @@
               "src": "2248:23:4"
             },
             "returnParameters": {
-              "id": 3939,
+              "id": 4293,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3938,
+                  "id": 4292,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3947,
+                  "scope": 4301,
                   "src": "2352:7:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2374,7 +2381,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3937,
+                    "id": 4291,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2352:7:4",
@@ -2388,7 +2395,7 @@
               ],
               "src": "2351:9:4"
             },
-            "scope": 3960,
+            "scope": 4314,
             "src": "2227:194:4",
             "stateMutability": "view",
             "virtual": false,
@@ -2396,7 +2403,7 @@
           },
           {
             "body": {
-              "id": 3958,
+              "id": 4312,
               "nodeType": "Block",
               "src": "2549:30:4",
               "statements": [
@@ -2405,7 +2412,7 @@
                     "components": [
                       {
                         "hexValue": "31",
-                        "id": 3954,
+                        "id": 4308,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2421,7 +2428,7 @@
                       },
                       {
                         "hexValue": "31",
-                        "id": 3955,
+                        "id": 4309,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -2436,7 +2443,7 @@
                         "value": "1"
                       }
                     ],
-                    "id": 3956,
+                    "id": 4310,
                     "isConstant": false,
                     "isInlineArray": false,
                     "isLValue": false,
@@ -2449,37 +2456,37 @@
                       "typeString": "tuple(int_const 1,int_const 1)"
                     }
                   },
-                  "functionReturnParameters": 3953,
-                  "id": 3957,
+                  "functionReturnParameters": 4307,
+                  "id": 4311,
                   "nodeType": "Return",
                   "src": "2559:13:4"
                 }
               ]
             },
             "functionSelector": "3412a15c",
-            "id": 3959,
+            "id": 4313,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "testConnection",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 3948,
+              "id": 4302,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "2450:2:4"
             },
             "returnParameters": {
-              "id": 3953,
+              "id": 4307,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3950,
+                  "id": 4304,
                   "mutability": "mutable",
                   "name": "sellTokenPrice",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3959,
+                  "scope": 4313,
                   "src": "2498:22:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2488,7 +2495,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3949,
+                    "id": 4303,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2498:7:4",
@@ -2501,11 +2508,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 3952,
+                  "id": 4306,
                   "mutability": "mutable",
                   "name": "buyTokenPrice",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3959,
+                  "scope": 4313,
                   "src": "2522:21:4",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -2514,7 +2521,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 3951,
+                    "id": 4305,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "2522:7:4",
@@ -2528,14 +2535,14 @@
               ],
               "src": "2497:47:4"
             },
-            "scope": 3960,
+            "scope": 4314,
             "src": "2427:152:4",
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "public"
           }
         ],
-        "scope": 3961,
+        "scope": 4315,
         "src": "102:2479:4"
       }
     ],
@@ -2546,10 +2553,10 @@
       "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExchangeOracle.sol",
       "exportedSymbols": {
         "ExchangeOracle": [
-          3960
+          4314
         ],
         "Ownable": [
-          7455
+          7809
         ]
       },
       "license": "MIT"
@@ -2567,22 +2574,22 @@
             ".0"
           ]
         },
-        "id": 3774,
+        "id": 4128,
         "name": "PragmaDirective",
         "src": "32:32:4"
       },
       {
         "attributes": {
-          "SourceUnit": 7456,
+          "SourceUnit": 7810,
           "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol",
           "file": "./interfaces/Ownable.sol",
-          "scope": 3961,
+          "scope": 4315,
           "symbolAliases": [
             null
           ],
           "unitAlias": ""
         },
-        "id": 3775,
+        "id": 4129,
         "name": "ImportDirective",
         "src": "66:34:4"
       },
@@ -2590,16 +2597,16 @@
         "attributes": {
           "abstract": false,
           "contractDependencies": [
-            7455
+            7809
           ],
           "contractKind": "contract",
           "fullyImplemented": true,
           "linearizedBaseContracts": [
-            3960,
-            7455
+            4314,
+            7809
           ],
           "name": "ExchangeOracle",
-          "scope": 3961
+          "scope": 4315
         },
         "children": [
           {
@@ -2608,15 +2615,15 @@
               {
                 "attributes": {
                   "name": "Ownable",
-                  "referencedDeclaration": 7455,
+                  "referencedDeclaration": 7809,
                   "type": "contract Ownable"
                 },
-                "id": 3776,
+                "id": 4130,
                 "name": "UserDefinedTypeName",
                 "src": "129:7:4"
               }
             ],
-            "id": 3777,
+            "id": 4131,
             "name": "InheritanceSpecifier",
             "src": "129:7:4"
           },
@@ -2625,7 +2632,7 @@
               "constant": false,
               "mutability": "mutable",
               "name": "USDpriceETH",
-              "scope": 3960,
+              "scope": 4314,
               "stateVariable": true,
               "storageLocation": "default",
               "type": "uint256",
@@ -2637,7 +2644,7 @@
                   "name": "uint256",
                   "type": "uint256"
                 },
-                "id": 3778,
+                "id": 4132,
                 "name": "ElementaryTypeName",
                 "src": "143:7:4"
               },
@@ -2652,12 +2659,12 @@
                   "type": "int_const 400000",
                   "value": "400000"
                 },
-                "id": 3779,
+                "id": 4133,
                 "name": "Literal",
                 "src": "165:6:4"
               }
             ],
-            "id": 3780,
+            "id": 4134,
             "name": "VariableDeclaration",
             "src": "143:28:4"
           },
@@ -2666,7 +2673,7 @@
               "constant": false,
               "mutability": "mutable",
               "name": "tokenData",
-              "scope": 3960,
+              "scope": 4314,
               "stateVariable": true,
               "storageLocation": "default",
               "type": "mapping(address => struct ExchangeOracle.Token)",
@@ -2683,27 +2690,27 @@
                       "name": "address",
                       "type": "address"
                     },
-                    "id": 3781,
+                    "id": 4135,
                     "name": "ElementaryTypeName",
                     "src": "185:7:4"
                   },
                   {
                     "attributes": {
                       "name": "Token",
-                      "referencedDeclaration": 3789,
+                      "referencedDeclaration": 4143,
                       "type": "struct ExchangeOracle.Token"
                     },
-                    "id": 3782,
+                    "id": 4136,
                     "name": "UserDefinedTypeName",
                     "src": "196:5:4"
                   }
                 ],
-                "id": 3783,
+                "id": 4137,
                 "name": "Mapping",
                 "src": "177:25:4"
               }
             ],
-            "id": 3784,
+            "id": 4138,
             "name": "VariableDeclaration",
             "src": "177:35:4"
           },
@@ -2711,7 +2718,7 @@
             "attributes": {
               "canonicalName": "ExchangeOracle.Token",
               "name": "Token",
-              "scope": 3960,
+              "scope": 4314,
               "visibility": "public"
             },
             "children": [
@@ -2720,7 +2727,7 @@
                   "constant": false,
                   "mutability": "mutable",
                   "name": "value",
-                  "scope": 3789,
+                  "scope": 4143,
                   "stateVariable": false,
                   "storageLocation": "default",
                   "type": "uint256",
@@ -2732,12 +2739,12 @@
                       "name": "uint256",
                       "type": "uint256"
                     },
-                    "id": 3785,
+                    "id": 4139,
                     "name": "ElementaryTypeName",
                     "src": "321:7:4"
                   }
                 ],
-                "id": 3786,
+                "id": 4140,
                 "name": "VariableDeclaration",
                 "src": "321:13:4"
               },
@@ -2746,7 +2753,7 @@
                   "constant": false,
                   "mutability": "mutable",
                   "name": "active",
-                  "scope": 3789,
+                  "scope": 4143,
                   "stateVariable": false,
                   "storageLocation": "default",
                   "type": "bool",
@@ -2758,17 +2765,17 @@
                       "name": "bool",
                       "type": "bool"
                     },
-                    "id": 3787,
+                    "id": 4141,
                     "name": "ElementaryTypeName",
                     "src": "344:4:4"
                   }
                 ],
-                "id": 3788,
+                "id": 4142,
                 "name": "VariableDeclaration",
                 "src": "344:11:4"
               }
             ],
-            "id": 3789,
+            "id": 4143,
             "name": "StructDefinition",
             "src": "298:64:4"
           },
@@ -2786,7 +2793,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "_tokenAddress",
-                      "scope": 3805,
+                      "scope": 4159,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -2799,17 +2806,17 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 3790,
+                        "id": 4144,
                         "name": "ElementaryTypeName",
                         "src": "389:7:4"
                       }
                     ],
-                    "id": 3791,
+                    "id": 4145,
                     "name": "VariableDeclaration",
                     "src": "389:21:4"
                   }
                 ],
-                "id": 3792,
+                "id": 4146,
                 "name": "ParameterList",
                 "src": "388:23:4"
               },
@@ -2852,7 +2859,7 @@
                               "type": "function (bool,string memory) pure",
                               "value": "require"
                             },
-                            "id": 3793,
+                            "id": 4147,
                             "name": "Identifier",
                             "src": "422:7:4"
                           },
@@ -2877,7 +2884,7 @@
                                   "isPure": false,
                                   "lValueRequested": false,
                                   "member_name": "active",
-                                  "referencedDeclaration": 3788,
+                                  "referencedDeclaration": 4142,
                                   "type": "bool"
                                 },
                                 "children": [
@@ -2895,11 +2902,11 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 3784,
+                                          "referencedDeclaration": 4138,
                                           "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                           "value": "tokenData"
                                         },
-                                        "id": 3794,
+                                        "id": 4148,
                                         "name": "Identifier",
                                         "src": "443:9:4"
                                       },
@@ -2908,21 +2915,21 @@
                                           "overloadedDeclarations": [
                                             null
                                           ],
-                                          "referencedDeclaration": 3791,
+                                          "referencedDeclaration": 4145,
                                           "type": "address",
                                           "value": "_tokenAddress"
                                         },
-                                        "id": 3795,
+                                        "id": 4149,
                                         "name": "Identifier",
                                         "src": "453:13:4"
                                       }
                                     ],
-                                    "id": 3796,
+                                    "id": 4150,
                                     "name": "IndexAccess",
                                     "src": "443:24:4"
                                   }
                                 ],
-                                "id": 3797,
+                                "id": 4151,
                                 "name": "MemberAccess",
                                 "src": "443:31:4"
                               },
@@ -2937,12 +2944,12 @@
                                   "type": "bool",
                                   "value": "true"
                                 },
-                                "id": 3798,
+                                "id": 4152,
                                 "name": "Literal",
                                 "src": "478:4:4"
                               }
                             ],
-                            "id": 3799,
+                            "id": 4153,
                             "name": "BinaryOperation",
                             "src": "443:39:4"
                           },
@@ -2957,32 +2964,32 @@
                               "type": "literal_string \"Token not currently supported.\"",
                               "value": "Token not currently supported."
                             },
-                            "id": 3800,
+                            "id": 4154,
                             "name": "Literal",
                             "src": "496:32:4"
                           }
                         ],
-                        "id": 3801,
+                        "id": 4155,
                         "name": "FunctionCall",
                         "src": "422:116:4"
                       }
                     ],
-                    "id": 3802,
+                    "id": 4156,
                     "name": "ExpressionStatement",
                     "src": "422:116:4"
                   },
                   {
-                    "id": 3803,
+                    "id": 4157,
                     "name": "PlaceholderStatement",
                     "src": "548:1:4"
                   }
                 ],
-                "id": 3804,
+                "id": 4158,
                 "name": "Block",
                 "src": "412:144:4"
               }
             ],
-            "id": 3805,
+            "id": 4159,
             "name": "ModifierDefinition",
             "src": "368:188:4"
           },
@@ -3000,7 +3007,7 @@
                       "indexed": false,
                       "mutability": "mutable",
                       "name": "token",
-                      "scope": 3809,
+                      "scope": 4163,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -3013,22 +3020,22 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 3806,
+                        "id": 4160,
                         "name": "ElementaryTypeName",
                         "src": "595:7:4"
                       }
                     ],
-                    "id": 3807,
+                    "id": 4161,
                     "name": "VariableDeclaration",
                     "src": "595:13:4"
                   }
                 ],
-                "id": 3808,
+                "id": 4162,
                 "name": "ParameterList",
                 "src": "594:15:4"
               }
             ],
-            "id": 3809,
+            "id": 4163,
             "name": "EventDefinition",
             "src": "576:34:4"
           },
@@ -3046,7 +3053,7 @@
                       "indexed": false,
                       "mutability": "mutable",
                       "name": "_value",
-                      "scope": 3813,
+                      "scope": 4167,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -3058,22 +3065,22 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3810,
+                        "id": 4164,
                         "name": "ElementaryTypeName",
                         "src": "639:7:4"
                       }
                     ],
-                    "id": 3811,
+                    "id": 4165,
                     "name": "VariableDeclaration",
                     "src": "639:14:4"
                   }
                 ],
-                "id": 3812,
+                "id": 4166,
                 "name": "ParameterList",
                 "src": "638:16:4"
               }
             ],
-            "id": 3813,
+            "id": 4167,
             "name": "EventDefinition",
             "src": "616:39:4"
           },
@@ -3086,7 +3093,7 @@
                 null
               ],
               "name": "",
-              "scope": 3960,
+              "scope": 4314,
               "stateMutability": "nonpayable",
               "virtual": false,
               "visibility": "public"
@@ -3099,7 +3106,7 @@
                   ]
                 },
                 "children": [],
-                "id": 3814,
+                "id": 4168,
                 "name": "ParameterList",
                 "src": "672:2:4"
               },
@@ -3110,7 +3117,7 @@
                   ]
                 },
                 "children": [],
-                "id": 3815,
+                "id": 4169,
                 "name": "ParameterList",
                 "src": "675:0:4"
               },
@@ -3142,11 +3149,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3784,
+                                  "referencedDeclaration": 4138,
                                   "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                   "value": "tokenData"
                                 },
-                                "id": 3816,
+                                "id": 4170,
                                 "name": "Identifier",
                                 "src": "685:9:4"
                               },
@@ -3161,12 +3168,12 @@
                                   "type": "address payable",
                                   "value": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
                                 },
-                                "id": 3817,
+                                "id": 4171,
                                 "name": "Literal",
                                 "src": "695:42:4"
                               }
                             ],
-                            "id": 3818,
+                            "id": 4172,
                             "name": "IndexAccess",
                             "src": "685:53:4"
                           },
@@ -3200,11 +3207,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3789,
+                                  "referencedDeclaration": 4143,
                                   "type": "type(struct ExchangeOracle.Token storage pointer)",
                                   "value": "Token"
                                 },
-                                "id": 3819,
+                                "id": 4173,
                                 "name": "Identifier",
                                 "src": "741:5:4"
                               },
@@ -3219,7 +3226,7 @@
                                   "type": "int_const 1000000000000000000",
                                   "value": "1000000000000000000"
                                 },
-                                "id": 3820,
+                                "id": 4174,
                                 "name": "Literal",
                                 "src": "760:19:4"
                               },
@@ -3234,22 +3241,22 @@
                                   "type": "bool",
                                   "value": "true"
                                 },
-                                "id": 3821,
+                                "id": 4175,
                                 "name": "Literal",
                                 "src": "793:4:4"
                               }
                             ],
-                            "id": 3822,
+                            "id": 4176,
                             "name": "FunctionCall",
                             "src": "741:66:4"
                           }
                         ],
-                        "id": 3823,
+                        "id": 4177,
                         "name": "Assignment",
                         "src": "685:122:4"
                       }
                     ],
-                    "id": 3824,
+                    "id": 4178,
                     "name": "ExpressionStatement",
                     "src": "685:122:4"
                   },
@@ -3279,11 +3286,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3784,
+                                  "referencedDeclaration": 4138,
                                   "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                   "value": "tokenData"
                                 },
-                                "id": 3825,
+                                "id": 4179,
                                 "name": "Identifier",
                                 "src": "870:9:4"
                               },
@@ -3298,12 +3305,12 @@
                                   "type": "address payable",
                                   "value": "0xc778417E063141139Fce010982780140Aa0cD5Ab"
                                 },
-                                "id": 3826,
+                                "id": 4180,
                                 "name": "Literal",
                                 "src": "880:42:4"
                               }
                             ],
-                            "id": 3827,
+                            "id": 4181,
                             "name": "IndexAccess",
                             "src": "870:53:4"
                           },
@@ -3337,11 +3344,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3789,
+                                  "referencedDeclaration": 4143,
                                   "type": "type(struct ExchangeOracle.Token storage pointer)",
                                   "value": "Token"
                                 },
-                                "id": 3828,
+                                "id": 4182,
                                 "name": "Identifier",
                                 "src": "926:5:4"
                               },
@@ -3356,7 +3363,7 @@
                                   "type": "int_const 1000000000000000000",
                                   "value": "1000000000000000000"
                                 },
-                                "id": 3829,
+                                "id": 4183,
                                 "name": "Literal",
                                 "src": "945:19:4"
                               },
@@ -3371,22 +3378,22 @@
                                   "type": "bool",
                                   "value": "true"
                                 },
-                                "id": 3830,
+                                "id": 4184,
                                 "name": "Literal",
                                 "src": "978:4:4"
                               }
                             ],
-                            "id": 3831,
+                            "id": 4185,
                             "name": "FunctionCall",
                             "src": "926:66:4"
                           }
                         ],
-                        "id": 3832,
+                        "id": 4186,
                         "name": "Assignment",
                         "src": "870:122:4"
                       }
                     ],
-                    "id": 3833,
+                    "id": 4187,
                     "name": "ExpressionStatement",
                     "src": "870:122:4"
                   },
@@ -3416,11 +3423,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3784,
+                                  "referencedDeclaration": 4138,
                                   "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                   "value": "tokenData"
                                 },
-                                "id": 3834,
+                                "id": 4188,
                                 "name": "Identifier",
                                 "src": "1002:9:4"
                               },
@@ -3435,12 +3442,12 @@
                                   "type": "address payable",
                                   "value": "0x433C6E3D2def6E1fb414cf9448724EFB0399b698"
                                 },
-                                "id": 3835,
+                                "id": 4189,
                                 "name": "Literal",
                                 "src": "1012:42:4"
                               }
                             ],
-                            "id": 3836,
+                            "id": 4190,
                             "name": "IndexAccess",
                             "src": "1002:53:4"
                           },
@@ -3474,11 +3481,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3789,
+                                  "referencedDeclaration": 4143,
                                   "type": "type(struct ExchangeOracle.Token storage pointer)",
                                   "value": "Token"
                                 },
-                                "id": 3837,
+                                "id": 4191,
                                 "name": "Identifier",
                                 "src": "1058:5:4"
                               },
@@ -3493,7 +3500,7 @@
                                   "type": "int_const 2000000000000",
                                   "value": "2000000000000"
                                 },
-                                "id": 3838,
+                                "id": 4192,
                                 "name": "Literal",
                                 "src": "1077:13:4"
                               },
@@ -3508,32 +3515,32 @@
                                   "type": "bool",
                                   "value": "true"
                                 },
-                                "id": 3839,
+                                "id": 4193,
                                 "name": "Literal",
                                 "src": "1104:4:4"
                               }
                             ],
-                            "id": 3840,
+                            "id": 4194,
                             "name": "FunctionCall",
                             "src": "1058:60:4"
                           }
                         ],
-                        "id": 3841,
+                        "id": 4195,
                         "name": "Assignment",
                         "src": "1002:116:4"
                       }
                     ],
-                    "id": 3842,
+                    "id": 4196,
                     "name": "ExpressionStatement",
                     "src": "1002:116:4"
                   }
                 ],
-                "id": 3843,
+                "id": 4197,
                 "name": "Block",
                 "src": "675:450:4"
               }
             ],
-            "id": 3844,
+            "id": 4198,
             "name": "FunctionDefinition",
             "src": "661:464:4"
           },
@@ -3547,7 +3554,7 @@
                 null
               ],
               "name": "updateToken",
-              "scope": 3960,
+              "scope": 4314,
               "stateMutability": "nonpayable",
               "virtual": false,
               "visibility": "public"
@@ -3560,7 +3567,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "_tokenAddress",
-                      "scope": 3867,
+                      "scope": 4221,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -3573,12 +3580,12 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 3845,
+                        "id": 4199,
                         "name": "ElementaryTypeName",
                         "src": "1161:7:4"
                       }
                     ],
-                    "id": 3846,
+                    "id": 4200,
                     "name": "VariableDeclaration",
                     "src": "1161:21:4"
                   },
@@ -3587,7 +3594,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "_value",
-                      "scope": 3867,
+                      "scope": 4221,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -3599,12 +3606,12 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3847,
+                        "id": 4201,
                         "name": "ElementaryTypeName",
                         "src": "1192:7:4"
                       }
                     ],
-                    "id": 3848,
+                    "id": 4202,
                     "name": "VariableDeclaration",
                     "src": "1192:14:4"
                   },
@@ -3613,7 +3620,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "_status",
-                      "scope": 3867,
+                      "scope": 4221,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "bool",
@@ -3625,17 +3632,17 @@
                           "name": "bool",
                           "type": "bool"
                         },
-                        "id": 3849,
+                        "id": 4203,
                         "name": "ElementaryTypeName",
                         "src": "1216:4:4"
                       }
                     ],
-                    "id": 3850,
+                    "id": 4204,
                     "name": "VariableDeclaration",
                     "src": "1216:12:4"
                   }
                 ],
-                "id": 3851,
+                "id": 4205,
                 "name": "ParameterList",
                 "src": "1151:83:4"
               },
@@ -3646,7 +3653,7 @@
                   ]
                 },
                 "children": [],
-                "id": 3852,
+                "id": 4206,
                 "name": "ParameterList",
                 "src": "1242:0:4"
               },
@@ -3678,11 +3685,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3784,
+                                  "referencedDeclaration": 4138,
                                   "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                   "value": "tokenData"
                                 },
-                                "id": 3853,
+                                "id": 4207,
                                 "name": "Identifier",
                                 "src": "1281:9:4"
                               },
@@ -3691,16 +3698,16 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3846,
+                                  "referencedDeclaration": 4200,
                                   "type": "address",
                                   "value": "_tokenAddress"
                                 },
-                                "id": 3854,
+                                "id": 4208,
                                 "name": "Identifier",
                                 "src": "1291:13:4"
                               }
                             ],
-                            "id": 3855,
+                            "id": 4209,
                             "name": "IndexAccess",
                             "src": "1281:24:4"
                           },
@@ -3734,11 +3741,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3789,
+                                  "referencedDeclaration": 4143,
                                   "type": "type(struct ExchangeOracle.Token storage pointer)",
                                   "value": "Token"
                                 },
-                                "id": 3856,
+                                "id": 4210,
                                 "name": "Identifier",
                                 "src": "1308:5:4"
                               },
@@ -3747,11 +3754,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3848,
+                                  "referencedDeclaration": 4202,
                                   "type": "uint256",
                                   "value": "_value"
                                 },
-                                "id": 3857,
+                                "id": 4211,
                                 "name": "Identifier",
                                 "src": "1314:6:4"
                               },
@@ -3760,26 +3767,26 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3850,
+                                  "referencedDeclaration": 4204,
                                   "type": "bool",
                                   "value": "_status"
                                 },
-                                "id": 3858,
+                                "id": 4212,
                                 "name": "Identifier",
                                 "src": "1322:7:4"
                               }
                             ],
-                            "id": 3859,
+                            "id": 4213,
                             "name": "FunctionCall",
                             "src": "1308:22:4"
                           }
                         ],
-                        "id": 3860,
+                        "id": 4214,
                         "name": "Assignment",
                         "src": "1281:49:4"
                       }
                     ],
-                    "id": 3861,
+                    "id": 4215,
                     "name": "ExpressionStatement",
                     "src": "1281:49:4"
                   },
@@ -3811,11 +3818,11 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 3813,
+                              "referencedDeclaration": 4167,
                               "type": "function (uint256)",
                               "value": "tokenUpdatedData"
                             },
-                            "id": 3862,
+                            "id": 4216,
                             "name": "Identifier",
                             "src": "1394:16:4"
                           },
@@ -3824,31 +3831,31 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 3848,
+                              "referencedDeclaration": 4202,
                               "type": "uint256",
                               "value": "_value"
                             },
-                            "id": 3863,
+                            "id": 4217,
                             "name": "Identifier",
                             "src": "1411:6:4"
                           }
                         ],
-                        "id": 3864,
+                        "id": 4218,
                         "name": "FunctionCall",
                         "src": "1394:24:4"
                       }
                     ],
-                    "id": 3865,
+                    "id": 4219,
                     "name": "EmitStatement",
                     "src": "1389:29:4"
                   }
                 ],
-                "id": 3866,
+                "id": 4220,
                 "name": "Block",
                 "src": "1242:183:4"
               }
             ],
-            "id": 3867,
+            "id": 4221,
             "name": "FunctionDefinition",
             "src": "1131:294:4"
           },
@@ -3862,7 +3869,7 @@
                 null
               ],
               "name": "priceOfPair",
-              "scope": 3960,
+              "scope": 4314,
               "stateMutability": "view",
               "virtual": false,
               "visibility": "public"
@@ -3875,7 +3882,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "_sellTokenAddress",
-                      "scope": 3904,
+                      "scope": 4258,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -3888,12 +3895,12 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 3868,
+                        "id": 4222,
                         "name": "ElementaryTypeName",
                         "src": "1452:7:4"
                       }
                     ],
-                    "id": 3869,
+                    "id": 4223,
                     "name": "VariableDeclaration",
                     "src": "1452:25:4"
                   },
@@ -3902,7 +3909,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "_buyTokenAddress",
-                      "scope": 3904,
+                      "scope": 4258,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -3915,17 +3922,17 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 3870,
+                        "id": 4224,
                         "name": "ElementaryTypeName",
                         "src": "1479:7:4"
                       }
                     ],
-                    "id": 3871,
+                    "id": 4225,
                     "name": "VariableDeclaration",
                     "src": "1479:24:4"
                   }
                 ],
-                "id": 3872,
+                "id": 4226,
                 "name": "ParameterList",
                 "src": "1451:53:4"
               },
@@ -3936,7 +3943,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "sellTokenPrice",
-                      "scope": 3904,
+                      "scope": 4258,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -3948,12 +3955,12 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3873,
+                        "id": 4227,
                         "name": "ElementaryTypeName",
                         "src": "1563:7:4"
                       }
                     ],
-                    "id": 3874,
+                    "id": 4228,
                     "name": "VariableDeclaration",
                     "src": "1563:22:4"
                   },
@@ -3962,7 +3969,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "buyTokenPrice",
-                      "scope": 3904,
+                      "scope": 4258,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -3974,12 +3981,12 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3875,
+                        "id": 4229,
                         "name": "ElementaryTypeName",
                         "src": "1599:7:4"
                       }
                     ],
-                    "id": 3876,
+                    "id": 4230,
                     "name": "VariableDeclaration",
                     "src": "1599:21:4"
                   },
@@ -3988,7 +3995,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "success",
-                      "scope": 3904,
+                      "scope": 4258,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "bool",
@@ -4000,17 +4007,17 @@
                           "name": "bool",
                           "type": "bool"
                         },
-                        "id": 3877,
+                        "id": 4231,
                         "name": "ElementaryTypeName",
                         "src": "1634:4:4"
                       }
                     ],
-                    "id": 3878,
+                    "id": 4232,
                     "name": "VariableDeclaration",
                     "src": "1634:12:4"
                   }
                 ],
-                "id": 3879,
+                "id": 4233,
                 "name": "ParameterList",
                 "src": "1549:107:4"
               },
@@ -4025,7 +4032,7 @@
                           "isPure": false,
                           "lValueRequested": false,
                           "member_name": "active",
-                          "referencedDeclaration": 3788,
+                          "referencedDeclaration": 4142,
                           "type": "bool"
                         },
                         "children": [
@@ -4043,11 +4050,11 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3784,
+                                  "referencedDeclaration": 4138,
                                   "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                   "value": "tokenData"
                                 },
-                                "id": 3880,
+                                "id": 4234,
                                 "name": "Identifier",
                                 "src": "1675:9:4"
                               },
@@ -4056,21 +4063,21 @@
                                   "overloadedDeclarations": [
                                     null
                                   ],
-                                  "referencedDeclaration": 3869,
+                                  "referencedDeclaration": 4223,
                                   "type": "address",
                                   "value": "_sellTokenAddress"
                                 },
-                                "id": 3881,
+                                "id": 4235,
                                 "name": "Identifier",
                                 "src": "1685:17:4"
                               }
                             ],
-                            "id": 3882,
+                            "id": 4236,
                             "name": "IndexAccess",
                             "src": "1675:28:4"
                           }
                         ],
-                        "id": 3883,
+                        "id": 4237,
                         "name": "MemberAccess",
                         "src": "1675:35:4"
                       },
@@ -4078,7 +4085,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "functionReturnParameters": 3879
+                              "functionReturnParameters": 4233
                             },
                             "children": [
                               {
@@ -4098,7 +4105,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "value",
-                                      "referencedDeclaration": 3786,
+                                      "referencedDeclaration": 4140,
                                       "type": "uint256"
                                     },
                                     "children": [
@@ -4116,11 +4123,11 @@
                                               "overloadedDeclarations": [
                                                 null
                                               ],
-                                              "referencedDeclaration": 3784,
+                                              "referencedDeclaration": 4138,
                                               "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                               "value": "tokenData"
                                             },
-                                            "id": 3884,
+                                            "id": 4238,
                                             "name": "Identifier",
                                             "src": "1751:9:4"
                                           },
@@ -4129,21 +4136,21 @@
                                               "overloadedDeclarations": [
                                                 null
                                               ],
-                                              "referencedDeclaration": 3869,
+                                              "referencedDeclaration": 4223,
                                               "type": "address",
                                               "value": "_sellTokenAddress"
                                             },
-                                            "id": 3885,
+                                            "id": 4239,
                                             "name": "Identifier",
                                             "src": "1761:17:4"
                                           }
                                         ],
-                                        "id": 3886,
+                                        "id": 4240,
                                         "name": "IndexAccess",
                                         "src": "1751:28:4"
                                       }
                                     ],
-                                    "id": 3887,
+                                    "id": 4241,
                                     "name": "MemberAccess",
                                     "src": "1751:34:4"
                                   },
@@ -4154,7 +4161,7 @@
                                       "isPure": false,
                                       "lValueRequested": false,
                                       "member_name": "value",
-                                      "referencedDeclaration": 3786,
+                                      "referencedDeclaration": 4140,
                                       "type": "uint256"
                                     },
                                     "children": [
@@ -4172,11 +4179,11 @@
                                               "overloadedDeclarations": [
                                                 null
                                               ],
-                                              "referencedDeclaration": 3784,
+                                              "referencedDeclaration": 4138,
                                               "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                               "value": "tokenData"
                                             },
-                                            "id": 3888,
+                                            "id": 4242,
                                             "name": "Identifier",
                                             "src": "1803:9:4"
                                           },
@@ -4185,21 +4192,21 @@
                                               "overloadedDeclarations": [
                                                 null
                                               ],
-                                              "referencedDeclaration": 3871,
+                                              "referencedDeclaration": 4225,
                                               "type": "address",
                                               "value": "_buyTokenAddress"
                                             },
-                                            "id": 3889,
+                                            "id": 4243,
                                             "name": "Identifier",
                                             "src": "1813:16:4"
                                           }
                                         ],
-                                        "id": 3890,
+                                        "id": 4244,
                                         "name": "IndexAccess",
                                         "src": "1803:27:4"
                                       }
                                     ],
-                                    "id": 3891,
+                                    "id": 4245,
                                     "name": "MemberAccess",
                                     "src": "1803:33:4"
                                   },
@@ -4214,22 +4221,22 @@
                                       "type": "bool",
                                       "value": "true"
                                     },
-                                    "id": 3892,
+                                    "id": 4246,
                                     "name": "Literal",
                                     "src": "1854:4:4"
                                   }
                                 ],
-                                "id": 3893,
+                                "id": 4247,
                                 "name": "TupleExpression",
                                 "src": "1733:139:4"
                               }
                             ],
-                            "id": 3894,
+                            "id": 4248,
                             "name": "Return",
                             "src": "1726:146:4"
                           }
                         ],
-                        "id": 3895,
+                        "id": 4249,
                         "name": "Block",
                         "src": "1712:171:4"
                       },
@@ -4237,7 +4244,7 @@
                         "children": [
                           {
                             "attributes": {
-                              "functionReturnParameters": 3879
+                              "functionReturnParameters": 4233
                             },
                             "children": [
                               {
@@ -4261,7 +4268,7 @@
                                       "type": "int_const 0",
                                       "value": "0"
                                     },
-                                    "id": 3896,
+                                    "id": 4250,
                                     "name": "Literal",
                                     "src": "1911:1:4"
                                   },
@@ -4276,7 +4283,7 @@
                                       "type": "int_const 0",
                                       "value": "0"
                                     },
-                                    "id": 3897,
+                                    "id": 4251,
                                     "name": "Literal",
                                     "src": "1914:1:4"
                                   },
@@ -4291,37 +4298,37 @@
                                       "type": "bool",
                                       "value": "false"
                                     },
-                                    "id": 3898,
+                                    "id": 4252,
                                     "name": "Literal",
                                     "src": "1917:5:4"
                                   }
                                 ],
-                                "id": 3899,
+                                "id": 4253,
                                 "name": "TupleExpression",
                                 "src": "1910:13:4"
                               }
                             ],
-                            "id": 3900,
+                            "id": 4254,
                             "name": "Return",
                             "src": "1903:20:4"
                           }
                         ],
-                        "id": 3901,
+                        "id": 4255,
                         "name": "Block",
                         "src": "1889:45:4"
                       }
                     ],
-                    "id": 3902,
+                    "id": 4256,
                     "name": "IfStatement",
                     "src": "1671:263:4"
                   }
                 ],
-                "id": 3903,
+                "id": 4257,
                 "name": "Block",
                 "src": "1661:279:4"
               }
             ],
-            "id": 3904,
+            "id": 4258,
             "name": "FunctionDefinition",
             "src": "1431:509:4"
           },
@@ -4335,7 +4342,7 @@
                 null
               ],
               "name": "priceOfETHandCBLT",
-              "scope": 3960,
+              "scope": 4314,
               "stateMutability": "view",
               "virtual": false,
               "visibility": "public"
@@ -4348,7 +4355,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "_cbltToken",
-                      "scope": 3921,
+                      "scope": 4275,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -4361,17 +4368,17 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 3905,
+                        "id": 4259,
                         "name": "ElementaryTypeName",
                         "src": "1973:7:4"
                       }
                     ],
-                    "id": 3906,
+                    "id": 4260,
                     "name": "VariableDeclaration",
                     "src": "1973:18:4"
                   }
                 ],
-                "id": 3907,
+                "id": 4261,
                 "name": "ParameterList",
                 "src": "1972:20:4"
               },
@@ -4382,7 +4389,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "scope": 3921,
+                      "scope": 4275,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -4394,12 +4401,12 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3908,
+                        "id": 4262,
                         "name": "ElementaryTypeName",
                         "src": "2038:7:4"
                       }
                     ],
-                    "id": 3909,
+                    "id": 4263,
                     "name": "VariableDeclaration",
                     "src": "2038:7:4"
                   },
@@ -4408,7 +4415,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "scope": 3921,
+                      "scope": 4275,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -4420,17 +4427,17 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3910,
+                        "id": 4264,
                         "name": "ElementaryTypeName",
                         "src": "2047:7:4"
                       }
                     ],
-                    "id": 3911,
+                    "id": 4265,
                     "name": "VariableDeclaration",
                     "src": "2047:7:4"
                   }
                 ],
-                "id": 3912,
+                "id": 4266,
                 "name": "ParameterList",
                 "src": "2037:18:4"
               },
@@ -4438,7 +4445,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "functionReturnParameters": 3912
+                      "functionReturnParameters": 4266
                     },
                     "children": [
                       {
@@ -4458,7 +4465,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "value",
-                              "referencedDeclaration": 3786,
+                              "referencedDeclaration": 4140,
                               "type": "uint256"
                             },
                             "children": [
@@ -4476,11 +4483,11 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 3784,
+                                      "referencedDeclaration": 4138,
                                       "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                       "value": "tokenData"
                                     },
-                                    "id": 3913,
+                                    "id": 4267,
                                     "name": "Identifier",
                                     "src": "2078:9:4"
                                   },
@@ -4489,21 +4496,21 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 3906,
+                                      "referencedDeclaration": 4260,
                                       "type": "address",
                                       "value": "_cbltToken"
                                     },
-                                    "id": 3914,
+                                    "id": 4268,
                                     "name": "Identifier",
                                     "src": "2088:10:4"
                                   }
                                 ],
-                                "id": 3915,
+                                "id": 4269,
                                 "name": "IndexAccess",
                                 "src": "2078:21:4"
                               }
                             ],
-                            "id": 3916,
+                            "id": 4270,
                             "name": "MemberAccess",
                             "src": "2078:27:4"
                           },
@@ -4512,31 +4519,31 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 3780,
+                              "referencedDeclaration": 4134,
                               "type": "uint256",
                               "value": "USDpriceETH"
                             },
-                            "id": 3917,
+                            "id": 4271,
                             "name": "Identifier",
                             "src": "2107:11:4"
                           }
                         ],
-                        "id": 3918,
+                        "id": 4272,
                         "name": "TupleExpression",
                         "src": "2077:42:4"
                       }
                     ],
-                    "id": 3919,
+                    "id": 4273,
                     "name": "Return",
                     "src": "2070:49:4"
                   }
                 ],
-                "id": 3920,
+                "id": 4274,
                 "name": "Block",
                 "src": "2060:66:4"
               }
             ],
-            "id": 3921,
+            "id": 4275,
             "name": "FunctionDefinition",
             "src": "1946:180:4"
           },
@@ -4550,7 +4557,7 @@
                 null
               ],
               "name": "priceOfETH",
-              "scope": 3960,
+              "scope": 4314,
               "stateMutability": "view",
               "virtual": false,
               "visibility": "public"
@@ -4563,7 +4570,7 @@
                   ]
                 },
                 "children": [],
-                "id": 3922,
+                "id": 4276,
                 "name": "ParameterList",
                 "src": "2151:2:4"
               },
@@ -4574,7 +4581,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "scope": 3930,
+                      "scope": 4284,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -4586,17 +4593,17 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3923,
+                        "id": 4277,
                         "name": "ElementaryTypeName",
                         "src": "2175:7:4"
                       }
                     ],
-                    "id": 3924,
+                    "id": 4278,
                     "name": "VariableDeclaration",
                     "src": "2175:7:4"
                   }
                 ],
-                "id": 3925,
+                "id": 4279,
                 "name": "ParameterList",
                 "src": "2174:9:4"
               },
@@ -4604,7 +4611,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "functionReturnParameters": 3925
+                      "functionReturnParameters": 4279
                     },
                     "children": [
                       {
@@ -4622,31 +4629,31 @@
                               "overloadedDeclarations": [
                                 null
                               ],
-                              "referencedDeclaration": 3780,
+                              "referencedDeclaration": 4134,
                               "type": "uint256",
                               "value": "USDpriceETH"
                             },
-                            "id": 3926,
+                            "id": 4280,
                             "name": "Identifier",
                             "src": "2202:11:4"
                           }
                         ],
-                        "id": 3927,
+                        "id": 4281,
                         "name": "TupleExpression",
                         "src": "2201:13:4"
                       }
                     ],
-                    "id": 3928,
+                    "id": 4282,
                     "name": "Return",
                     "src": "2194:20:4"
                   }
                 ],
-                "id": 3929,
+                "id": 4283,
                 "name": "Block",
                 "src": "2184:37:4"
               }
             ],
-            "id": 3930,
+            "id": 4284,
             "name": "FunctionDefinition",
             "src": "2132:89:4"
           },
@@ -4657,7 +4664,7 @@
               "isConstructor": false,
               "kind": "function",
               "name": "priceOfToken",
-              "scope": 3960,
+              "scope": 4314,
               "stateMutability": "view",
               "virtual": false,
               "visibility": "public"
@@ -4670,7 +4677,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "_tokenAddress",
-                      "scope": 3947,
+                      "scope": 4301,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "address",
@@ -4683,17 +4690,17 @@
                           "stateMutability": "nonpayable",
                           "type": "address"
                         },
-                        "id": 3931,
+                        "id": 4285,
                         "name": "ElementaryTypeName",
                         "src": "2249:7:4"
                       }
                     ],
-                    "id": 3932,
+                    "id": 4286,
                     "name": "VariableDeclaration",
                     "src": "2249:21:4"
                   }
                 ],
-                "id": 3933,
+                "id": 4287,
                 "name": "ParameterList",
                 "src": "2248:23:4"
               },
@@ -4704,7 +4711,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "",
-                      "scope": 3947,
+                      "scope": 4301,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -4716,17 +4723,17 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3937,
+                        "id": 4291,
                         "name": "ElementaryTypeName",
                         "src": "2352:7:4"
                       }
                     ],
-                    "id": 3938,
+                    "id": 4292,
                     "name": "VariableDeclaration",
                     "src": "2352:7:4"
                   }
                 ],
-                "id": 3939,
+                "id": 4293,
                 "name": "ParameterList",
                 "src": "2351:9:4"
               },
@@ -4737,11 +4744,11 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 3805,
+                      "referencedDeclaration": 4159,
                       "type": "modifier (address)",
                       "value": "activeToken"
                     },
-                    "id": 3934,
+                    "id": 4288,
                     "name": "Identifier",
                     "src": "2308:11:4"
                   },
@@ -4750,16 +4757,16 @@
                       "overloadedDeclarations": [
                         null
                       ],
-                      "referencedDeclaration": 3932,
+                      "referencedDeclaration": 4286,
                       "type": "address",
                       "value": "_tokenAddress"
                     },
-                    "id": 3935,
+                    "id": 4289,
                     "name": "Identifier",
                     "src": "2320:13:4"
                   }
                 ],
-                "id": 3936,
+                "id": 4290,
                 "name": "ModifierInvocation",
                 "src": "2308:26:4"
               },
@@ -4767,7 +4774,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "functionReturnParameters": 3939
+                      "functionReturnParameters": 4293
                     },
                     "children": [
                       {
@@ -4787,7 +4794,7 @@
                               "isPure": false,
                               "lValueRequested": false,
                               "member_name": "value",
-                              "referencedDeclaration": 3786,
+                              "referencedDeclaration": 4140,
                               "type": "uint256"
                             },
                             "children": [
@@ -4805,11 +4812,11 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 3784,
+                                      "referencedDeclaration": 4138,
                                       "type": "mapping(address => struct ExchangeOracle.Token storage ref)",
                                       "value": "tokenData"
                                     },
-                                    "id": 3940,
+                                    "id": 4294,
                                     "name": "Identifier",
                                     "src": "2383:9:4"
                                   },
@@ -4818,41 +4825,41 @@
                                       "overloadedDeclarations": [
                                         null
                                       ],
-                                      "referencedDeclaration": 3932,
+                                      "referencedDeclaration": 4286,
                                       "type": "address",
                                       "value": "_tokenAddress"
                                     },
-                                    "id": 3941,
+                                    "id": 4295,
                                     "name": "Identifier",
                                     "src": "2393:13:4"
                                   }
                                 ],
-                                "id": 3942,
+                                "id": 4296,
                                 "name": "IndexAccess",
                                 "src": "2383:24:4"
                               }
                             ],
-                            "id": 3943,
+                            "id": 4297,
                             "name": "MemberAccess",
                             "src": "2383:30:4"
                           }
                         ],
-                        "id": 3944,
+                        "id": 4298,
                         "name": "TupleExpression",
                         "src": "2382:32:4"
                       }
                     ],
-                    "id": 3945,
+                    "id": 4299,
                     "name": "Return",
                     "src": "2375:39:4"
                   }
                 ],
-                "id": 3946,
+                "id": 4300,
                 "name": "Block",
                 "src": "2365:56:4"
               }
             ],
-            "id": 3947,
+            "id": 4301,
             "name": "FunctionDefinition",
             "src": "2227:194:4"
           },
@@ -4866,7 +4873,7 @@
                 null
               ],
               "name": "testConnection",
-              "scope": 3960,
+              "scope": 4314,
               "stateMutability": "pure",
               "virtual": false,
               "visibility": "public"
@@ -4879,7 +4886,7 @@
                   ]
                 },
                 "children": [],
-                "id": 3948,
+                "id": 4302,
                 "name": "ParameterList",
                 "src": "2450:2:4"
               },
@@ -4890,7 +4897,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "sellTokenPrice",
-                      "scope": 3959,
+                      "scope": 4313,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -4902,12 +4909,12 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3949,
+                        "id": 4303,
                         "name": "ElementaryTypeName",
                         "src": "2498:7:4"
                       }
                     ],
-                    "id": 3950,
+                    "id": 4304,
                     "name": "VariableDeclaration",
                     "src": "2498:22:4"
                   },
@@ -4916,7 +4923,7 @@
                       "constant": false,
                       "mutability": "mutable",
                       "name": "buyTokenPrice",
-                      "scope": 3959,
+                      "scope": 4313,
                       "stateVariable": false,
                       "storageLocation": "default",
                       "type": "uint256",
@@ -4928,17 +4935,17 @@
                           "name": "uint256",
                           "type": "uint256"
                         },
-                        "id": 3951,
+                        "id": 4305,
                         "name": "ElementaryTypeName",
                         "src": "2522:7:4"
                       }
                     ],
-                    "id": 3952,
+                    "id": 4306,
                     "name": "VariableDeclaration",
                     "src": "2522:21:4"
                   }
                 ],
-                "id": 3953,
+                "id": 4307,
                 "name": "ParameterList",
                 "src": "2497:47:4"
               },
@@ -4946,7 +4953,7 @@
                 "children": [
                   {
                     "attributes": {
-                      "functionReturnParameters": 3953
+                      "functionReturnParameters": 4307
                     },
                     "children": [
                       {
@@ -4970,7 +4977,7 @@
                               "type": "int_const 1",
                               "value": "1"
                             },
-                            "id": 3954,
+                            "id": 4308,
                             "name": "Literal",
                             "src": "2567:1:4"
                           },
@@ -4985,37 +4992,37 @@
                               "type": "int_const 1",
                               "value": "1"
                             },
-                            "id": 3955,
+                            "id": 4309,
                             "name": "Literal",
                             "src": "2570:1:4"
                           }
                         ],
-                        "id": 3956,
+                        "id": 4310,
                         "name": "TupleExpression",
                         "src": "2566:6:4"
                       }
                     ],
-                    "id": 3957,
+                    "id": 4311,
                     "name": "Return",
                     "src": "2559:13:4"
                   }
                 ],
-                "id": 3958,
+                "id": 4312,
                 "name": "Block",
                 "src": "2549:30:4"
               }
             ],
-            "id": 3959,
+            "id": 4313,
             "name": "FunctionDefinition",
             "src": "2427:152:4"
           }
         ],
-        "id": 3960,
+        "id": 4314,
         "name": "ContractDefinition",
         "src": "102:2479:4"
       }
     ],
-    "id": 3961,
+    "id": 4315,
     "name": "SourceUnit",
     "src": "32:2550:4"
   },
@@ -5027,12 +5034,13 @@
     "4": {
       "events": {},
       "links": {},
-      "address": "0x1EFf7351718dE4042241be70F6A14AC69A264C47",
-      "transactionHash": "0x7da75a014145c043aa31fac931ccd855d8d4dce85bd1f6bf00f74e4af2cb02c3"
+      "address": "0x71C658bd9d8d0383Ef1A8E133924ADd6A773B8f9",
+      "transactionHash": "0x57c75e663b8cb01992043da0421fdca2642a1676e20a3f2717dc34aced63248c"
     }
   },
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-06-02T18:15:08.351Z",
+  "updatedAt": "2021-06-08T21:35:35.884Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},
