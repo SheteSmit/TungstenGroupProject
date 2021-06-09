@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./interfaces/Ownable.sol";
@@ -43,6 +44,8 @@ contract Bank is Ownable {
 
         // Time tier at launch is 5
         tierMax = 5;
+        // Support for other tokens off during launch
+        otherTokens = false;
 
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
@@ -386,15 +389,51 @@ contract Bank is Ownable {
 
     /**
      * @dev Variable displaying the maximum time tier supported.
-     * @notice This action can only be perform under dev vote
+     * @notice This action can only be perform under dev vote.
      */
     uint256 public tierMax;
 
     /**
-     * @dev Variable to turn staking off and on
-     * @notice This action can only be perform under dev vote
+     * @dev Variable for staking flat fee.
+     */
+    uint256 fee;
+
+    /**
+     * @dev Setter for staking flat fee.
+     * @param _newFee new uint fee value.
+     * @notice This action can only be perform under dev vote.
+     */
+    function newFee(uint256 _newFee) public {
+        fee = _newFee;
+    }
+
+    /**
+     * @dev Variable turns support for other tokens as reward outside of CBLT.
+     */
+    bool otherTokens;
+
+    /**
+     * @dev Setter function to turn support for other tokens.
+     * @notice This action can only be perform under dev vote.
+     * @param _bool value true for on, false for off.
+     */
+    function setTokenSupport(bool _bool) public {
+        otherTokens = _bool;
+    }
+
+    /**
+     * @dev Variable to turn staking off and on.
      */
     bool public stakingStatus;
+
+    /**
+     * @dev Setter function to turn staking status on and off.
+     * @notice This action can only be perform under dev vote.
+     * @param _bool value true - on, false - off.
+     */
+    function setStakingStatus(bool _bool) public {
+        stakingStatus = _bool;
+    }
 
     /**
      * @dev Struct saves tier interest, monitor amount of stakers allowed per tier and
@@ -560,6 +599,195 @@ contract Bank is Ownable {
             "Tier number must be a number between 1 and 5."
         );
         _;
+    }
+
+    /**
+     * @dev Modifier makes sure to allow only CBLT during launch or specific periods
+     */
+    modifier tokenIsCBLT(address _tokenAddress) {
+        if (otherTokens == false) {
+            require(
+                _tokenAddress ==
+                    address(0x433C6E3D2def6E1fb414cf9448724EFB0399b698),
+                "Token must be CBLT"
+            );
+        }
+        _;
+    }
+
+    /**
+     * @dev Function stakes ethereum based on the user's desired duration and token of reward
+     * @param _timeStakedTier user passes the intended duration of their desired staking period
+     * @param _tokenAddress token address rewarded to the user for staking
+     * CBLT used as default during launch
+     * @notice Modifier tokenIsCBLT checks if support for other tokens as reward is turned on.
+     */
+    function stakeEth(uint32 _timeStakedTier, address _tokenAddress)
+        public
+        payable
+        tokenIsCBLT(_tokenAddress)
+        isValidStake(_timeStakedTier)
+    {
+        uint256 amountStakedTier; // Amount tier staked sent as value
+        uint256 paidAdvanced = 0; // User sent tokens upfront?
+        uint256 dueDate; // Due date to check if user is allowed to restake
+        uint256 tokensReserved; // Tokens owed for staking amount
+        uint256 lotteryTicket = userBook[msg.sender].lotteryTicket; // is user lottery winner
+        uint256 balance; // Balance saved after fee is subtracted
+
+        // Checks if the transaction should be charged using a flat or percentage based
+        if (msg.value > 5e18) {
+            balance = SafeMath.sub(
+                msg.value,
+                SafeMath.multiply(msg.value, 3, 100)
+            );
+        } else {
+            // Oracle call for current ETH price in USD
+            uint256 ETHprice = oracle.priceOfETH();
+            // Dollar fee based
+            uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
+            // New balance saved
+            balance = SafeMath.sub(msg.value, SafeMath.mul(ETHinUSD, fee));
+        }
+
+        // Check the amountStakedTier based on deposit
+        if (msg.value <= 4e17) {
+            amountStakedTier = 1;
+        } else if (msg.value <= 2e18) {
+            amountStakedTier = 2;
+        } else if (msg.value <= 5e18) {
+            amountStakedTier = 3;
+        } else if (msg.value <= 25e18) {
+            amountStakedTier = 4;
+            // if user is staking for 180, pay tokens in advance
+            if (_timeStakedTier == 4) {
+                paidAdvanced = 25;
+                borrowingPool = SafeMath.add(borrowingPool, balance);
+            } else if (_timeStakedTier == 5) {
+                paidAdvanced = 50;
+                borrowingPool = SafeMath.add(borrowingPool, balance);
+            }
+        } else {
+            amountStakedTier = 5;
+            // if user is staking for 180, pay tokens in advance
+            if (_timeStakedTier == 4) {
+                paidAdvanced = 25;
+                borrowingPool = SafeMath.add(borrowingPool, balance);
+            } else if (_timeStakedTier == 5) {
+                paidAdvanced = 50;
+                borrowingPool = SafeMath.add(borrowingPool, balance);
+            }
+        }
+
+        // Checks if the user is a lottery winner and checks if amount staked and time staked is within lottery instance parameters
+        if (lotteryTicket > 0) {
+            require(
+                _timeStakedTier ==
+                    lotteryBook[userBook[msg.sender].lotteryTicket]
+                        .lotteryTimeTier &&
+                    amountStakedTier ==
+                    lotteryBook[userBook[msg.sender].lotteryTicket]
+                        .lotteryAmountTier
+            );
+        } else {
+            // Check if the tier is currently depleted
+            require(
+                stakingRewardRate[_timeStakedTier][amountStakedTier]
+                    .amountStakersLeft > 0,
+                "Tier depleted, come back later"
+            );
+        }
+
+        // Checking if user is restaking or this is his/her first staking instance
+        if (userBook[msg.sender].ethBalance > 0) {
+            // Creates a due date for current staking period
+            dueDate = SafeMath.add(
+                stakingRewardRate[_timeStakedTier][amountStakedTier]
+                    .tierDuration,
+                userBook[msg.sender].depositTime
+            );
+            // Revert if staking period is not over
+            require(
+                block.timestamp > 1,
+                "Current staking period is not over yet"
+            );
+
+            // Checks the amount of CBLT tokens that need to be reserved plus existing balance
+            tokensReserved = calculateRewardDeposit(
+                SafeMath.add(msg.value, userBook[msg.sender].ethBalance),
+                _timeStakedTier,
+                amountStakedTier,
+                _tokenAddress,
+                lotteryTicket
+            );
+        } else {
+            // Checks the amount of CBLT tokens that need to be reserved
+            tokensReserved = calculateRewardDeposit(
+                msg.value,
+                _timeStakedTier,
+                amountStakedTier,
+                _tokenAddress,
+                lotteryTicket
+            );
+        }
+
+        // Treasury must have that amount open
+        require(
+            tokensReserved <= tokenReserve[_tokenAddress],
+            "Treasury is currently depleted"
+        );
+
+        // Check if we are sending CBLT based on time staked
+        if (paidAdvanced > 0) {
+            uint256 tokensSent =
+                SafeMath.multiply(tokensReserved, paidAdvanced, 100);
+            // require( token.transfer(msg.sender, cbltSent), "Transaction was not successful" );
+
+            // Saves the amount of CBLT tokens reserved minus the amount sent in advanced
+            userBook[msg.sender].tokenReserved = SafeMath.add(
+                userBook[msg.sender].tokenReserved,
+                SafeMath.multiply(
+                    tokensReserved,
+                    SafeMath.sub(100, paidAdvanced),
+                    100
+                )
+            );
+        } else {
+            // Saves the amount of CBLT tokens reserved in user struct
+            userBook[msg.sender].tokenReserved = SafeMath.add(
+                userBook[msg.sender].tokenReserved,
+                tokensReserved
+            );
+        }
+
+        // Save amount of time staked
+        userBook[msg.sender].timeStakedTier = _timeStakedTier;
+
+        // Substract CBLT tokens reserved for user from treasury
+        tokenReserve[_tokenAddress] = SafeMath.sub(
+            tokenReserve[_tokenAddress],
+            tokensReserved
+        );
+
+        // Save new eth deposit in user account
+        userBook[msg.sender].ethBalance = SafeMath.add(
+            userBook[msg.sender].ethBalance,
+            balance
+        );
+
+        // Decrease number of stakers avaliable for current tier based on time and amount
+        stakingRewardRate[_timeStakedTier][amountStakedTier]
+            .amountStakersLeft = SafeMath.sub(
+            stakingRewardRate[_timeStakedTier][amountStakedTier]
+                .amountStakersLeft,
+            1
+        );
+
+        // Save token address for user
+        userBook[msg.sender].currentTokenStaked = _tokenAddress;
+
+        // Change the time of deposit
+        userBook[msg.sender].depositTime = block.timestamp;
     }
 
     function previousStakingMath(uint256 _amountStakedPreviously)
@@ -774,157 +1002,6 @@ contract Bank is Ownable {
         } else {
             return 0;
         }
-    }
-
-    function depositEth(uint32 _timeStakedTier, address _tokenAddress)
-        public
-        payable
-        isValidStake(_timeStakedTier)
-    {
-        uint256 amountStakedTier;
-        uint256 paidAdvanced = 0;
-        uint256 dueDate;
-        uint256 tokensReserved;
-        uint256 lotteryTicket = userBook[msg.sender].lotteryTicket;
-
-        // Check the amountStakedTier based on deposit
-        if (msg.value <= 4e17) {
-            amountStakedTier = 1;
-        } else if (msg.value <= 2e18) {
-            amountStakedTier = 2;
-        } else if (msg.value <= 5e18) {
-            amountStakedTier = 3;
-        } else if (msg.value <= 25e18) {
-            amountStakedTier = 4;
-            if (_timeStakedTier == 4) {
-                paidAdvanced = 25;
-            } else if (_timeStakedTier == 5) {
-                paidAdvanced = 50;
-            }
-        } else {
-            amountStakedTier = 5;
-            if (_timeStakedTier == 4) {
-                paidAdvanced = 25;
-            } else if (_timeStakedTier == 5) {
-                paidAdvanced = 50;
-            }
-        }
-
-        // Checks if the user is a lottery winner and checks if amount staked and time staked is within lottery instance parameters
-        if (lotteryTicket > 0) {
-            require(
-                _timeStakedTier ==
-                    lotteryBook[userBook[msg.sender].lotteryTicket]
-                        .lotteryTimeTier &&
-                    amountStakedTier ==
-                    lotteryBook[userBook[msg.sender].lotteryTicket]
-                        .lotteryAmountTier
-            );
-        } else {
-            // Check if the tier is currently depleted
-            require(
-                stakingRewardRate[_timeStakedTier][amountStakedTier]
-                    .amountStakersLeft > 0,
-                "Tier depleted, come back later"
-            );
-        }
-
-        // Checking if user is restaking or this is his/her first staking instance
-        if (userBook[msg.sender].ethBalance > 0) {
-            // Creates a due date for current staking period
-            dueDate = SafeMath.add(
-                stakingRewardRate[_timeStakedTier][amountStakedTier]
-                    .tierDuration,
-                userBook[msg.sender].depositTime
-            );
-            // Revert if staking period is not over
-            require(
-                block.timestamp > 1,
-                "Current staking period is not over yet"
-            );
-
-            // Checks the amount of CBLT tokens that need to be reserved plus existing balance
-            tokensReserved = calculateRewardDeposit(
-                SafeMath.add(msg.value, userBook[msg.sender].ethBalance),
-                _timeStakedTier,
-                amountStakedTier,
-                _tokenAddress,
-                lotteryTicket
-            );
-        } else {
-            // Checks the amount of CBLT tokens that need to be reserved
-            tokensReserved = calculateRewardDeposit(
-                msg.value,
-                _timeStakedTier,
-                amountStakedTier,
-                _tokenAddress,
-                lotteryTicket
-            );
-        }
-
-        // Treasury must have that amount open
-        require(
-            tokensReserved <= tokenReserve[_tokenAddress],
-            "Treasury is currently depleted"
-        );
-
-        // Check if we are sending CBLT based on time staked
-        if (paidAdvanced > 0) {
-            uint256 tokensSent =
-                SafeMath.multiply(tokensReserved, paidAdvanced, 100);
-            // require( token.transfer(msg.sender, cbltSent), "Transaction was not successful" );
-
-            // Saves the amount of CBLT tokens reserved minus the amount sent in advanced
-            userBook[msg.sender].tokenReserved = SafeMath.add(
-                userBook[msg.sender].tokenReserved,
-                SafeMath.multiply(
-                    tokensReserved,
-                    SafeMath.sub(100, paidAdvanced),
-                    100
-                )
-            );
-        } else {
-            // Saves the amount of CBLT tokens reserved in user struct
-            userBook[msg.sender].tokenReserved = SafeMath.add(
-                userBook[msg.sender].tokenReserved,
-                tokensReserved
-            );
-        }
-
-        // Save amount of time staked
-        userBook[msg.sender].timeStakedTier = _timeStakedTier;
-
-        // Substract CBLT tokens reserved for user from treasury
-        tokenReserve[_tokenAddress] = SafeMath.sub(
-            tokenReserve[_tokenAddress],
-            tokensReserved
-        );
-
-        // Oracle call for current ETH price in USD
-        uint256 ETHprice = oracle.priceOfETH();
-
-        // Dollar fee based
-        uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
-
-        // Save new eth deposit in user account
-        userBook[msg.sender].ethBalance = SafeMath.add(
-            userBook[msg.sender].ethBalance,
-            SafeMath.sub(msg.value, ETHinUSD)
-        );
-
-        // Decrease number of stakers avaliable for current tier based on time and amount
-        stakingRewardRate[_timeStakedTier][amountStakedTier]
-            .amountStakersLeft = SafeMath.sub(
-            stakingRewardRate[_timeStakedTier][amountStakedTier]
-                .amountStakersLeft,
-            1
-        );
-
-        // Save token address for user
-        userBook[msg.sender].currentTokenStaked = _tokenAddress;
-
-        // Change the time of deposit
-        userBook[msg.sender].depositTime = block.timestamp;
     }
 
     function withdrawEth(uint256 _amount) public {
