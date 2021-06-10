@@ -44,8 +44,12 @@ contract Bank is Ownable {
 
         // Time tier at launch is 5
         tierMax = 5;
-        // Support for other tokens off during launch
+        // Assing value to other token support
         otherTokens = false;
+        // Assign value to staking status
+        stakingStatus = true;
+        // Assign value to fee
+        fee = 3;
 
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
@@ -144,9 +148,14 @@ contract Bank is Ownable {
 
     mapping(address => bool) devBook;
     address[] devArray;
+    address addressProposed;
     string proposedChange;
     uint256 intProposed;
-    address addressProposed;
+    uint256 _amountTier;
+    uint256 _timeTier;
+    uint256 _interest;
+    uint256 _amountStakersLeft;
+    uint256 _tierDuration;
     bool boolProposed;
 
     modifier clearedAction(
@@ -180,7 +189,16 @@ contract Bank is Ownable {
         proposedChange = "number";
     }
 
-    // proposeBoolChange(bool _bool)  proposedChange = "bool"
+    function proposeTierChange(
+        uint256 _amountTier,
+        uint256 _timeTier,
+        uint256 _interest,
+        uint256 _amountStakersLeft,
+        uint256 _tierDuration
+    ) public {}
+
+    // need modifier for public functions
+    // function proposeBoolChange(bool _bool) public {}
     // proposeAddressChange(address _address)  proposedChange = "string"
     // addDevTeam
     // deleteDevTeam
@@ -422,6 +440,13 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev Getter function to pull info on support for other tokens.
+     */
+    function getTokenSupport() public view returns (bool) {
+        return otherTokens;
+    }
+
+    /**
      * @dev Variable to turn staking off and on.
      */
     bool public stakingStatus;
@@ -433,6 +458,13 @@ contract Bank is Ownable {
      */
     function setStakingStatus(bool _bool) public {
         stakingStatus = _bool;
+    }
+
+    /**
+     * @dev Getter function to pull staking status on and off.
+     */
+    function getStakingStatus() public view returns (bool) {
+        return stakingStatus;
     }
 
     /**
@@ -454,12 +486,12 @@ contract Bank is Ownable {
 
     /**
      * @dev Getter function pulls current tier information.
-     * @param _amountTier key tier amount value used to access tier combination.
+     * @param _amount amount value sent in ETH used to access tier combination.
      * @param _timeTier key tier time value used to access tier combination.
      * @return Returns the interest under time and amount tier combination, amount of stakers avaliable.
      * and the tierDuration or period staked in EPOCH.
      */
-    function getTierInformation(uint256 _amountTier, uint256 _timeTier)
+    function getTierInformation(uint256 _amount, uint256 _timeTier)
         public
         view
         returns (
@@ -468,10 +500,24 @@ contract Bank is Ownable {
             uint256
         )
     {
+        uint256 amountStakedTier;
+
+        if (_amount <= 4e17) {
+            amountStakedTier = 1;
+        } else if (_amount <= 2e18) {
+            amountStakedTier = 2;
+        } else if (_amount <= 5e18) {
+            amountStakedTier = 3;
+        } else if (_amount <= 25e18) {
+            amountStakedTier = 4;
+        } else {
+            amountStakedTier = 5;
+        }
+
         return (
-            stakingRewardRate[_timeTier][_amountTier].interest,
-            stakingRewardRate[_timeTier][_amountTier].amountStakersLeft,
-            stakingRewardRate[_timeTier][_amountTier].tierDuration
+            stakingRewardRate[_timeTier][amountStakedTier].interest,
+            stakingRewardRate[_timeTier][amountStakedTier].amountStakersLeft,
+            stakingRewardRate[_timeTier][amountStakedTier].tierDuration
         );
     }
 
@@ -616,6 +662,55 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev Function sends an estimation of how many tokens
+     */
+    function getTokenReturn(
+        uint256 _amount,
+        uint256 _timeStakedTier,
+        uint256 _amountStakedTier,
+        address _tokenAddress
+    ) internal view returns (uint256, uint256) {
+        uint256 tokenPrice = oracle.priceOfToken(address(_tokenAddress));
+        uint256 lotteryTicket = userBook[msg.sender].lotteryTicket;
+        uint256 interest;
+
+        // Checks if the transaction should be charged using a flat or percentage based fee
+        if (msg.value > 5e18) {
+            _amount = SafeMath.sub(
+                msg.value,
+                SafeMath.multiply(msg.value, 3, 1000)
+            );
+        } else {
+            // Oracle call for current ETH price in USD
+            uint256 ETHprice = oracle.priceOfETH();
+            // Dollar fee based
+            uint256 ETHinUSD = SafeMath.div(300000000000000000000, ETHprice);
+            // New balance saved
+            _amount = SafeMath.sub(msg.value, SafeMath.mul(ETHinUSD, fee));
+        }
+
+        // Calculate and return new CBLT reserved
+        if (lotteryTicket > 0) {
+            if (userBook[msg.sender].withdrawReady == false) {
+                interest = SafeMath.mul(
+                    stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                        .interest,
+                    2
+                );
+            }
+            userBook[msg.sender].withdrawReady == true;
+        } else {
+            interest = stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                .interest;
+        }
+
+        return (
+            SafeMath.div(SafeMath.multiply(_amount, interest, 100), tokenPrice),
+            _amount
+        );
+    }
+
+    /**
      * @dev Function stakes ethereum based on the user's desired duration and token of reward
      * @param _timeStakedTier user passes the intended duration of their desired staking period
      * @param _tokenAddress token address rewarded to the user for staking
@@ -635,17 +730,17 @@ contract Bank is Ownable {
         uint256 lotteryTicket = userBook[msg.sender].lotteryTicket; // is user lottery winner
         uint256 balance; // Balance saved after fee is subtracted
 
-        // Checks if the transaction should be charged using a flat or percentage based
+        // Checks if the transaction should be charged using a flat or percentage based fee
         if (msg.value > 5e18) {
             balance = SafeMath.sub(
                 msg.value,
-                SafeMath.multiply(msg.value, 3, 100)
+                SafeMath.multiply(msg.value, 3, 1000)
             );
         } else {
             // Oracle call for current ETH price in USD
             uint256 ETHprice = oracle.priceOfETH();
             // Dollar fee based
-            uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
+            uint256 ETHinUSD = SafeMath.div(300000000000000000000, ETHprice);
             // New balance saved
             balance = SafeMath.sub(msg.value, SafeMath.mul(ETHinUSD, fee));
         }
@@ -679,26 +774,7 @@ contract Bank is Ownable {
             }
         }
 
-        // Checks if the user is a lottery winner and checks if amount staked and time staked is within lottery instance parameters
-        if (lotteryTicket > 0) {
-            require(
-                _timeStakedTier ==
-                    lotteryBook[userBook[msg.sender].lotteryTicket]
-                        .lotteryTimeTier &&
-                    amountStakedTier ==
-                    lotteryBook[userBook[msg.sender].lotteryTicket]
-                        .lotteryAmountTier
-            );
-        } else {
-            // Check if the tier is currently depleted
-            require(
-                stakingRewardRate[_timeStakedTier][amountStakedTier]
-                    .amountStakersLeft > 0,
-                "Tier depleted, come back later"
-            );
-        }
-
-        // Checking if user is restaking or this is his/her first staking instance
+        // Checking if user is restaking or if this is his/her first staking instance
         if (userBook[msg.sender].ethBalance > 0) {
             // Creates a due date for current staking period
             dueDate = SafeMath.add(
@@ -728,6 +804,25 @@ contract Bank is Ownable {
                 amountStakedTier,
                 _tokenAddress,
                 lotteryTicket
+            );
+        }
+
+        // Checks if the user is a lottery winner and checks if amount staked and time staked is within lottery instance parameters
+        if (lotteryTicket > 0) {
+            require(
+                _timeStakedTier ==
+                    lotteryBook[userBook[msg.sender].lotteryTicket]
+                        .lotteryTimeTier &&
+                    amountStakedTier ==
+                    lotteryBook[userBook[msg.sender].lotteryTicket]
+                        .lotteryAmountTier
+            );
+        } else {
+            // Check if the tier is currently depleted
+            require(
+                stakingRewardRate[_timeStakedTier][amountStakedTier]
+                    .amountStakersLeft > 0,
+                "Tier depleted, come back later"
             );
         }
 
@@ -826,12 +921,13 @@ contract Bank is Ownable {
     }
 
     function payRewardWalletDeposit(uint256 _userReserved) internal {
-        uint256 amountStakedPreviously = userBook[msg.sender].ethBalance;
         uint256 interest;
+        uint256 amountStakedPreviously = userBook[msg.sender].ethBalance;
+        uint256 previousTimeTier = userBook[msg.sender].timeStakedTier;
         address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
+        uint256 previousTokenPrice = oracle.priceOfToken(previousTokenAddress);
         (uint256 percentBasedAmount, uint256 previousAmountTier) =
             previousStakingMath(amountStakedPreviously);
-        uint256 previousTokenPrice = oracle.priceOfToken(previousTokenAddress);
 
         if (userBook[msg.sender].withdrawReady == true) {
             interest = SafeMath.mul(
@@ -858,9 +954,7 @@ contract Bank is Ownable {
                         percentBasedAmount,
                         100
                     ),
-                    stakingRewardRate[userBook[msg.sender].timeStakedTier][
-                        previousAmountTier
-                    ]
+                    stakingRewardRate[previousTimeTier][previousAmountTier]
                         .interest,
                     100
                 ),
@@ -891,6 +985,14 @@ contract Bank is Ownable {
             );
             // Reset amount of tokens owed
             userBook[msg.sender].tokenReserved = 0;
+
+            // Increase number of stakers avaliable for current tier based on time and amount
+            stakingRewardRate[previousTimeTier][previousAmountTier]
+                .amountStakersLeft = SafeMath.add(
+                stakingRewardRate[previousTimeTier][previousAmountTier]
+                    .amountStakersLeft,
+                1
+            );
         }
     }
 
@@ -998,6 +1100,14 @@ contract Bank is Ownable {
 
                 // Return new amount of CBLT owed
                 return newReserved;
+
+                // Increase number of stakers avaliable for current tier based on time and amount
+                stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                    .amountStakersLeft = SafeMath.add(
+                    stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                        .amountStakersLeft,
+                    1
+                );
             }
         } else {
             return 0;
@@ -1083,29 +1193,12 @@ contract Bank is Ownable {
         // token.transfer
     }
 
+    // ************************************ Lottery ***************************************
     function lottery(
         address _winnerAddress,
         uint256 _timeTier,
         uint256 _amountTier
     ) public {}
-
-    function modifyTiers(
-        uint256 _new,
-        uint256 _amountTier,
-        uint256 _timeTier,
-        uint256 _newInterest,
-        uint256 _tierDuration
-    ) public {
-        // only devs
-        stakingRewardRate[_timeTier][_amountTier].amountStakersLeft = _new;
-        stakingRewardRate[_timeTier][_amountTier].interest = _newInterest;
-        stakingRewardRate[_timeTier][_amountTier].tierDuration = _tierDuration;
-    }
-
-    function stakingControl(bool _status) public {
-        // only devs
-        stakingStatus = _status;
-    }
 }
 
 // 7 days
