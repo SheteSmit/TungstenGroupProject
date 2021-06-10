@@ -18,10 +18,9 @@ import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 import DIDs from "./pages/DID/DIDs";
 import Laon from "./pages/Loan/Loan";
 import Exchange from "./pages/Exchange/Exchange";
-import ChromiumApp from './pages/Exchange/ChromiumApp';
+import ChromiumApp from "./pages/Exchange/ChromiumApp";
 import Voting from "./pages/Voting/Voting";
 import Hugo from "./pages/Exchange/ChromiumSwap";
-
 
 export default class App extends Component {
   constructor() {

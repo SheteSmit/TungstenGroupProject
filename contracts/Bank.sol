@@ -45,7 +45,7 @@ contract Bank is Ownable {
         // Time tier at launch is 5
         tierMax = 5;
         // Assing value to other token support
-        otherTokens = false;
+        multipleTokenSupport = false;
         // Assign value to staking status
         stakingStatus = true;
         // Assign value to fee
@@ -399,11 +399,18 @@ contract Bank is Ownable {
         delete loanBook[msg.sender];
     }
 
-    // **************************** Staking ******************************
+    // ********************************* Staking ***********************************
     /**
      * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
      */
     uint256 public borrowingPool;
+
+    /**
+     * @dev Getter function to pull total value avaliable on the borrowing pool
+     */
+    function getBorrowingPool() public view returns (uint256) {
+        return borrowingPool;
+    }
 
     /**
      * @dev Variable displaying the maximum time tier supported.
@@ -428,7 +435,7 @@ contract Bank is Ownable {
     /**
      * @dev Variable turns support for other tokens as reward outside of CBLT.
      */
-    bool otherTokens;
+    bool multipleTokenSupport;
 
     /**
      * @dev Setter function to turn support for other tokens.
@@ -436,14 +443,14 @@ contract Bank is Ownable {
      * @param _bool value true for on, false for off.
      */
     function setTokenSupport(bool _bool) public {
-        otherTokens = _bool;
+        multipleTokenSupport = _bool;
     }
 
     /**
      * @dev Getter function to pull info on support for other tokens.
      */
     function getTokenSupport() public view returns (bool) {
-        return otherTokens;
+        return multipleTokenSupport;
     }
 
     /**
@@ -605,10 +612,35 @@ contract Bank is Ownable {
     mapping(address => uint256) public tokenReserve;
 
     /**
+     * @dev Getter function to pull information for avaliable token amount in reserves
+     * @param _tokenAddress token address of queried token
+     */
+    function getTokenReserve(address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return tokenReserve[_tokenAddress];
+    }
+
+    /**
      * @dev Mapping with key value address (user address) leads to submapping with key value address
      * (token address) to pull the current balance rewarded to that user in the tokens
      */
     mapping(address => mapping(address => uint256)) public rewardWallet;
+
+    /**
+     * @dev Getter function to pull avaliable tokens ready to withdraw from reserves
+     * @param _userAddress address of queried user
+     * @param _tokenAddress address of queried token
+     */
+    function getUserBalance(address _userAddress, address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return rewardWallet[_userAddress][_tokenAddress];
+    }
 
     /**
      * @dev Struct saves information on previous lottery tickets. Saves information on the time and amount
@@ -624,6 +656,11 @@ contract Bank is Ownable {
      * tier for the user to redeem his reward staking.
      */
     mapping(uint256 => LotteryTicket) lotteryBook;
+
+    /**
+     * @dev Getter function to pull tier
+     * @param _ticketSignature
+     */
 
     /**
      * @dev Modifier checks if staking is currently online, the deposit is higher
@@ -651,7 +688,7 @@ contract Bank is Ownable {
      * @dev Modifier makes sure to allow only CBLT during launch or specific periods
      */
     modifier tokenIsCBLT(address _tokenAddress) {
-        if (otherTokens == false) {
+        if (multipleTokenSupport == false) {
             require(
                 _tokenAddress ==
                     address(0x433C6E3D2def6E1fb414cf9448724EFB0399b698),
@@ -712,8 +749,8 @@ contract Bank is Ownable {
 
     /**
      * @dev Function stakes ethereum based on the user's desired duration and token of reward
-     * @param _timeStakedTier user passes the intended duration of their desired staking period
-     * @param _tokenAddress token address rewarded to the user for staking
+     * @param _timeStakedTier intended duration of their desired staking period
+     * @param _tokenAddress token address rewarded to user staking
      * CBLT used as default during launch
      * @notice Modifier tokenIsCBLT checks if support for other tokens as reward is turned on.
      */
@@ -774,7 +811,7 @@ contract Bank is Ownable {
             }
         }
 
-        // Checking if user is restaking or if this is his/her first staking instance
+        // Checking if user has a running balance from previous staking instances
         if (userBook[msg.sender].ethBalance > 0) {
             // Creates a due date for current staking period
             dueDate = SafeMath.add(
@@ -784,11 +821,11 @@ contract Bank is Ownable {
             );
             // Revert if staking period is not over
             require(
-                block.timestamp > 1,
+                block.timestamp > 1, //MUST CHANGE BEFORE LAUNCH!!!!!!!!!!!!
                 "Current staking period is not over yet"
             );
 
-            // Checks the amount of CBLT tokens that need to be reserved plus existing balance
+            // Checks the amount of CBLT tokens that needs to be reserved plus existing balance
             tokensReserved = calculateRewardDeposit(
                 SafeMath.add(msg.value, userBook[msg.sender].ethBalance),
                 _timeStakedTier,
@@ -797,7 +834,7 @@ contract Bank is Ownable {
                 lotteryTicket
             );
         } else {
-            // Checks the amount of CBLT tokens that need to be reserved
+            // Calculate the amount of CBLT tokens that need to be reserved
             tokensReserved = calculateRewardDeposit(
                 msg.value,
                 _timeStakedTier,
@@ -885,6 +922,150 @@ contract Bank is Ownable {
         userBook[msg.sender].depositTime = block.timestamp;
     }
 
+    /**
+     * @dev Helper function calculates amount of tokens owed to user at current market value
+     * with both tier combinations. If user is restaking the function calls another helper
+     * function (payRewardWalletDeposit(userReserved)) that deposits previous tokens staked
+     * this function also recalculates the amount based on deposit and current token value.
+     * @param _amount new amount balance saved by user. Combination of existing balance and
+     * incoming amount.
+     * @param _timeStakedTier time duration tier for staking period
+     * @param _amountStakedTier time amount tier for staking period
+     * @param _tokenAddress token address of token owed at the end of staking period
+     * @param _lotteryTicket whether the user has an active lottery ticket and should
+     * be rewarded with x2 interest reward for his staking period
+     */
+    function calculateRewardDeposit(
+        uint256 _amount,
+        uint256 _timeStakedTier,
+        uint256 _amountStakedTier,
+        address _tokenAddress,
+        uint256 _lotteryTicket
+    ) internal returns (uint256) {
+        uint256 tokenPrice = oracle.priceOfToken(address(_tokenAddress));
+        uint256 userReserved = userBook[msg.sender].tokenReserved;
+        uint256 interest;
+
+        // Check if user has CBLT tokens reserved
+        if (userReserved > 0) {
+            payRewardWalletDeposit(userReserved);
+        }
+
+        // Check lottery status
+        if (_lotteryTicket > 0) {
+            // Check if user is restaking with an active lottery ticket reward
+            if (userBook[msg.sender].withdrawReady == false) {
+                // Save new interest
+                interest = SafeMath.mul(
+                    stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                        .interest,
+                    2
+                );
+            }
+            // User's reserved token owed is double during his next withdraw or restake instance
+            userBook[msg.sender].withdrawReady == true;
+        } else {
+            interest = stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                .interest;
+        }
+
+        return
+            SafeMath.div(SafeMath.multiply(_amount, interest, 100), tokenPrice);
+    }
+
+    /**
+     * @dev Helper function calculates the amount of tokens owed to user based on previous
+     * token value, time and amount tier combination and current token value and saves the
+     * amount in the virtual wallet for the user to withdraw from.
+     * @param _userReserved maximum amount of tokens reserved for user based on previous
+     * token value when staking instance was created.
+     */
+    function payRewardWalletDeposit(uint256 _userReserved) internal {
+        uint256 interest; // Previous interest
+        // Amount tier used in last staking instance
+        uint256 amountStakedPreviously = userBook[msg.sender].ethBalance;
+        // Time tier used in last staking instance
+        uint256 previousTimeTier = userBook[msg.sender].timeStakedTier;
+        // The address of the token owed to user for staking
+        address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
+        // Current price of that token
+        uint256 previousTokenPrice = oracle.priceOfToken(previousTokenAddress);
+        // Function checks if the user was sent tokens upfront
+        (uint256 percentBasedAmount, uint256 previousAmountTier) =
+            previousStakingMath(amountStakedPreviously);
+
+        // If user has an active staking period under lottery ticket, tokens owed are doubled
+        if (userBook[msg.sender].withdrawReady == true) {
+            interest = SafeMath.mul(
+                stakingRewardRate[userBook[msg.sender].timeStakedTier][
+                    previousAmountTier
+                ]
+                    .interest,
+                2
+            );
+            userBook[msg.sender].lotteryTicket = 0;
+        } else {
+            interest = stakingRewardRate[userBook[msg.sender].timeStakedTier][
+                previousAmountTier
+            ]
+                .interest;
+        }
+
+        // Calculate the new amount of cblt reserved for user at current market price
+        uint256 newReserved =
+            SafeMath.div(
+                SafeMath.multiply(
+                    SafeMath.multiply(
+                        amountStakedPreviously,
+                        percentBasedAmount,
+                        100
+                    ),
+                    interest,
+                    100
+                ),
+                previousTokenPrice
+            );
+        // if new amount owed is larger send all avaliable tokens reserved to user
+        if (newReserved >= _userReserved) {
+            rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
+                rewardWallet[msg.sender][previousTokenAddress],
+                _userReserved
+            );
+            userBook[msg.sender].tokenReserved = 0;
+        } else {
+            // if new amount owed is smaller, calculate the difference between
+            // new and old amount owed
+            uint256 tokenDifference = SafeMath.sub(_userReserved, newReserved);
+
+            // Add lefover tokens back into treasury
+            tokenReserve[previousTokenAddress] = SafeMath.add(
+                tokenReserve[previousTokenAddress],
+                tokenDifference
+            );
+
+            // Save tokens in contract wallet
+            rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
+                rewardWallet[msg.sender][previousTokenAddress],
+                newReserved
+            );
+            // Reset amount of tokens owed
+            userBook[msg.sender].tokenReserved = 0;
+
+            // Increase number of stakers avaliable for current tier based on time and amount
+            stakingRewardRate[previousTimeTier][previousAmountTier]
+                .amountStakersLeft = SafeMath.add(
+                stakingRewardRate[previousTimeTier][previousAmountTier]
+                    .amountStakersLeft,
+                1
+            );
+        }
+    }
+
+    /**
+     * @dev Helper function to determine if user was sent tokens upfront based on
+     * tier combination during the previous staking instance
+     * @param _amountStakedPreviously the amount balance staked previously
+     */
     function previousStakingMath(uint256 _amountStakedPreviously)
         internal
         view
@@ -920,256 +1101,170 @@ contract Bank is Ownable {
         return (percentBasedAmount, previousAmountTier);
     }
 
-    function payRewardWalletDeposit(uint256 _userReserved) internal {
-        uint256 interest;
-        uint256 amountStakedPreviously = userBook[msg.sender].ethBalance;
-        uint256 previousTimeTier = userBook[msg.sender].timeStakedTier;
-        address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
-        uint256 previousTokenPrice = oracle.priceOfToken(previousTokenAddress);
-        (uint256 percentBasedAmount, uint256 previousAmountTier) =
-            previousStakingMath(amountStakedPreviously);
-
-        if (userBook[msg.sender].withdrawReady == true) {
-            interest = SafeMath.mul(
-                stakingRewardRate[userBook[msg.sender].timeStakedTier][
-                    previousAmountTier
-                ]
-                    .interest,
-                2
-            );
-            userBook[msg.sender].lotteryTicket = 0;
-        } else {
-            interest = stakingRewardRate[userBook[msg.sender].timeStakedTier][
-                previousAmountTier
-            ]
-                .interest;
-        }
-
-        // Calculate the new amount of cblt reserved for user at current market price
-        uint256 newReserved =
-            SafeMath.div(
-                SafeMath.multiply(
-                    SafeMath.multiply(
-                        amountStakedPreviously,
-                        percentBasedAmount,
-                        100
-                    ),
-                    stakingRewardRate[previousTimeTier][previousAmountTier]
-                        .interest,
-                    100
-                ),
-                previousTokenPrice
-            );
-
-        if (newReserved >= _userReserved) {
-            // If price decrease, send all tokens reserved
-            rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
-                rewardWallet[msg.sender][previousTokenAddress],
-                _userReserved
-            );
-            userBook[msg.sender].tokenReserved = 0;
-        } else {
-            // If price increased, calculate the difference between new and old amount final
-            uint256 tokenDifference = SafeMath.sub(_userReserved, newReserved);
-
-            // Add lefover tokens back into treasury
-            tokenReserve[previousTokenAddress] = SafeMath.add(
-                tokenReserve[previousTokenAddress],
-                tokenDifference
-            );
-
-            // Save tokens in contract wallet
-            rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
-                rewardWallet[msg.sender][previousTokenAddress],
-                newReserved
-            );
-            // Reset amount of tokens owed
-            userBook[msg.sender].tokenReserved = 0;
-
-            // Increase number of stakers avaliable for current tier based on time and amount
-            stakingRewardRate[previousTimeTier][previousAmountTier]
-                .amountStakersLeft = SafeMath.add(
-                stakingRewardRate[previousTimeTier][previousAmountTier]
-                    .amountStakersLeft,
-                1
-            );
-        }
-    }
-
-    function calculateRewardDeposit(
-        uint256 _amount,
-        uint256 _timeStakedTier,
-        uint256 _amountStakedTier,
-        address _tokenAddress,
-        uint256 _lotteryTicket
-    ) internal returns (uint256) {
-        uint256 tokenPrice = oracle.priceOfToken(address(_tokenAddress));
-        uint256 userReserved = userBook[msg.sender].tokenReserved;
-        uint256 interest;
-
-        // Check if user has CBLT tokens reserved
-        if (userReserved > 0) {
-            payRewardWalletDeposit(userReserved);
-        }
-
-        // Calculate and return new CBLT reserved
-        if (_lotteryTicket > 0) {
-            if (userBook[msg.sender].withdrawReady == false) {
-                interest = SafeMath.mul(
-                    stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                        .interest,
-                    2
-                );
-            }
-            userBook[msg.sender].withdrawReady == true;
-        } else {
-            interest = stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                .interest;
-        }
-
-        return
-            SafeMath.div(SafeMath.multiply(_amount, interest, 100), tokenPrice);
-    }
-
+    /**
+     * @dev Helper function to determine if the user is owed tokens during his
+     * withdraw instance.
+     * @param _timeStakedTier time staked tier of previous staking instance
+     * @param _amountStakedTier amount staked tier of previous staking instance
+     */
     function payRewardWalletWithdraw(
         uint256 _timeStakedTier,
-        uint256 _amountStakedTier
+        uint256 _amountStakedTier,
+        uint256 _userReserved
     ) internal returns (uint256) {
         uint256 percentBasedAmount = 100;
-        uint256 userReserved = userBook[msg.sender].tokenReserved;
         address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
         uint256 tokenPrice = oracle.priceOfToken(previousTokenAddress);
         uint256 interest;
 
         // If user has CBLT tokens reserved on withdraw, calculate how much is owed to him
-        if (userReserved > 0) {
-            // Determining if user was sent CBLT tokens on initial staking
-            if (
-                _timeStakedTier == 4 &&
-                (_amountStakedTier == 4 || _amountStakedTier == 5)
-            ) {
-                percentBasedAmount = 75;
-            } else if (
-                _timeStakedTier == 5 &&
-                (_amountStakedTier == 4 || _amountStakedTier == 5)
-            ) {
-                percentBasedAmount = 50;
-            }
+        // Determining if user was sent CBLT tokens on initial staking
+        if (
+            _timeStakedTier == 4 &&
+            (_amountStakedTier == 4 || _amountStakedTier == 5)
+        ) {
+            percentBasedAmount = 75;
+        } else if (
+            _timeStakedTier == 5 &&
+            (_amountStakedTier == 4 || _amountStakedTier == 5)
+        ) {
+            percentBasedAmount = 50;
+        }
+        // Checks if user's lottery ticket is ready to be applied to tokens reserved
+        if (userBook[msg.sender].withdrawReady == true) {
+            interest = SafeMath.mul(
+                stakingRewardRate[_timeStakedTier][_amountStakedTier].interest,
+                2
+            );
+            userBook[msg.sender].lotteryTicket = 0;
+        } else {
+            interest = stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                .interest;
+        }
 
-            if (userBook[msg.sender].withdrawReady == true) {
-                interest = SafeMath.mul(
-                    stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                        .interest,
-                    2
-                );
-                userBook[msg.sender].lotteryTicket = 0;
-            } else {
-                interest = stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                    .interest;
-            }
-
-            // Calculate the new amount of cblt reserved for user at current market price
-            uint256 newReserved =
-                SafeMath.div(
+        // Calculate new amount of cblt reserved for user at current market price
+        uint256 tokensOwed =
+            SafeMath.div(
+                SafeMath.multiply(
                     SafeMath.multiply(
-                        SafeMath.multiply(
-                            userBook[msg.sender].ethBalance,
-                            percentBasedAmount,
-                            100
-                        ),
-                        stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                            .interest,
+                        userBook[msg.sender].ethBalance,
+                        percentBasedAmount,
                         100
                     ),
-                    tokenPrice
-                );
-
-            if (newReserved >= userReserved) {
-                // If token price decrease, send all tokens reserved
-                return userReserved;
-            } else {
-                // If CBLT price increased, calculate the difference between new and old amount final
-                uint256 tokenDifference =
-                    SafeMath.sub(userReserved, newReserved);
-
-                // Add lefover cblt tokens back into treasury
-                tokenReserve[previousTokenAddress] = SafeMath.add(
-                    tokenReserve[previousTokenAddress],
-                    tokenDifference
-                );
-
-                // Return new amount of CBLT owed
-                return newReserved;
-
-                // Increase number of stakers avaliable for current tier based on time and amount
-                stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                    .amountStakersLeft = SafeMath.add(
                     stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                        .amountStakersLeft,
-                    1
-                );
-            }
+                        .interest,
+                    100
+                ),
+                tokenPrice
+            );
+
+        if (tokensOwed >= _userReserved) {
+            // Increase number of stakers avaliable for current tier based on time and amount
+            stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                .amountStakersLeft = SafeMath.add(
+                stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                    .amountStakersLeft,
+                1
+            );
+            return _userReserved;
         } else {
-            return 0;
+            // Calculate the difference between new and old amount owed
+            uint256 tokenDifference = SafeMath.sub(_userReserved, tokensOwed);
+
+            // Add lefover cblt tokens back into treasury
+            tokenReserve[previousTokenAddress] = SafeMath.add(
+                tokenReserve[previousTokenAddress],
+                tokenDifference
+            );
+            // Increase number of stakers avaliable for current tier based on time and amount
+            stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                .amountStakersLeft = SafeMath.add(
+                stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                    .amountStakersLeft,
+                1
+            );
+            // Return amount of tokens owed
+            return tokensOwed;
         }
     }
 
+    /**
+     * @dev Function sends a specified amount of ETH from the users balance back to the user
+     * @notice Function also allocates final amount tokens owed into users reward wallet
+     * if this hasnt ocurred already
+     * @param _amount amount intended to withdraw
+     */
     function withdrawEth(uint256 _amount) public {
         uint256 dueDate;
-        uint256 stakingPeriod = userBook[msg.sender].timeStakedTier;
-        uint256 amountStakedTier;
+        uint256 userReserved = userBook[msg.sender].tokenReserved;
+        uint256 stakingPeriodTier = userBook[msg.sender].timeStakedTier;
+        uint256 stakingAmountTier;
         uint256 userBalance = userBook[msg.sender].ethBalance;
 
         // Determine the amount staked tier based on ETH balance
         if (userBalance <= 4e17) {
-            amountStakedTier = 5;
+            stakingAmountTier = 5;
         } else if (userBalance <= 2e18) {
-            amountStakedTier = 4;
+            stakingAmountTier = 4;
         } else if (userBalance <= 5e18) {
-            amountStakedTier = 3;
+            stakingAmountTier = 3;
         } else if (userBalance <= 25e18) {
-            amountStakedTier = 2;
+            stakingAmountTier = 2;
         } else {
-            amountStakedTier = 1;
+            stakingAmountTier = 1;
         }
 
         // Calulate due date based on time staked tier and deposit time
         dueDate = SafeMath.add(
-            stakingRewardRate[stakingPeriod][amountStakedTier].tierDuration,
+            stakingRewardRate[stakingPeriodTier][stakingAmountTier]
+                .tierDuration,
             userBook[msg.sender].depositTime
         );
 
         // Staking period must be over before he withdraws ETH balance
         // require(block.timestamp >= dueDate, "Staking period is not over.");
 
-        // Recalculate tokens based on current token value
-        uint256 stakingReward =
-            payRewardWalletWithdraw(stakingPeriod, amountStakedTier);
-        // Save reward in wallet
-        rewardWallet[msg.sender][
-            userBook[msg.sender].currentTokenStaked
-        ] = SafeMath.add(
-            rewardWallet[msg.sender][userBook[msg.sender].currentTokenStaked],
-            stakingReward
-        );
-        // Reset amount of CBLT reserved
-        userBook[msg.sender].tokenReserved = 0;
+        if (userReserved > 0) {
+            uint256 stakingReward =
+                payRewardWalletWithdraw(
+                    stakingPeriodTier,
+                    stakingAmountTier,
+                    userReserved
+                );
+
+            // Save reward in wallet if any is owed
+            rewardWallet[msg.sender][
+                userBook[msg.sender].currentTokenStaked
+            ] = SafeMath.add(
+                rewardWallet[msg.sender][
+                    userBook[msg.sender].currentTokenStaked
+                ],
+                stakingReward
+            );
+
+            // Reset amount of CBLT reserved
+            userBook[msg.sender].tokenReserved = 0;
+        }
 
         // Substract eth from user account
         userBook[msg.sender].ethBalance = SafeMath.sub(
             userBook[msg.sender].ethBalance,
             _amount
         );
-        // Change the latest time of deposit
-        userBook[msg.sender].depositTime = block.timestamp;
 
         payable(msg.sender).transfer(_amount);
     }
 
+    /**
+     * @dev Function withdraws tokens from user's reward wallet
+     * @param _amount amount of tokens withdrawn
+     * @param _withdrawTokenAddress token address of tokens withdrawn
+     */
     function withdrawStaking(uint256 _amount, address _withdrawTokenAddress)
         public
         payable
     {
+        // Pulls current value of token and ETH in USD
         (uint256 tokenPrice, uint256 ETHprice) =
             oracle.priceOfETHandCBLT(_withdrawTokenAddress);
 
