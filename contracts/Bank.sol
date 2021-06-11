@@ -1321,6 +1321,37 @@ contract Bank is Ownable {
     mapping(address => bool) lotteryBook;
 
     /**
+     * @dev Address of lottery contract in charge of executing LotteryWinner function
+     */
+    address Lottery;
+
+    /**
+     * @dev Setter function to change the contract address for the lottery connected to
+     * staking.
+     * @notice This action can only be perform under dev vote.
+     * @param _lotteryAddress address of lottery contract picking winners.
+     */
+    function setLottery(address _lotteryAddress) public {
+        Lottery = _lotteryAddress;
+    }
+
+    /**
+     * @dev Getter function to pull current lottery address
+     * @return address of contract
+     */
+    function getLottery() public view returns (address) {
+        return Lottery;
+    }
+
+    /**
+     * @dev Modifier ensures only the lottery is allowed to pick new winners
+     */
+    modifier lotteryContract() {
+        require(msg.sender == Lottery);
+        _;
+    }
+
+    /**
      * @dev Getter function to pull information on lottery winner
      * @param _userAddress address of user queried
      * @return if user has a multiplier ready to be reedemed
