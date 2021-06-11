@@ -401,6 +401,14 @@ contract Bank is Ownable {
 
     // ********************************* Staking ***********************************
     /**
+     * @dev
+     */
+    function tokenReserveDeposit(uint256 _amount, address _tokenAddress)
+        public
+        payable
+    {}
+
+    /**
      * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
      */
     uint256 public borrowingPool; // 25%
@@ -438,6 +446,20 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev
+     */
+    bool terminateStaking;
+
+    /**
+     * @dev Function terminates all staking instances and allows early balance withdrewal
+     * @param _bool true terminates all contract instances and allows users to withdraw
+     * @notice This action can only be perform under dev vote.
+     */
+    function setStakingTermination(bool _bool) public {
+        terminateStaking = _bool;
+    }
+
+    /**
      * @dev Variable turns support for other tokens as reward outside of CBLT.
      */
     bool multipleTokenSupport;
@@ -445,7 +467,7 @@ contract Bank is Ownable {
     /**
      * @dev Setter function to turn support for other tokens.
      * @notice This action can only be perform under dev vote.
-     * @param _bool value true for on, false for off.
+     * @param _bool true turns on other token support for staking reward, false off
      */
     function setTokenSupport(bool _bool) public {
         multipleTokenSupport = _bool;
@@ -684,6 +706,17 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev
+     */
+    modifier stakingTermination(bool _functionSpecific) {
+        require(
+            terminateStaking == true && _functionSpecific,
+            "Staking is currently functioning as expected"
+        );
+        _;
+    }
+
+    /**
      * @dev Function sends an estimation of how many tokens
      */
     function getTokenReturn(
@@ -744,6 +777,7 @@ contract Bank is Ownable {
         payable
         tokenIsCBLT(_tokenAddress)
         isValidStake(_timeStakedTier)
+        stakingTermination(false)
     {
         uint256 amountStakedTier; // Amount tier staked sent as value
         uint256 paidAdvanced = 0; // User sent tokens upfront?
@@ -814,7 +848,7 @@ contract Bank is Ownable {
 
             // Checks the amount of CBLT tokens that needs to be reserved plus existing balance
             tokensReserved = calculateRewardDeposit(
-                SafeMath.add(msg.value, userBook[msg.sender].ethBalance),
+                SafeMath.add(balance, userBook[msg.sender].ethBalance),
                 _timeStakedTier,
                 amountStakedTier,
                 _tokenAddress,
@@ -1118,7 +1152,7 @@ contract Bank is Ownable {
         uint256 _timeStakedTier,
         uint256 _amountStakedTier,
         uint256 _userReserved
-    ) internal returns (uint256) {
+    ) internal {
         uint256 percentBasedAmount = 100;
         address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
         uint256 tokenPrice = oracle.priceOfToken(previousTokenAddress);
@@ -1175,9 +1209,31 @@ contract Bank is Ownable {
                     // Return lottery value to false after multiplier is used
                     lotteryBook[msg.sender] = false;
 
-                    return tokensOwed;
+                    // Save reward in wallet if any is owed
+                    rewardWallet[msg.sender][
+                        userBook[msg.sender].currentTokenStaked
+                    ] = SafeMath.add(
+                        rewardWallet[msg.sender][
+                            userBook[msg.sender].currentTokenStaked
+                        ],
+                        tokensOwed
+                    );
+
+                    // Reset amount of CBLT reserved
+                    userBook[msg.sender].tokenReserved = 0;
                 } else {
-                    return _userReserved;
+                    // Save reward in wallet if any is owed
+                    rewardWallet[msg.sender][
+                        userBook[msg.sender].currentTokenStaked
+                    ] = SafeMath.add(
+                        rewardWallet[msg.sender][
+                            userBook[msg.sender].currentTokenStaked
+                        ],
+                        _userReserved
+                    );
+                    // Reset amount of CBLT reserved
+                    userBook[msg.sender].tokenReserved = 0;
+
                     // Lottery multipler won't be used if user did not cash out rewards
                 }
             } else {
@@ -1188,7 +1244,18 @@ contract Bank is Ownable {
                         .amountStakersLeft,
                     1
                 );
-                return _userReserved;
+                // Save reward in wallet if any is owed
+                rewardWallet[msg.sender][
+                    userBook[msg.sender].currentTokenStaked
+                ] = SafeMath.add(
+                    rewardWallet[msg.sender][
+                        userBook[msg.sender].currentTokenStaked
+                    ],
+                    _userReserved
+                );
+
+                // Reset amount of CBLT reserved
+                userBook[msg.sender].tokenReserved = 0;
             }
         } else {
             // Calculate the difference between new and old amount owed
@@ -1208,8 +1275,18 @@ contract Bank is Ownable {
                     1
                 );
             }
-            // Return amount of tokens owed
-            return tokensOwed;
+            // Save reward in wallet if any is owed
+            rewardWallet[msg.sender][
+                userBook[msg.sender].currentTokenStaked
+            ] = SafeMath.add(
+                rewardWallet[msg.sender][
+                    userBook[msg.sender].currentTokenStaked
+                ],
+                tokensOwed
+            );
+
+            // Reset amount of CBLT reserved
+            userBook[msg.sender].tokenReserved = 0;
         }
     }
 
@@ -1219,7 +1296,7 @@ contract Bank is Ownable {
      * if this hasnt ocurred already
      * @param _amount amount intended to withdraw
      */
-    function withdrawEth(uint256 _amount) public {
+    function withdrawEth(uint256 _amount) public stakingTermination(false) {
         uint256 dueDate;
         uint256 userReserved = userBook[msg.sender].tokenReserved;
         uint256 stakingPeriodTier = userBook[msg.sender].timeStakedTier;
@@ -1247,28 +1324,14 @@ contract Bank is Ownable {
         );
 
         // Staking period must be over before he withdraws ETH balance
-        // require(block.timestamp >= dueDate, "Staking period is not over.");
+        require(block.timestamp >= 1, "Staking period is not over."); // MUST CHANGE
 
         if (userReserved > 0) {
-            uint256 stakingReward =
-                payRewardWalletWithdraw(
-                    stakingPeriodTier,
-                    stakingAmountTier,
-                    userReserved
-                );
-
-            // Save reward in wallet if any is owed
-            rewardWallet[msg.sender][
-                userBook[msg.sender].currentTokenStaked
-            ] = SafeMath.add(
-                rewardWallet[msg.sender][
-                    userBook[msg.sender].currentTokenStaked
-                ],
-                stakingReward
+            payRewardWalletWithdraw(
+                stakingPeriodTier,
+                stakingAmountTier,
+                userReserved
             );
-
-            // Reset amount of CBLT reserved
-            userBook[msg.sender].tokenReserved = 0;
         }
 
         // Substract eth from user account
@@ -1280,10 +1343,57 @@ contract Bank is Ownable {
         payable(msg.sender).transfer(_amount);
     }
 
+    /**
+     * @dev Function transfer an amount of desired cblt tokens from the user's
+     * token reward wallet.
+     * @notice Function also calculates any running token balance reserved and deposits it
+     * on the user's reward wallet
+     * @param _amount amount of token rewarded sent to the user's wallet
+     * @param _withdrawTokenAddress token address of token being withdrawn
+     */
     function withdrawStaking(uint256 _amount, address _withdrawTokenAddress)
         public
         payable
+        stakingTermination(false)
     {
+        uint256 dueDate; // Due date to check if user is allowed to restake
+        uint256 userReserved = userBook[msg.sender].tokenReserved;
+        uint256 stakingPeriodTier = userBook[msg.sender].timeStakedTier;
+        uint256 stakingAmountTier;
+        uint256 userBalance = userBook[msg.sender].ethBalance;
+
+        // Determine the amount staked tier based on ETH balance
+        if (userBalance <= 4e17) {
+            stakingAmountTier = 5;
+        } else if (userBalance <= 2e18) {
+            stakingAmountTier = 4;
+        } else if (userBalance <= 5e18) {
+            stakingAmountTier = 3;
+        } else if (userBalance <= 25e18) {
+            stakingAmountTier = 2;
+        } else {
+            stakingAmountTier = 1;
+        }
+
+        if (userReserved > 0) {
+            // Creates a due date for current staking period
+            dueDate = SafeMath.add(
+                stakingRewardRate[stakingPeriodTier][stakingAmountTier]
+                    .tierDuration,
+                userBook[msg.sender].depositTime
+            );
+            // Check if user has an ongoing staking instance
+            if (block.timestamp < 1) {
+                payRewardWalletDeposit(userReserved);
+            } else {
+                payRewardWalletWithdraw(
+                    stakingPeriodTier,
+                    stakingAmountTier,
+                    userReserved
+                );
+            }
+        }
+
         (uint256 tokenPrice, uint256 ETHprice) =
             oracle.priceOfETHandCBLT(_withdrawTokenAddress);
 
@@ -1310,7 +1420,17 @@ contract Bank is Ownable {
     /**
      * @dev
      */
-    function emergencyWithdraw() public payable {}
+    function emergencyWithdraw() public payable stakingTermination(true) {
+        uint256 userBalance = userBook[msg.sender].ethBalance;
+
+        // Substract eth from user account
+        userBook[msg.sender].ethBalance = SafeMath.sub(
+            userBook[msg.sender].ethBalance,
+            userBalance
+        );
+
+        payable(msg.sender).transfer(userBalance);
+    }
 
     // ************************************ Lottery ***************************************
 
@@ -1346,7 +1466,7 @@ contract Bank is Ownable {
     /**
      * @dev Modifier ensures only the lottery is allowed to pick new winners
      */
-    modifier lotteryContract() {
+    modifier isLotteryContract {
         require(msg.sender == Lottery);
         _;
     }
@@ -1365,7 +1485,7 @@ contract Bank is Ownable {
      * @param _winners array of all  winners
      * @notice Only an allowed address will be able to execute this function
      */
-    function lottery(address[] memory _winners) public {
+    function lottery(address[] memory _winners) public isLotteryContract {
         // needs modifier
         for (uint256 i = 0; i < _winners.length; i++) {
             lotteryBook[_winners[i]] = true;
