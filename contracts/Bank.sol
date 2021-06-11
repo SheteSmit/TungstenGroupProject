@@ -283,7 +283,8 @@ contract Bank is Ownable {
         require(amountBorrowed <= loanTiers[userMaxTier].principalLimit);
 
         // Pay loan application lee to cover for fees
-        // require(msg.value >= SafeMath.mul(oneUSDinETH,flatfee)); // Needs change based on current prices
+        // require(msg.value >= SafeMath.mul(oneUSDinETH,flatfee));
+        // Needs change based on current prices
 
         (uint256 CBLTprice, uint256 ETHprice, bool ready) =
             oracle.priceOfPair(
@@ -406,7 +407,7 @@ contract Bank is Ownable {
     uint256 public borrowingPool;
 
     /**
-     * @dev Getter function to pull total value avaliable on the borrowing pool
+     * @dev Getter function to pull total value available on the borrowing pool
      */
     function getBorrowingPool() public view returns (uint256) {
         return borrowingPool;
@@ -485,9 +486,10 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Nested mappings with key value uint (time tier) leads to submapping with key value uint
-     * (amount tier) that leads the crossTier combination to pull the combination's interest amount of stakers
-     * avaliable and the tier duration used to calculate due date period.
+     * @dev Nested mappings with key value uint (time tier) leads to submapping with key
+     * value uint (amount tier) that leads the crossTier combination to pull the
+     * combination's interest amount of stakers available and the tier duration used
+     * to calculate due date period.
      */
     mapping(uint256 => mapping(uint256 => crossTier)) public stakingRewardRate;
 
@@ -495,8 +497,8 @@ contract Bank is Ownable {
      * @dev Getter function pulls current tier information.
      * @param _amount amount value sent in ETH used to access tier combination.
      * @param _timeTier key tier time value used to access tier combination.
-     * @return Returns the interest under time and amount tier combination, amount of stakers avaliable.
-     * and the tierDuration or period staked in EPOCH.
+     * @return Returns the interest under time and amount tier combination,
+     * amount of stakers available and the tierDuration or period staked in EPOCH.
      */
     function getTierInformation(uint256 _amount, uint256 _timeTier)
         public
@@ -531,9 +533,9 @@ contract Bank is Ownable {
     /**
      * @dev Setter function to modify interests based on time and amount
      * @notice Function is used to modify existing tiers or create new tiers if new
-     * tier key values are passed, creating new tier combinations.If time tier used
+     * tier key values are passed, creating new tier combinations. If time tier used
      * is higher than current tier max, new tier combination was just created and
-     * tierMax should change to new cap
+     * tierMax should change to new cap.
      * @notice This action can only be perform under dev vote
      * @param _amountTier key tier amount value used to access tier combination.
      * @param _timeTier key tier time value used to access tier combination.
@@ -572,8 +574,8 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Mapping with key value address(the user's address) leads to the struct with the user's
-     * staking and lottery information.
+     * @dev Mapping with key value address(the user's address) leads to the struct
+     * with the user's staking and lottery information.
      */
     mapping(address => User) public userBook;
 
@@ -606,13 +608,13 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Mapping with key value address (token address) leads the current reserves avaliable for tokens
-     * being currently offered to stake on.
+     * @dev Mapping with key value address (token address) leads the current reserves
+     * available for tokens being currently offered to stake on.
      */
     mapping(address => uint256) public tokenReserve;
 
     /**
-     * @dev Getter function to pull information for avaliable token amount in reserves
+     * @dev Getter function to pull information for available token amount in reserves
      * @param _tokenAddress token address of queried token
      */
     function getTokenReserve(address _tokenAddress)
@@ -624,13 +626,13 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Mapping with key value address (user address) leads to submapping with key value address
-     * (token address) to pull the current balance rewarded to that user in the tokens
+     * @dev Mapping with key value address (user address) leads to submapping with key value
+     * address (token address) to pull the current balance rewarded to that user in the tokens.
      */
     mapping(address => mapping(address => uint256)) public rewardWallet;
 
     /**
-     * @dev Getter function to pull avaliable tokens ready to withdraw from reserves
+     * @dev Getter function to pull available tokens ready to withdraw from reserves
      * @param _userAddress address of queried user
      * @param _tokenAddress address of queried token
      */
@@ -643,8 +645,8 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Struct saves information on previous lottery tickets. Saves information on the time and amount
-     * tier the user is allowed to stake to redeem his x2 staking reward.
+     * @dev Struct saves information on previous lottery tickets. Saves information on
+     * the time and amount tier the user is allowed to stake to redeem his x2 staking reward.
      */
     struct LotteryTicket {
         uint256 lotteryTimeTier;
@@ -652,8 +654,8 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Mapping with key value uint (lottery ticket) leads to the information on ticket amount and time
-     * tier for the user to redeem his reward staking.
+     * @dev Mapping with key value uint (lottery ticket) leads to the information on ticket
+     * amount and time tier for the user to redeem his reward staking.
      */
     mapping(uint256 => LotteryTicket) lotteryBook;
 
@@ -844,7 +846,8 @@ contract Bank is Ownable {
             );
         }
 
-        // Checks if the user is a lottery winner and checks if amount staked and time staked is within lottery instance parameters
+        // Checks if the user is a lottery winner and checks if amount staked and time
+        // staked is within lottery instance parameters
         if (lotteryTicket > 0) {
             require(
                 _timeStakedTier ==
@@ -895,7 +898,7 @@ contract Bank is Ownable {
         // Save amount of time staked
         userBook[msg.sender].timeStakedTier = _timeStakedTier;
 
-        // Substract CBLT tokens reserved for user from treasury
+        // Subtract CBLT tokens reserved for user from treasury
         tokenReserve[_tokenAddress] = SafeMath.sub(
             tokenReserve[_tokenAddress],
             tokensReserved
@@ -907,7 +910,7 @@ contract Bank is Ownable {
             balance
         );
 
-        // Decrease number of stakers avaliable for current tier based on time and amount
+        // Decrease number of stakers available for current tier based on time and amount
         stakingRewardRate[_timeStakedTier][amountStakedTier]
             .amountStakersLeft = SafeMath.sub(
             stakingRewardRate[_timeStakedTier][amountStakedTier]
@@ -1011,7 +1014,7 @@ contract Bank is Ownable {
                 .interest;
         }
 
-        // Calculate the new amount of cblt reserved for user at current market price
+        // Calculate the new amount of tokens reserved for user at current market price
         uint256 newReserved =
             SafeMath.div(
                 SafeMath.multiply(
@@ -1025,7 +1028,7 @@ contract Bank is Ownable {
                 ),
                 previousTokenPrice
             );
-        // if new amount owed is larger send all avaliable tokens reserved to user
+        // if new amount owed is larger send all available tokens reserved to user
         if (newReserved >= _userReserved) {
             rewardWallet[msg.sender][previousTokenAddress] = SafeMath.add(
                 rewardWallet[msg.sender][previousTokenAddress],
@@ -1037,7 +1040,7 @@ contract Bank is Ownable {
             // new and old amount owed
             uint256 tokenDifference = SafeMath.sub(_userReserved, newReserved);
 
-            // Add lefover tokens back into treasury
+            // Add leftover tokens back into treasury
             tokenReserve[previousTokenAddress] = SafeMath.add(
                 tokenReserve[previousTokenAddress],
                 tokenDifference
@@ -1051,7 +1054,7 @@ contract Bank is Ownable {
             // Reset amount of tokens owed
             userBook[msg.sender].tokenReserved = 0;
 
-            // Increase number of stakers avaliable for current tier based on time and amount
+            // Increase number of stakers available for current tier based on time and amount
             stakingRewardRate[previousTimeTier][previousAmountTier]
                 .amountStakersLeft = SafeMath.add(
                 stakingRewardRate[previousTimeTier][previousAmountTier]
@@ -1142,7 +1145,7 @@ contract Bank is Ownable {
                 .interest;
         }
 
-        // Calculate new amount of cblt reserved for user at current market price
+        // Calculate new amount of tokens reserved for user at current market price
         uint256 tokensOwed =
             SafeMath.div(
                 SafeMath.multiply(
@@ -1159,7 +1162,7 @@ contract Bank is Ownable {
             );
 
         if (tokensOwed >= _userReserved) {
-            // Increase number of stakers avaliable for current tier based on time and amount
+            // Increase number of stakers available for current tier based on time and amount
             stakingRewardRate[_timeStakedTier][_amountStakedTier]
                 .amountStakersLeft = SafeMath.add(
                 stakingRewardRate[_timeStakedTier][_amountStakedTier]
@@ -1176,7 +1179,7 @@ contract Bank is Ownable {
                 tokenReserve[previousTokenAddress],
                 tokenDifference
             );
-            // Increase number of stakers avaliable for current tier based on time and amount
+            // Increase number of stakers available for current tier based on time and amount
             stakingRewardRate[_timeStakedTier][_amountStakedTier]
                 .amountStakersLeft = SafeMath.add(
                 stakingRewardRate[_timeStakedTier][_amountStakedTier]
@@ -1191,7 +1194,7 @@ contract Bank is Ownable {
     /**
      * @dev Function sends a specified amount of ETH from the users balance back to the user
      * @notice Function also allocates final amount tokens owed into users reward wallet
-     * if this hasnt ocurred already
+     * if this hasn’t occurred already
      * @param _amount amount intended to withdraw
      */
     function withdrawEth(uint256 _amount) public {
@@ -1214,7 +1217,7 @@ contract Bank is Ownable {
             stakingAmountTier = 1;
         }
 
-        // Calulate due date based on time staked tier and deposit time
+        // Calculate due date based on time staked tier and deposit time
         dueDate = SafeMath.add(
             stakingRewardRate[stakingPeriodTier][stakingAmountTier]
                 .tierDuration,
@@ -1246,7 +1249,7 @@ contract Bank is Ownable {
             userBook[msg.sender].tokenReserved = 0;
         }
 
-        // Substract eth from user account
+        // Subtract eth from user account
         userBook[msg.sender].ethBalance = SafeMath.sub(
             userBook[msg.sender].ethBalance,
             _amount
