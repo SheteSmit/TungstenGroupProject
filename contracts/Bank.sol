@@ -783,7 +783,6 @@ contract Bank is Ownable {
         uint256 paidAdvanced = 0; // User sent tokens upfront?
         uint256 dueDate; // Due date to check if user is allowed to restake
         uint256 tokensReserved; // Tokens owed for staking amount
-        uint256 lotteryTicket = userBook[msg.sender].lotteryTicket; // is user lottery winner
         uint256 balance; // Balance saved after fee is subtracted
 
         // Checks if the transaction should be charged using a flat or percentage based fee
@@ -851,8 +850,7 @@ contract Bank is Ownable {
                 SafeMath.add(balance, userBook[msg.sender].ethBalance),
                 _timeStakedTier,
                 amountStakedTier,
-                _tokenAddress,
-                lotteryTicket
+                _tokenAddress
             );
         } else {
             // Calculate the amount of CBLT tokens that need to be reserved
@@ -860,8 +858,7 @@ contract Bank is Ownable {
                 msg.value,
                 _timeStakedTier,
                 amountStakedTier,
-                _tokenAddress,
-                lotteryTicket
+                _tokenAddress
             );
         }
 
@@ -944,15 +941,13 @@ contract Bank is Ownable {
      * @param _timeStakedTier time duration tier for staking period
      * @param _amountStakedTier time amount tier for staking period
      * @param _tokenAddress token address of token owed at the end of staking period
-     * @param _lotteryTicket whether the user has an active lottery ticket and should
      * be rewarded with x2 interest reward for his staking period
      */
     function calculateRewardDeposit(
         uint256 _amount,
         uint256 _timeStakedTier,
         uint256 _amountStakedTier,
-        address _tokenAddress,
-        uint256 _lotteryTicket
+        address _tokenAddress
     ) internal returns (uint256) {
         uint256 tokenPrice = oracle.priceOfToken(address(_tokenAddress));
         uint256 userReserved = userBook[msg.sender].tokenReserved;
