@@ -1422,16 +1422,75 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev
+     *@dev
      */
-    function emergencyWithdraw() public payable stakingTermination(true) {
+    function earlyWithdraw() public payable stakingTermination(false) {
+        uint256 stakingPeriodTier = userBook[msg.sender].timeStakedTier;
+        uint256 stakingAmountTier;
+        address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
+        uint256 timeOfStaking = userBook[msg.sender].depositTime;
         uint256 userBalance = userBook[msg.sender].ethBalance;
+        uint256 userReserved = userBook[msg.sender].tokenReserved;
+
+        // Determine the amount staked tier based on ETH balance
+        if (userBalance <= 4e17) {
+            stakingAmountTier = 5;
+        } else if (userBalance <= 2e18) {
+            stakingAmountTier = 4;
+        } else if (userBalance <= 5e18) {
+            stakingAmountTier = 3;
+        } else if (userBalance <= 25e18) {
+            stakingAmountTier = 2;
+        } else {
+            stakingAmountTier = 1;
+        }
+
+        uint256 tokenPrice = oracle.priceOfToken(previousTokenAddress);
+        uint256 tokensOwed =
+            SafeMath.div(
+                SafeMath.multiply(
+                    userBalance,
+                    stakingRewardRate[stakingPeriodTier][stakingAmountTier]
+                        .interest,
+                    100
+                ),
+                tokenPrice
+            );
+
+        uint256 timeStaked = SafeMath.sub(block.timestamp, timeOfStaking);
+        uint256 relativeOwed =
+            SafeMath.multiply(
+                tokensOwed,
+                timeStaked,
+                stakingRewardRate[stakingPeriodTier][stakingAmountTier]
+                    .tierDuration
+            );
 
         // Substract eth from user account
         userBook[msg.sender].ethBalance = SafeMath.sub(
             userBook[msg.sender].ethBalance,
             userBalance
         );
+
+        // Reset values
+        userBook[msg.sender].ethBalance = 0;
+        userBook[msg.sender].tokenReserved = 0;
+        userBook[msg.sender].depositTime = block.timestamp;
+
+        // token transfer
+        payable(msg.sender).transfer(userBalance);
+
+        require(stakingPeriodTier > 5, "Tier not supporting early withdraw");
+    }
+
+    /**
+     * @dev
+     */
+    function emergencyWithdraw() public payable stakingTermination(true) {
+        uint256 userBalance = userBook[msg.sender].ethBalance;
+
+        // Substract eth from user account
+        userBook[msg.sender].ethBalance = 0;
 
         payable(msg.sender).transfer(userBalance);
     }
@@ -1443,6 +1502,15 @@ contract Bank is Ownable {
      * amount and time tier for the user to redeem his reward staking.
      */
     mapping(address => bool) lotteryBook;
+
+    /**
+     * @dev Getter function to pull information on lottery winner
+     * @param _userAddress address of user queried
+     * @return if user has a multiplier ready to be reedemed
+     */
+    function lotteryWinner(address _userAddress) public view returns (bool) {
+        return (lotteryBook[_userAddress]);
+    }
 
     /**
      * @dev Address of lottery contract in charge of executing LotteryWinner function
@@ -1473,15 +1541,6 @@ contract Bank is Ownable {
     modifier isLotteryContract {
         require(msg.sender == Lottery);
         _;
-    }
-
-    /**
-     * @dev Getter function to pull information on lottery winner
-     * @param _userAddress address of user queried
-     * @return if user has a multiplier ready to be reedemed
-     */
-    function lotteryWinner(address _userAddress) public view returns (bool) {
-        return (lotteryBook[_userAddress]);
     }
 
     /**
