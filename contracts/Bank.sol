@@ -31,9 +31,9 @@ contract Bank is Ownable {
         oracle = ExchangeOracle(_oracle);
         token = IERC20(_CBLT);
 
-        loanTiers[5].maxVoters = 100;
-        loanTiers[5].maximumPaymentPeriod = 60;
-        loanTiers[5].principalLimit = 500000;
+        // loanTiers[5].maxVoters = 100;
+        // loanTiers[5].maximumPaymentPeriod = 60;
+        // loanTiers[5].principalLimit = 500000;
 
         tokenReserve[
             0x433C6E3D2def6E1fb414cf9448724EFB0399b698
@@ -214,196 +214,197 @@ contract Bank is Ownable {
 
     // ****************************** Lending **********************************
 
-    /**
-     * @dev Mapping with key to store all loan information with the key of borrower address
-     *  and value of Loan struct with all loan information
-     */
-    mapping(address => Loan) public loanBook;
+    // /**
+    //  * @dev Mapping with key to store all loan information with the key of borrower address
+    //  *  and value of Loan struct with all loan information
+    //  */
+    // mapping(address => Loan) public loanBook;
 
-    /**
-     * @dev Informstion from previously fullfilled loans are stored into the blockchain
-     * before being permanently deleted
-     */
-    mapping(address => Loan[]) public loanRecords;
+    // /**
+    //  * @dev Informstion from previously fullfilled loans are stored into the blockchain
+    //  * before being permanently deleted
+    //  */
+    // mapping(address => Loan[]) public loanRecords;
 
-    /**
-     * @dev struct to access information on tier structure
-     */
-    struct loanTier {
-        uint256 principalLimit;
-        uint256 maximumPaymentPeriod;
-        uint256 maxVoters;
-    }
+    // /**
+    //  * @dev struct to access information on tier structure
+    //  */
+    // struct loanTier {
+    //     uint256 principalLimit;
+    //     uint256 maximumPaymentPeriod;
+    //     uint256 maxVoters;
+    // }
 
-    mapping(uint256 => loanTier) loanTiers;
+    // mapping(uint256 => loanTier) loanTiers;
 
-    /**
-     * @dev Struct to store loan information
-     */
-    struct Loan {
-        address borrower; // Address of wallet
-        uint256 amountBorrowed; // Initial loan balance
-        uint256 remainingBalance; // Remaining balance
-        uint256 minimumPayment; // MinimumPayment // Can be calculated off total amount
-        uint256 collateral; // Amount owed back to borrower after loan is paid in full
-        bool active; // Is the current loan active (Voted yes)
-        bool initialized; // Does the borrower have a current loan application
-        uint256 timeCreated; // Time of loan application also epoch in days
-        uint256 dueDate; // Time of contract ending
-        uint256 totalVote; // Total amount determined by tier
-        uint256 yes; // Amount of votes for yes
-        // address currentCoin; // Address of collateral coin
-    }
+    // /**
+    //  * @dev Struct to store loan information
+    //  */
+    // struct Loan {
+    //     address borrower; // Address of wallet
+    //     uint256 amountBorrowed; // Initial loan balance
+    //     uint256 remainingBalance; // Remaining balance
+    //     uint256 minimumPayment; // MinimumPayment // Can be calculated off total amount
+    //     uint256 collateral; // Amount owed back to borrower after loan is paid in full
+    //     bool active; // Is the current loan active (Voted yes)
+    //     bool initialized; // Does the borrower have a current loan application
+    //     uint256 timeCreated; // Time of loan application also epoch in days
+    //     uint256 dueDate; // Time of contract ending
+    //     uint256 totalVote; // Total amount determined by tier
+    //     uint256 yes; // Amount of votes for yes
+    //     // address currentCoin; // Address of collateral coin
+    // }
 
-    /**
-     * @dev Recalculates interest and also conducts check and balances
-     */
+    // /**
+    //  * @dev Recalculates interest and also conducts check and balances
+    //  */
 
-    function newLoan(uint256 _paymentPeriod, uint256 _principal)
-        public
-        payable
-    {
-        require(loanBook[msg.sender].initialized == false);
+    // function newLoan(uint256 _paymentPeriod, uint256 _principal)
+    //     public
+    //     payable
+    // {
+    //     require(loanBook[msg.sender].initialized == false);
 
-        uint256 riskScore = 20; // NFT ENTRY!!!!
-        uint256 riskFactor = 15; // NFT ENTRY!!!!
-        uint256 interestRate = 2; // NFT ENTRY!!!!
-        uint256 userMaxTier = 5; // NFT ENTRY!!!!
-        // uint256 flatfee = 400; // NFT ENTRY!!!!
+    //     uint256 riskScore = 20; // NFT ENTRY!!!!
+    //     uint256 riskFactor = 15; // NFT ENTRY!!!!
+    //     uint256 interestRate = 2; // NFT ENTRY!!!!
+    //     uint256 userMaxTier = 5; // NFT ENTRY!!!!
+    //     // uint256 flatfee = 400; // NFT ENTRY!!!!
 
-        require(
-            _paymentPeriod <= loanTiers[userMaxTier].maximumPaymentPeriod,
-            "Payment period exceeds that of the tier, pleas try again"
-        );
+    //     require(
+    //         _paymentPeriod <= loanTiers[userMaxTier].maximumPaymentPeriod,
+    //         "Payment period exceeds that of the tier, pleas try again"
+    //     );
 
-        // One dollar in ETH
-        uint256 oneUSDinETH =
-            SafeMath.div(100000000000000000000, oracle.priceOfETH());
+    //     // One dollar in ETH
+    //     uint256 oneUSDinETH =
+    //         SafeMath.div(100000000000000000000, oracle.priceOfETH());
 
-        // Calculate how much is being borrowed in USD - must be within limits of the tier
-        uint256 amountBorrowed = SafeMath.div(_principal, oneUSDinETH);
-        require(amountBorrowed <= loanTiers[userMaxTier].principalLimit);
+    //     // Calculate how much is being borrowed in USD - must be within limits of the tier
+    //     uint256 amountBorrowed = SafeMath.div(_principal, oneUSDinETH);
+    //     require(amountBorrowed <= loanTiers[userMaxTier].principalLimit);
 
-        // Pay loan application lee to cover for fees
-        // require(msg.value >= SafeMath.mul(oneUSDinETH,flatfee)); // Needs change based on current prices
+    //     // Pay loan application lee to cover for fees
+    //     // require(msg.value >= SafeMath.mul(oneUSDinETH,flatfee)); // Needs change based on current prices
 
-        (uint256 CBLTprice, uint256 ETHprice, bool ready) =
-            oracle.priceOfPair(
-                address(token),
-                0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-            );
+    //     (uint256 CBLTprice, uint256 ETHprice, bool ready) =
+    //         oracle.priceOfPair(
+    //             address(token),
+    //             0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
+    //         );
 
-        // Calculate collateral in CBLT based on principal, riskScore and riskFactor
-        uint256 collateralInCBLT =
-            SafeMath.div(
-                SafeMath.multiply(
-                    _principal,
-                    SafeMath.mul(riskScore, riskFactor),
-                    100
-                ),
-                CBLTprice
-            );
+    //     // Calculate collateral in CBLT based on principal, riskScore and riskFactor
+    //     uint256 collateralInCBLT =
+    //         SafeMath.div(
+    //             SafeMath.multiply(
+    //                 _principal,
+    //                 SafeMath.mul(riskScore, riskFactor),
+    //                 100
+    //             ),
+    //             CBLTprice
+    //         );
 
-        // Calculate new principal with the added interest
-        uint256 finalPrincipal =
-            SafeMath.add(
-                _principal,
-                SafeMath.multiply(_principal, interestRate, 100)
-            );
+    //     // Calculate new principal with the added interest
+    //     uint256 finalPrincipal =
+    //         SafeMath.add(
+    //             _principal,
+    //             SafeMath.multiply(_principal, interestRate, 100)
+    //         );
 
-        uint256 monthlyPayment = SafeMath.div(finalPrincipal, _paymentPeriod);
+    //     uint256 monthlyPayment = SafeMath.div(finalPrincipal, _paymentPeriod);
 
-        require(
-            token.transferFrom(msg.sender, address(this), collateralInCBLT) ==
-                true,
-            "Payment was not approved."
-        );
+    //     require(
+    //         token.transferFrom(msg.sender, address(this), collateralInCBLT) ==
+    //             true,
+    //         "Payment was not approved."
+    //     );
 
-        loanBook[msg.sender] = Loan(
-            msg.sender,
-            _principal,
-            finalPrincipal,
-            monthlyPayment,
-            collateralInCBLT,
-            false,
-            true,
-            SafeMath.add(block.timestamp, 2629743),
-            block.timestamp,
-            loanTiers[userMaxTier].maxVoters,
-            0
-        );
-    }
+    //     loanBook[msg.sender] = Loan(
+    //         msg.sender,
+    //         _principal,
+    //         finalPrincipal,
+    //         monthlyPayment,
+    //         collateralInCBLT,
+    //         false,
+    //         true,
+    //         SafeMath.add(block.timestamp, 2629743),
+    //         block.timestamp,
+    //         loanTiers[userMaxTier].maxVoters,
+    //         0
+    //     );
+    // }
 
-    /**
-     * @dev
-     */
+    // /**
+    //  * @dev
+    //  */
 
-    function processPeriod(uint256 _payment, bool _missedPayment) internal {
-        loanBook[msg.sender].remainingBalance = SafeMath.sub(
-            loanBook[msg.sender].remainingBalance,
-            _payment
-        );
+    // function processPeriod(uint256 _payment, bool _missedPayment) internal {
+    //     loanBook[msg.sender].remainingBalance = SafeMath.sub(
+    //         loanBook[msg.sender].remainingBalance,
+    //         _payment
+    //     );
 
-        loanBook[msg.sender].dueDate = SafeMath.add(block.timestamp, 2629743);
+    //     loanBook[msg.sender].dueDate = SafeMath.add(block.timestamp, 2629743);
 
-        if (_missedPayment) {
-            // Needs to interact with the NFT
-            // Collateral is substracted
-            // Strike system // Connected to NFT
-            uint256 daysMissed =
-                SafeMath.div(
-                    SafeMath.sub(block.timestamp, loanBook[msg.sender].dueDate),
-                    86400
-                );
-            if (daysMissed > 7) {
-                // Suspend loan
-            }
-        }
-    }
+    //     if (_missedPayment) {
+    //         // Needs to interact with the NFT
+    //         // Collateral is substracted
+    //         // Strike system // Connected to NFT
+    //         uint256 daysMissed =
+    //             SafeMath.div(
+    //                 SafeMath.sub(block.timestamp, loanBook[msg.sender].dueDate),
+    //                 86400
+    //             );
+    //         if (daysMissed > 7) {
+    //             // Suspend loan
+    //         }
+    //     }
+    // }
 
-    /**
-     * @dev
-     */
-    function validate() public {} // Only devs
+    // /**
+    //  * @dev
+    //  */
+    // function validate() public {} // Only devs
 
-    /**
-     * @dev Function for the user to make a payment with ETH
-     *
-     */
-    function makePayment() public payable {
-        require(msg.value >= loanBook[msg.sender].minimumPayment);
+    // /**
+    //  * @dev Function for the user to make a payment with ETH
+    //  *
+    //  */
+    // function makePayment() public payable {
+    //     require(msg.value >= loanBook[msg.sender].minimumPayment);
 
-        if (block.timestamp <= loanBook[msg.sender].dueDate) {
-            processPeriod(msg.value, false);
-        } else {
-            processPeriod(msg.value, true);
-        }
-    }
+    //     if (block.timestamp <= loanBook[msg.sender].dueDate) {
+    //         processPeriod(msg.value, false);
+    //     } else {
+    //         processPeriod(msg.value, true);
+    //     }
+    // }
 
-    /**
-     * @dev
-     */
-    function returnCollateral() public {
-        require(loanBook[msg.sender].remainingBalance == 0);
+    // /**
+    //  * @dev
+    //  */
+    // function returnCollateral() public {
+    //     require(loanBook[msg.sender].remainingBalance == 0);
 
-        uint256 amount = loanBook[msg.sender].collateral;
-        require(token.transfer(msg.sender, amount));
+    //     uint256 amount = loanBook[msg.sender].collateral;
+    //     require(token.transfer(msg.sender, amount));
 
-        loanBook[msg.sender].collateral = 0;
-    }
+    //     loanBook[msg.sender].collateral = 0;
+    // }
 
-    /**
-     * @dev Deletes loan instance once the user has paid his active loan in full
-     */
-    function cleanSlate() public {
-        require(loanBook[msg.sender].remainingBalance == 0);
-        loanRecords[msg.sender].push(loanBook[msg.sender]);
-        delete loanBook[msg.sender];
-    }
+    // /**
+    //  * @dev Deletes loan instance once the user has paid his active loan in full
+    //  */
+    // function cleanSlate() public {
+    //     require(loanBook[msg.sender].remainingBalance == 0);
+    //     loanRecords[msg.sender].push(loanBook[msg.sender]);
+    //     delete loanBook[msg.sender];
+    // }
 
     // ********************************* Staking ***********************************
+
     /**
-     * @dev
+     * @dev Function handles the deposit and implementation of
      */
     function tokenReserveDeposit(uint256 _amount, address _tokenAddress)
         public
@@ -413,7 +414,7 @@ contract Bank is Ownable {
     /**
      * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
      */
-    uint256 public borrowingPool; // 25%
+    uint256 public borrowingPool;
 
     /**
      * @dev Getter function to pull total amount of ETH saved in fees
@@ -535,6 +536,25 @@ contract Bank is Ownable {
             stakingRewardRate[_timeTier][amountStakedTier].interest,
             stakingRewardRate[_timeTier][amountStakedTier].amountStakersLeft,
             stakingRewardRate[_timeTier][amountStakedTier].tierDuration
+        );
+    }
+
+    /**
+     * @dev
+     */
+    function getTierCombination(uint256 _amountTier, uint256 _timeTier)
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        return (
+            stakingRewardRate[_timeTier][_amountTier].interest,
+            stakingRewardRate[_timeTier][_amountTier].amountStakersLeft,
+            stakingRewardRate[_timeTier][_amountTier].tierDuration
         );
     }
 

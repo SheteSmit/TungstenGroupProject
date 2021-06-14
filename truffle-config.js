@@ -57,7 +57,7 @@ module.exports = {
           `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}` // Url to an Ethereum Node
         );
       },
-      gas: 9000000,
+      gas: 9999999,
       gasPrice: 5000000000, // 5 gwei
       network_id: 4,
     },
@@ -80,7 +80,7 @@ module.exports = {
       version: ">=0.6.0 <0.8.0",
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 500,
       },
     },
   },
