@@ -50,6 +50,8 @@ contract Bank is Ownable {
         stakingStatus = true;
         // Assign value to fee
         fee = 3;
+        // Assign value to terminateStaking
+        terminateStaking = false;
 
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
@@ -709,10 +711,17 @@ contract Bank is Ownable {
      * @dev
      */
     modifier stakingTermination(bool _functionSpecific) {
-        require(
-            terminateStaking == true && _functionSpecific,
-            "Staking is currently functioning as expected"
-        );
+        if (_functionSpecific) {
+            require(
+                terminateStaking == true,
+                "Staking is currently functioning as expected"
+            );
+        } else {
+            require(
+                terminateStaking == false,
+                "Staking is currently functioning as expected"
+            );
+        }
         _;
     }
 
