@@ -416,11 +416,6 @@ contract Bank is Ownable {
     uint256 public borrowingPool; // 25%
 
     /**
-     * @dev Saving running fee total
-     */
-    uint256 public totalFeeBalance;
-
-    /**
      * @dev Getter function to pull total amount of ETH saved in fees
      */
     function getFees() public view returns (uint256) {
@@ -432,20 +427,6 @@ contract Bank is Ownable {
      * @notice This action can only be perform under dev vote.
      */
     uint256 public tierMax;
-
-    /**
-     * @dev Variable for staking flat fee.
-     */
-    uint256 fee;
-
-    /**
-     * @dev Setter for staking flat fee.
-     * @param _newFee new uint fee value.
-     * @notice This action can only be perform under dev vote.
-     */
-    function newFee(uint256 _newFee) public {
-        fee = _newFee;
-    }
 
     /**
      * @dev
@@ -1553,6 +1534,65 @@ contract Bank is Ownable {
         for (uint256 i = 0; i < _winners.length; i++) {
             lotteryBook[_winners[i]] = true;
         }
+    }
+
+    // ******************************** Fee mechanism ***********************************
+    /**
+     * @dev
+     */
+    address WithdrawContract;
+
+    /**
+     * @dev
+     */
+    function setContract(address _treasuryAddress) public {
+        WithdrawContract = _treasuryAddress;
+    }
+
+    /**
+     * @dev Saving running fee total
+     */
+    uint256 public totalFeeBalance;
+
+    /**
+     * @dev
+     */
+    function getTotalBalance() public view returns (uint256) {
+        return totalFeeBalance;
+    }
+
+    /**
+     * @dev transfers funds to an approved contract
+     */
+    function withdrawFees(uint256 _amount) public payable onlyTreasury {
+        require(
+            _amount <= totalFeeBalance,
+            "Treasury doesn't have sufficient funds."
+        );
+        totalFeeBalance = SafeMath.sub(totalFeeBalance, _amount);
+        payable(msg.sender).transfer(_amount);
+    }
+
+    /**
+     * @dev Variable for staking flat fee.
+     */
+    uint256 fee;
+
+    /**
+     * @dev Setter for staking flat fee.
+     * @param _newFee new uint fee value.
+     * @notice This action can only be perform under dev vote.
+     */
+    function newFee(uint256 _newFee) public {
+        fee = _newFee;
+    }
+
+    modifier onlyTreasury {
+        require(
+            msg.sender == WithdrawContract,
+            "This address can't withdraw funds from treasury"
+        );
+        _;
     }
 }
 
