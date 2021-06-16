@@ -33,6 +33,8 @@ module.exports = {
    * $ truffle test --network <network-name>
    */
 
+  plugins: ["truffle-contract-size"],
+
   networks: {
     development: {
       host: "127.0.0.1",
@@ -57,7 +59,7 @@ module.exports = {
           `https://rinkeby.infura.io/v3/${process.env.INFURA_API_KEY}` // Url to an Ethereum Node
         );
       },
-      gas: 9999999,
+      gas: 9000000,
       gasPrice: 5000000000, // 5 gwei
       network_id: 4,
     },
@@ -78,9 +80,13 @@ module.exports = {
   compilers: {
     solc: {
       version: ">=0.6.0 <0.8.0",
-      optimizer: {
-        enabled: true,
-        runs: 500,
+      parser: "solcjs", // Leverages solc-js purely for speedy parsing
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 200,
+        },
+        evmVersion: "istanbul", // Default: "istanbul"
       },
     },
   },

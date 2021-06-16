@@ -56,86 +56,84 @@ contract Bank is Ownable {
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
         stakingRewardRate[1][1].amountStakersLeft = 0;
-        stakingRewardRate[1][1].tierDuration = 2629743;
-
+        stakingRewardRate[1][1].tierDuration = 1800;
+        //
         stakingRewardRate[1][2].interest = 2;
         stakingRewardRate[1][2].amountStakersLeft = 0;
-        stakingRewardRate[1][2].tierDuration = 2629743;
-
+        stakingRewardRate[1][2].tierDuration = 1800;
         stakingRewardRate[1][3].interest = 3;
         stakingRewardRate[1][3].amountStakersLeft = 0;
-        stakingRewardRate[1][3].tierDuration = 2629743;
-
+        stakingRewardRate[1][3].tierDuration = 1800;
         stakingRewardRate[1][4].interest = 4;
         stakingRewardRate[1][4].amountStakersLeft = 0;
-        stakingRewardRate[1][4].tierDuration = 2629743;
+        stakingRewardRate[1][4].tierDuration = 1800;
         stakingRewardRate[1][5].interest = 4;
         stakingRewardRate[1][5].amountStakersLeft = 0;
-        stakingRewardRate[1][5].tierDuration = 2629743;
+        stakingRewardRate[1][5].tierDuration = 1800;
         //
         stakingRewardRate[2][1].interest = 1;
         stakingRewardRate[2][1].amountStakersLeft = 0;
-        stakingRewardRate[2][1].tierDuration = 5259486;
+        stakingRewardRate[2][1].tierDuration = 3600;
         stakingRewardRate[2][2].interest = 2;
         stakingRewardRate[2][2].amountStakersLeft = 0;
-        stakingRewardRate[2][2].tierDuration = 5259486;
+        stakingRewardRate[2][2].tierDuration = 3600;
         stakingRewardRate[2][3].interest = 3;
         stakingRewardRate[2][3].amountStakersLeft = 0;
-        stakingRewardRate[2][3].tierDuration = 5259486;
+        stakingRewardRate[2][3].tierDuration = 3600;
         stakingRewardRate[2][4].interest = 4;
         stakingRewardRate[2][4].amountStakersLeft = 0;
-        stakingRewardRate[2][4].tierDuration = 5259486;
+        stakingRewardRate[2][4].tierDuration = 3600;
         stakingRewardRate[2][5].interest = 4;
         stakingRewardRate[2][5].amountStakersLeft = 0;
-        stakingRewardRate[2][5].tierDuration = 5259486;
+        stakingRewardRate[2][5].tierDuration = 3600;
         //
         stakingRewardRate[3][1].interest = 1;
         stakingRewardRate[3][1].amountStakersLeft = 0;
-        stakingRewardRate[3][1].tierDuration = 7889229;
+        stakingRewardRate[3][1].tierDuration = 5400;
         stakingRewardRate[3][2].interest = 2;
         stakingRewardRate[3][2].amountStakersLeft = 0;
-        stakingRewardRate[3][2].tierDuration = 7889229;
+        stakingRewardRate[3][2].tierDuration = 5400;
         stakingRewardRate[3][3].interest = 3;
         stakingRewardRate[3][3].amountStakersLeft = 0;
-        stakingRewardRate[3][3].tierDuration = 7889229;
+        stakingRewardRate[3][3].tierDuration = 5400;
         stakingRewardRate[3][4].interest = 4;
         stakingRewardRate[3][4].amountStakersLeft = 0;
-        stakingRewardRate[3][4].tierDuration = 7889229;
+        stakingRewardRate[3][4].tierDuration = 5400;
         stakingRewardRate[3][5].interest = 4;
         stakingRewardRate[3][5].amountStakersLeft = 0;
-        stakingRewardRate[3][5].tierDuration = 7889229;
+        stakingRewardRate[3][5].tierDuration = 5400;
         //
         stakingRewardRate[4][1].interest = 3;
         stakingRewardRate[4][1].amountStakersLeft = 500;
-        stakingRewardRate[4][1].tierDuration = 15778458;
+        stakingRewardRate[4][1].tierDuration = 10800;
         stakingRewardRate[4][2].interest = 5;
         stakingRewardRate[4][2].amountStakersLeft = 500;
-        stakingRewardRate[4][2].tierDuration = 15778458;
+        stakingRewardRate[4][2].tierDuration = 10800;
         stakingRewardRate[4][3].interest = 5;
         stakingRewardRate[4][3].amountStakersLeft = 500;
-        stakingRewardRate[4][3].tierDuration = 15778458;
+        stakingRewardRate[4][3].tierDuration = 10800;
         stakingRewardRate[4][4].interest = 5;
         stakingRewardRate[4][4].amountStakersLeft = 1000;
-        stakingRewardRate[4][4].tierDuration = 15778458;
+        stakingRewardRate[4][4].tierDuration = 10800;
         stakingRewardRate[4][5].interest = 5;
         stakingRewardRate[4][5].amountStakersLeft = 1000;
-        stakingRewardRate[4][5].tierDuration = 15778458;
+        stakingRewardRate[4][5].tierDuration = 10800;
         //
         stakingRewardRate[5][1].interest = 4;
         stakingRewardRate[5][1].amountStakersLeft = 500;
-        stakingRewardRate[5][1].tierDuration = 31556916;
+        stakingRewardRate[5][1].tierDuration = 21360;
         stakingRewardRate[5][2].interest = 5;
         stakingRewardRate[5][2].amountStakersLeft = 500;
-        stakingRewardRate[5][2].tierDuration = 31556916;
+        stakingRewardRate[5][2].tierDuration = 21360;
         stakingRewardRate[5][3].interest = 5;
         stakingRewardRate[5][3].amountStakersLeft = 500;
-        stakingRewardRate[5][3].tierDuration = 31556916;
+        stakingRewardRate[5][3].tierDuration = 21360;
         stakingRewardRate[5][4].interest = 6;
         stakingRewardRate[5][4].amountStakersLeft = 1000;
-        stakingRewardRate[5][4].tierDuration = 31556916;
+        stakingRewardRate[5][4].tierDuration = 21360;
         stakingRewardRate[5][5].interest = 7;
         stakingRewardRate[5][5].amountStakersLeft = 1000;
-        stakingRewardRate[5][5].tierDuration = 31556916;
+        stakingRewardRate[5][5].tierDuration = 21360;
     }
 
     /**
@@ -1765,3 +1763,11 @@ contract Bank is Ownable {
 //     }
 //     // loanbook[_loanSignature].status;
 // }
+
+//   "networks": {
+//     "4": {
+//       "events": {},
+//       "links": {},
+//       "address": "0x6a85759a6d7d460f3c76b0b5f5037db694e0582d",
+//       "transactionHash": "0xc0010cb01f9a8bf6ba6ba5a10514d16c4b82f9ebeaf6d20cd0cd5e7b2d4f21f9"
+//     }

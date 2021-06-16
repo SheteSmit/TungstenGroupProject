@@ -66,47 +66,47 @@
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "211:9886:1:-:0;;;;;;;;;;;;;304:10:6;295:6;;:19;;;;;;;;;;;;;;;;;;211:9886:1;;;;;;",
-  "deployedSourceMap": "211:9886:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;426:92:6;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;158:21;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;524:166;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;426:92;466:4;504:6;;;;;;;;;;;490:20;;:10;:20;;;482:29;;426:92;:::o;158:21::-;;;;;;;;;;;;:::o;524:166::-;366:9;:7;:9::i;:::-;358:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;626:1:::1;605:23;;:9;:23;;;;597:32;;;::::0;::::1;;673:9;644:39;;;665:6;::::0;::::1;;;;;;;;644:39;;;;;;;;;;;;;;;;;;;;524:166:::0;:::o",
+  "sourceMap": "211:9886:1:-:0;;;;;;;;;;;;;304:10:17;295:6;;:19;;;;;;;;;;;;;;;;;;211:9886:1;;;;;;",
+  "deployedSourceMap": "211:9886:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;426:92:17;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;158:21;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;;524:166;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;426:92;466:4;504:6;;;;;;;;;;;490:20;;:10;:20;;;482:29;;426:92;:::o;158:21::-;;;;;;;;;;;;:::o;524:166::-;366:9;:7;:9::i;:::-;358:44;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;626:1:::1;605:23;;:9;:23;;;;597:32;;;::::0;::::1;;673:9;644:39;;;665:6;::::0;::::1;;;;;;;;644:39;;;;;;;;;;;;;;;;;;;;524:166:::0;:::o",
   "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.22 <0.9.0;\n\nimport \"./interfaces/UniversalERC20.sol\";\nimport \"./interfaces/Ownable.sol\";\nimport \"./interfaces/IUniswap.sol\";\nimport \"./ExchangeOracle.sol\";\n\ncontract ChromiumV2 is Ownable {\n    // using UniversalERC20 for IERC20;\n    // // used to keep track of tokens in contract\n    // mapping(uint256 => uint256) public cbltLiquidity;\n    // uint256 cbltLiquidityMaxAmount;\n    // // eth contract address\n    // IERC20 private constant ETH_ADDRESS =\n    //     IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);\n    // IUniswap private constant uniswap =\n    //     IUniswap(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);\n    // // initializing objects\n    // IERC20 cbltToken;\n    // ExchangeOracle oracle;\n    // // emits when chromium is used\n    // event ChromiumTrade(\n    //     address indexed _from,\n    //     address _fromToken,\n    //     address _destToken,\n    //     uint256 _fromAmount,\n    //     uint256 _cbltAmount\n    // );\n    // /**\n    //  * pass in the oracle contract so that it can pull info from it\n    //  */\n    // constructor(\n    //     address _cbltToken,\n    //     address _oracle,\n    //     uint256 _liquidityCbltPoolAmount\n    // ) {\n    //     cbltToken = IERC20(_cbltToken);\n    //     oracle = ExchangeOracle(_oracle);\n    //     cbltLiquidityMaxAmount = _liquidityCbltPoolAmount;\n    // }\n    // // sets CBLT token  // only devs\n    // function setCbltToken(address _cblt) external {\n    //     cbltToken = IERC20(_cblt);\n    // }\n    // // only devs\n    // function setOracle(address _oracle) external {\n    //     oracle = ExchangeOracle(_oracle);\n    // }\n    // // only devs\n    // function changeCbltLiquidityLimit(uint256 _liquidityLimit) external {\n    //     cbltLiquidityMaxAmount = _liquidityLimit;\n    // }\n    // /************ chromium functions ************/\n    // function getExchangeRate() public view returns (uint256) {\n    //     (uint256 sellTokenValue, uint256 buyTokenValue, bool success) =\n    //         oracle.priceOfPair(path[0], path[1]);\n    //     if (success) {\n    //         amounts = new uint256[](path.length);\n    //         amounts[0] = amountIn;\n    //         amountIn = SafeMath.sub(\n    //             amountIn,\n    //             SafeMath.mul(amountIn, SafeMath.div(3, 1000))\n    //         );\n    //         uint256 returnAmount =\n    //             SafeMath.mul(\n    //                 amountIn,\n    //                 SafeMath.findRate(sellTokenValue, buyTokenValue)\n    //             );\n    //         amounts[1] = returnAmount;\n    //     } else {\n    //         amountIn = SafeMath.sub(\n    //             amountIn,\n    //             SafeMath.mul(amountIn, SafeMath.div(3, 1000))\n    //         );\n    //         amounts = uniswap.getAmountsOut(amountIn, path);\n    //     }\n    // }\n    // /**\n    //  * @dev this function will swap cblt tokens for tokens that are allowed\n    //  */\n    // function swapTokens(address[] calldata path, uint256 amount)\n    //     external\n    //     payable\n    //     returns (uint256)\n    // {\n    //     require(\n    //         path[0] != address(cbltToken) && path[1] != address(cbltToken),\n    //         \"Cblt can't be traded with this function\"\n    //     );\n    //     uint256[] memory amounts = getExchangeRate(amount, path);\n    //     if (IERC20(path[0]) == ETH_ADDRESS) {\n    //         require(msg.value != 0, \"Chromium:: msg.value can not equal 0\");\n    //         require(\n    //             tokenLiquidity[path[1]] >= amounts[1],\n    //             \"Not enough tokens in Treasury.\"\n    //         );\n    //         IERC20(path[0]).universalTransferFromSenderToThis(amount);\n    //         tokenLiquidity[path[0]] = SafeMath.add(\n    //             tokenLiquidity[path[0]],\n    //             amount\n    //         );\n    //         IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);\n    //         tokenLiquidity[path[1]] = SafeMath.sub(\n    //             tokenLiquidity[path[1]],\n    //             amounts[1]\n    //         );\n    //         emit ChromiumTrade(\n    //             msg.sender,\n    //             path[0],\n    //             path[1],\n    //             amount,\n    //             amounts[1]\n    //         );\n    //         return amounts[1];\n    //     } else {\n    //         require(\n    //             tokenLiquidity[path[1]] >= amounts[1],\n    //             \"Chromium:: Not enough tokens in Treasury.\"\n    //         );\n    //         IERC20(path[0]).universalTransferFromSenderToThis(amount);\n    //         tokenLiquidity[path[0]] = SafeMath.add(\n    //             tokenLiquidity[path[0]],\n    //             amount\n    //         );\n    //         IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);\n    //         emit ChromiumTrade(\n    //             msg.sender,\n    //             path[0],\n    //             path[1],\n    //             amount,\n    //             amounts[1]\n    //         );\n    //         return amounts[1];\n    //     }\n    // }\n    // function swapCblt(address[] calldata path, uint256 amount)\n    //     external\n    //     payable\n    //     returns (uint256)\n    // {\n    //     require(\n    //         path[0] == address(cbltToken),\n    //         \"Chromium:: fromToken needs to be cbltToken.\"\n    //     );\n    //     uint256[] memory amounts = getExchangeRate(amount, path);\n    //     require(\n    //         tokenLiquidity[path[1]] >= amounts[1],\n    //         \"Not enough tokens in treasury.\"\n    //     );\n    //     cbltToken.universalTransferFromSenderToThis(amount);\n    //     uint256 temp = getCbltPool(amount);\n    //     cbltLiquidity[temp] = SafeMath.add(cbltLiquidity[temp], amount);\n    //     IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);\n    //     tokenLiquidity[path[1]] = SafeMath.sub(\n    //         tokenLiquidity[path[1]],\n    //         amounts[1]\n    //     );\n    //     emit ChromiumTrade(msg.sender, path[0], path[1], amount, amounts[1]);\n    //     return amounts[1];\n    // }\n    // function swapForCblt(address[] calldata path, uint256 amount)\n    //     external\n    //     payable\n    //     returns (uint256)\n    // {\n    //     require(\n    //         path[1] == address(cbltToken),\n    //         \"Chromium:: destToken needs to be cbltToken.\"\n    //     );\n    //     uint256[] memory amounts = getExchangeRate(amount, path);\n    //     uint256 temp = getCbltPool(amounts[1]);\n    //     if (IERC20(path[0]) == ETH_ADDRESS) {\n    //         require(msg.value != 0, \"Chromium:: msg.value can not equal 0\");\n    //         require(\n    //             cbltLiquidity[temp] >= amounts[1],\n    //             \"Not enough cblt tokens in pool for 1000 and up in Treasury.\"\n    //         );\n    //         IERC20(path[0]).universalTransferFromSenderToThis(amount);\n    //         tokenLiquidity[path[0]] = SafeMath.add(\n    //             tokenLiquidity[path[0]],\n    //             amount\n    //         );\n    //         cbltLiquidity[temp] = SafeMath.sub(cbltLiquidity[temp], amounts[1]);\n    //         cbltToken.universalTransfer(msg.sender, amounts[1]);\n    //         emit ChromiumTrade(\n    //             msg.sender,\n    //             path[0],\n    //             path[1],\n    //             amount,\n    //             amounts[1]\n    //         );\n    //         return amounts[1];\n    //     } else {\n    //         require(\n    //             cbltLiquidity[temp] >= amounts[1],\n    //             \"Not enough cblt tokens in pool for 1000 and down in Treasury.\"\n    //         );\n    //         IERC20(path[0]).universalTransferFromSenderToThis(amount);\n    //         tokenLiquidity[path[0]] = SafeMath.add(\n    //             tokenLiquidity[path[0]],\n    //             amount\n    //         );\n    //         cbltLiquidity[temp] = SafeMath.sub(cbltLiquidity[temp], amounts[1]);\n    //         cbltToken.universalTransfer(msg.sender, amounts[1]);\n    //         emit ChromiumTrade(\n    //             msg.sender,\n    //             path[0],\n    //             path[1],\n    //             amount,\n    //             amounts[1]\n    //         );\n    //         return amounts[1];\n    //     }\n    // }\n    // function addCbltToPool(uint256 _poolNumber, uint256 _amount)\n    //     external\n    //     onlyOwner\n    // {\n    //     cbltToken.universalTransferFromSenderToThis(_amount);\n    //     cbltLiquidity[_poolNumber] = SafeMath.add(\n    //         cbltLiquidity[_poolNumber],\n    //         _amount\n    //     );\n    // }\n    // function addNewTokenToPool(address _token, uint256 _amount) external {\n    //     IERC20(_token).universalTransferFromSenderToThis(_amount);\n    //     tokenLiquidity[_token] = SafeMath.add(tokenLiquidity[_token], _amount);\n    //     tokenApproval[_token] = TokenInfo(false, false);\n    // }\n    // function retrieveTokens(IERC20 _token, uint256 amount) external onlyOwner {\n    //     require(\n    //         cbltToken != _token,\n    //         \"Chromium:: can't withdraw CBLT with this function.\"\n    //     );\n    //     require(\n    //         amount <= tokenLiquidity[address(_token)],\n    //         \"Chromium:: not enough tokens in exchange.\"\n    //     );\n    //     _token.universalTransfer(msg.sender, amount);\n    //     tokenLiquidity[address(_token)] = SafeMath.sub(\n    //         tokenLiquidity[address(_token)],\n    //         amount\n    //     );\n    // }\n    // function retrieveCBLT(uint256 liquidityPool, uint256 amount)\n    //     external\n    //     onlyOwner\n    // {\n    //     require(\n    //         amount <= cbltLiquidity[liquidityPool],\n    //         \"Chromium:: not enough CBLT in this liquidity pool.\"\n    //     );\n    //     cbltToken.universalTransfer(msg.sender, amount);\n    //     cbltLiquidity[liquidityPool] = SafeMath.sub(\n    //         cbltLiquidity[liquidityPool],\n    //         amount\n    //     );\n    // }\n    // function getCbltPool(uint256 amount) internal view returns (uint256) {\n    //     if (amount >= cbltLiquidityMaxAmount) {\n    //         return 1;\n    //     } else {\n    //         return 2;\n    //     }\n    // }\n    // // fallback function\n    // receive() external payable {}\n}\n",
   "sourcePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ChromiumV2.sol",
   "ast": {
     "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ChromiumV2.sol",
     "exportedSymbols": {
       "Address": [
-        4040
+        7317
       ],
       "ChromiumV2": [
-        3556
+        3650
       ],
       "ExchangeOracle": [
-        3744
+        4284
       ],
       "IERC20": [
-        4109
+        7386
       ],
       "IUniswap": [
-        4123
+        7715
       ],
       "Ownable": [
-        4187
+        7779
       ],
       "SafeERC20": [
-        4323
+        7915
       ],
       "SafeMath": [
-        4550
+        8142
       ],
       "UniversalERC20": [
-        4914
+        8506
       ]
     },
-    "id": 3557,
+    "id": 3651,
     "license": "MIT",
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 3549,
+        "id": 3643,
         "literals": [
           "solidity",
           ">=",
@@ -122,10 +122,10 @@
       {
         "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/UniversalERC20.sol",
         "file": "./interfaces/UniversalERC20.sol",
-        "id": 3550,
+        "id": 3644,
         "nodeType": "ImportDirective",
-        "scope": 3557,
-        "sourceUnit": 4915,
+        "scope": 3651,
+        "sourceUnit": 8507,
         "src": "66:41:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -133,10 +133,10 @@
       {
         "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol",
         "file": "./interfaces/Ownable.sol",
-        "id": 3551,
+        "id": 3645,
         "nodeType": "ImportDirective",
-        "scope": 3557,
-        "sourceUnit": 4188,
+        "scope": 3651,
+        "sourceUnit": 7780,
         "src": "108:34:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -144,10 +144,10 @@
       {
         "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/IUniswap.sol",
         "file": "./interfaces/IUniswap.sol",
-        "id": 3552,
+        "id": 3646,
         "nodeType": "ImportDirective",
-        "scope": 3557,
-        "sourceUnit": 4124,
+        "scope": 3651,
+        "sourceUnit": 7716,
         "src": "143:35:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -155,10 +155,10 @@
       {
         "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExchangeOracle.sol",
         "file": "./ExchangeOracle.sol",
-        "id": 3553,
+        "id": 3647,
         "nodeType": "ImportDirective",
-        "scope": 3557,
-        "sourceUnit": 3745,
+        "scope": 3651,
+        "sourceUnit": 4285,
         "src": "179:30:1",
         "symbolAliases": [],
         "unitAlias": ""
@@ -168,35 +168,35 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 3554,
+              "id": 3648,
               "name": "Ownable",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 4187,
+              "referencedDeclaration": 7779,
               "src": "234:7:1",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_Ownable_$4187",
+                "typeIdentifier": "t_contract$_Ownable_$7779",
                 "typeString": "contract Ownable"
               }
             },
-            "id": 3555,
+            "id": 3649,
             "nodeType": "InheritanceSpecifier",
             "src": "234:7:1"
           }
         ],
         "contractDependencies": [
-          4187
+          7779
         ],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "id": 3556,
+        "id": 3650,
         "linearizedBaseContracts": [
-          3556,
-          4187
+          3650,
+          7779
         ],
         "name": "ChromiumV2",
         "nodeType": "ContractDefinition",
         "nodes": [],
-        "scope": 3557,
+        "scope": 3651,
         "src": "211:9886:1"
       }
     ],
@@ -207,31 +207,31 @@
       "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ChromiumV2.sol",
       "exportedSymbols": {
         "Address": [
-          4040
+          7317
         ],
         "ChromiumV2": [
-          3556
+          3650
         ],
         "ExchangeOracle": [
-          3744
+          4284
         ],
         "IERC20": [
-          4109
+          7386
         ],
         "IUniswap": [
-          4123
+          7715
         ],
         "Ownable": [
-          4187
+          7779
         ],
         "SafeERC20": [
-          4323
+          7915
         ],
         "SafeMath": [
-          4550
+          8142
         ],
         "UniversalERC20": [
-          4914
+          8506
         ]
       },
       "license": "MIT"
@@ -249,67 +249,67 @@
             ".0"
           ]
         },
-        "id": 3549,
+        "id": 3643,
         "name": "PragmaDirective",
         "src": "32:32:1"
       },
       {
         "attributes": {
-          "SourceUnit": 4915,
+          "SourceUnit": 8507,
           "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/UniversalERC20.sol",
           "file": "./interfaces/UniversalERC20.sol",
-          "scope": 3557,
+          "scope": 3651,
           "symbolAliases": [
             null
           ],
           "unitAlias": ""
         },
-        "id": 3550,
+        "id": 3644,
         "name": "ImportDirective",
         "src": "66:41:1"
       },
       {
         "attributes": {
-          "SourceUnit": 4188,
+          "SourceUnit": 7780,
           "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol",
           "file": "./interfaces/Ownable.sol",
-          "scope": 3557,
+          "scope": 3651,
           "symbolAliases": [
             null
           ],
           "unitAlias": ""
         },
-        "id": 3551,
+        "id": 3645,
         "name": "ImportDirective",
         "src": "108:34:1"
       },
       {
         "attributes": {
-          "SourceUnit": 4124,
+          "SourceUnit": 7716,
           "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/IUniswap.sol",
           "file": "./interfaces/IUniswap.sol",
-          "scope": 3557,
+          "scope": 3651,
           "symbolAliases": [
             null
           ],
           "unitAlias": ""
         },
-        "id": 3552,
+        "id": 3646,
         "name": "ImportDirective",
         "src": "143:35:1"
       },
       {
         "attributes": {
-          "SourceUnit": 3745,
+          "SourceUnit": 4285,
           "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExchangeOracle.sol",
           "file": "./ExchangeOracle.sol",
-          "scope": 3557,
+          "scope": 3651,
           "symbolAliases": [
             null
           ],
           "unitAlias": ""
         },
-        "id": 3553,
+        "id": 3647,
         "name": "ImportDirective",
         "src": "179:30:1"
       },
@@ -317,19 +317,19 @@
         "attributes": {
           "abstract": false,
           "contractDependencies": [
-            4187
+            7779
           ],
           "contractKind": "contract",
           "fullyImplemented": true,
           "linearizedBaseContracts": [
-            3556,
-            4187
+            3650,
+            7779
           ],
           "name": "ChromiumV2",
           "nodes": [
             null
           ],
-          "scope": 3557
+          "scope": 3651
         },
         "children": [
           {
@@ -338,25 +338,25 @@
               {
                 "attributes": {
                   "name": "Ownable",
-                  "referencedDeclaration": 4187,
+                  "referencedDeclaration": 7779,
                   "type": "contract Ownable"
                 },
-                "id": 3554,
+                "id": 3648,
                 "name": "UserDefinedTypeName",
                 "src": "234:7:1"
               }
             ],
-            "id": 3555,
+            "id": 3649,
             "name": "InheritanceSpecifier",
             "src": "234:7:1"
           }
         ],
-        "id": 3556,
+        "id": 3650,
         "name": "ContractDefinition",
         "src": "211:9886:1"
       }
     ],
-    "id": 3557,
+    "id": 3651,
     "name": "SourceUnit",
     "src": "32:10066:1"
   },
@@ -366,7 +366,7 @@
   },
   "networks": {},
   "schemaVersion": "3.3.4",
-  "updatedAt": "2021-06-16T04:17:10.358Z",
+  "updatedAt": "2021-06-16T19:55:15.782Z",
   "devdoc": {
     "kind": "dev",
     "methods": {},
