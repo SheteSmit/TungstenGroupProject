@@ -57,12 +57,15 @@ contract Bank is Ownable {
         stakingRewardRate[1][1].interest = 1;
         stakingRewardRate[1][1].amountStakersLeft = 0;
         stakingRewardRate[1][1].tierDuration = 2629743;
+
         stakingRewardRate[1][2].interest = 2;
         stakingRewardRate[1][2].amountStakersLeft = 0;
         stakingRewardRate[1][2].tierDuration = 2629743;
+
         stakingRewardRate[1][3].interest = 3;
         stakingRewardRate[1][3].amountStakersLeft = 0;
         stakingRewardRate[1][3].tierDuration = 2629743;
+
         stakingRewardRate[1][4].interest = 4;
         stakingRewardRate[1][4].amountStakersLeft = 0;
         stakingRewardRate[1][4].tierDuration = 2629743;
@@ -404,12 +407,36 @@ contract Bank is Ownable {
     // ********************************* Staking ***********************************
 
     /**
-     * @dev Function handles the deposit and implementation of
+     * @dev Function handles token deposit for treasury to track
      */
     function tokenReserveDeposit(uint256 _amount, address _tokenAddress)
         public
         payable
-    {}
+    {
+        IERC20(_tokenAddress).universalTransferFromSenderToThis(_amount);
+        tokenReserve[_tokenAddress] = SafeMath.add(
+            tokenReserve[_tokenAddress],
+            _amount
+        );
+    }
+
+    /**
+     * @dev Mapping with key value address (token address) leads the current reserves avaliable for tokens
+     * being currently offered to stake on.
+     */
+    mapping(address => uint256) public tokenReserve;
+
+    /**
+     * @dev Getter function to pull information for avaliable token amount in reserves
+     * @param _tokenAddress token address of queried token
+     */
+    function getTokenReserve(address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return tokenReserve[_tokenAddress];
+    }
 
     /**
      * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
@@ -425,14 +452,13 @@ contract Bank is Ownable {
 
     /**
      * @dev Variable displaying the maximum time tier supported.
-     * @notice This action can only be perform under dev vote.
      */
     uint256 public tierMax;
 
     /**
-     * @dev
+     * @dev Bool switch for all staking instance terminations
      */
-    bool terminateStaking;
+    bool public terminateStaking;
 
     /**
      * @dev Function terminates all staking instances and allows early balance withdrewal
@@ -444,7 +470,7 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Variable turns support for other tokens as reward outside of CBLT.
+     * @dev Bool switch turns support for other tokens as reward outside of CBLT.
      */
     bool multipleTokenSupport;
 
@@ -578,6 +604,8 @@ contract Bank is Ownable {
         uint256 _amountStakersLeft,
         uint256 _tierDuration
     ) public {
+        require(_amountTier <= 5, "Amount tier must be lower or equal to 5");
+
         stakingRewardRate[_timeTier][_amountTier].interest = _interest;
         stakingRewardRate[_timeTier][_amountTier]
             .amountStakersLeft = _amountStakersLeft;
@@ -636,24 +664,6 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Mapping with key value address (token address) leads the current reserves avaliable for tokens
-     * being currently offered to stake on.
-     */
-    mapping(address => uint256) public tokenReserve;
-
-    /**
-     * @dev Getter function to pull information for avaliable token amount in reserves
-     * @param _tokenAddress token address of queried token
-     */
-    function getTokenReserve(address _tokenAddress)
-        public
-        view
-        returns (uint256)
-    {
-        return tokenReserve[_tokenAddress];
-    }
-
-    /**
      * @dev Mapping with key value address (user address) leads to submapping with key value address
      * (token address) to pull the current balance rewarded to that user in the tokens
      */
@@ -689,13 +699,13 @@ contract Bank is Ownable {
         // The tier input must be between 1 and tierMax
         require(
             _timeStakedTier >= 1 && _timeStakedTier <= tierMax,
-            "Tier number must be a number between 1 and 5."
+            "Tier number must be a number between 1 and maximum tier supported."
         );
         _;
     }
 
     /**
-     * @dev Modifier makes sure to allow only CBLT during launch or specific periods
+     * @dev Modifier checks current support on other tokens as rewards for staking
      */
     modifier tokenIsCBLT(address _tokenAddress) {
         if (multipleTokenSupport == false) {
@@ -709,14 +719,11 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev
+     * @dev Checks if all current staking instances are to be terminated
      */
     modifier stakingTermination(bool _functionSpecific) {
         if (_functionSpecific) {
-            require(
-                terminateStaking == true,
-                "Staking is currently functioning as expected"
-            );
+            require(terminateStaking == true, "Staking is currently disabled.");
         } else {
             require(
                 terminateStaking == false,
@@ -728,22 +735,51 @@ contract Bank is Ownable {
 
     /**
      * @dev Function sends an estimation of how many tokens
+     * @param _amount Amount of ETH send by the user
+     * @param _timeStakedTier Duration tier for staking instance
+     * @param _tokenAddress Address of token rewarded
      */
     function getTokenReturn(
         uint256 _amount,
         uint256 _timeStakedTier,
-        uint256 _amountStakedTier,
-        address _tokenAddress
-    ) internal view returns (uint256, uint256) {
+        address _tokenAddress,
+        address _user
+    ) public view returns (uint256, uint256) {
         uint256 tokenPrice = oracle.priceOfToken(address(_tokenAddress));
-        uint256 lotteryTicket = userBook[msg.sender].lotteryTicket;
+        uint256 lotteryTicket = userBook[_user].lotteryTicket;
         uint256 interest;
+        uint256 amountStakedTier;
+        uint256 paidAdvanced;
+
+        if (_amount <= 4e17) {
+            amountStakedTier = 1;
+        } else if (_amount <= 2e18) {
+            amountStakedTier = 2;
+        } else if (_amount <= 5e18) {
+            amountStakedTier = 3;
+        } else if (_amount <= 25e18) {
+            amountStakedTier = 4;
+            // if user is staking for 180, pay tokens in advance
+            if (_timeStakedTier == 4) {
+                paidAdvanced = 25;
+            } else if (_timeStakedTier == 5) {
+                paidAdvanced = 50;
+            }
+        } else {
+            amountStakedTier = 5;
+            // if user is staking for 180, pay tokens in advance
+            if (_timeStakedTier == 4) {
+                paidAdvanced = 25;
+            } else if (_timeStakedTier == 5) {
+                paidAdvanced = 50;
+            }
+        }
 
         // Checks if the transaction should be charged using a flat or percentage based fee
-        if (msg.value > 5e18) {
+        if (_amount > 5e18) {
             _amount = SafeMath.sub(
-                msg.value,
-                SafeMath.multiply(msg.value, 3, 1000)
+                _amount,
+                SafeMath.multiply(_amount, 3, 1000)
             );
         } else {
             // Oracle call for current ETH price in USD
@@ -751,27 +787,27 @@ contract Bank is Ownable {
             // Dollar fee based
             uint256 ETHinUSD = SafeMath.div(300000000000000000000, ETHprice);
             // New balance saved
-            _amount = SafeMath.sub(msg.value, SafeMath.mul(ETHinUSD, fee));
+            _amount = SafeMath.sub(_amount, SafeMath.mul(ETHinUSD, fee));
         }
 
         // Calculate and return new CBLT reserved
         if (lotteryTicket > 0) {
-            if (userBook[msg.sender].withdrawReady == false) {
+            if (userBook[_user].withdrawReady == false) {
                 interest = SafeMath.mul(
-                    stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                    stakingRewardRate[_timeStakedTier][amountStakedTier]
                         .interest,
                     2
                 );
             }
-            userBook[msg.sender].withdrawReady == true;
+            userBook[_user].withdrawReady == true;
         } else {
-            interest = stakingRewardRate[_timeStakedTier][_amountStakedTier]
+            interest = stakingRewardRate[_timeStakedTier][amountStakedTier]
                 .interest;
         }
 
         return (
             SafeMath.div(SafeMath.multiply(_amount, interest, 100), tokenPrice),
-            _amount
+            paidAdvanced
         );
     }
 
@@ -1423,7 +1459,9 @@ contract Bank is Ownable {
     }
 
     /**
-     *@dev
+     * @dev Breaks staking instance for users with a duration tier higher than
+     * the default of 5. A relative amount of tokens reserved are sent to the
+     * user based on time staked.
      */
     function earlyWithdraw() public payable stakingTermination(false) {
         uint256 stakingPeriodTier = userBook[msg.sender].timeStakedTier;
@@ -1485,7 +1523,8 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev
+     * @dev Function allows all users to break staking instance and withdraw
+     * all eth deposited for staking.
      */
     function emergencyWithdraw() public payable stakingTermination(true) {
         uint256 userBalance = userBook[msg.sender].ethBalance;
