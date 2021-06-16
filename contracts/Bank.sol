@@ -901,7 +901,7 @@ contract Bank is Ownable {
         } else {
             // Calculate the amount of CBLT tokens that need to be reserved
             tokensReserved = calculateRewardDeposit(
-                msg.value,
+                balance,
                 _timeStakedTier,
                 amountStakedTier,
                 _tokenAddress
