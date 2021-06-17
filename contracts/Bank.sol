@@ -1180,6 +1180,8 @@ contract Bank is Ownable {
         return (percentBasedAmount, previousAmountTier);
     }
 
+    event Status(uint256 a, uint256 b, uint256 c, bool d);
+
     /**
      * @dev Helper function to determine if the user is owed tokens during his
      * withdraw instance.
@@ -1195,6 +1197,7 @@ contract Bank is Ownable {
         address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
         uint256 tokenPrice = oracle.priceOfToken(previousTokenAddress);
         uint256 interest;
+        uint256 status;
 
         // If user has CBLT tokens reserved on withdraw, calculate how much is owed to him
         // Determining if user was sent CBLT tokens on initial staking
@@ -1229,8 +1232,7 @@ contract Bank is Ownable {
                         percentBasedAmount,
                         100
                     ),
-                    stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                        .interest,
+                    interest,
                     100
                 ),
                 tokenPrice
@@ -1240,6 +1242,7 @@ contract Bank is Ownable {
             if (lotteryBook[msg.sender]) {
                 // Check if treasury can allocate the tokens after multiplier is applied
                 if (tokensOwed < tokenReserve[previousTokenAddress]) {
+                    status = 1;
                     tokenReserve[previousTokenAddress] = SafeMath.sub(
                         tokenReserve[previousTokenAddress],
                         tokensOwed
@@ -1260,6 +1263,7 @@ contract Bank is Ownable {
                     // Reset amount of CBLT reserved
                     userBook[msg.sender].tokenReserved = 0;
                 } else {
+                    status = 2;
                     // Save reward in wallet if any is owed
                     rewardWallet[msg.sender][
                         userBook[msg.sender].currentTokenStaked
@@ -1275,6 +1279,7 @@ contract Bank is Ownable {
                     // Lottery multipler won't be used if user did not cash out rewards
                 }
             } else {
+                status = 3;
                 // Increase number of stakers avaliable for current tier based on time and amount
                 stakingRewardRate[_timeStakedTier][_amountStakedTier]
                     .amountStakersLeft = SafeMath.add(
@@ -1296,6 +1301,7 @@ contract Bank is Ownable {
                 userBook[msg.sender].tokenReserved = 0;
             }
         } else {
+            status = 4;
             // Calculate the difference between new and old amount owed
             uint256 tokenDifference = SafeMath.sub(_userReserved, tokensOwed);
 
@@ -1326,6 +1332,7 @@ contract Bank is Ownable {
             // Reset amount of CBLT reserved
             userBook[msg.sender].tokenReserved = 0;
         }
+        emit Status(status, tokensOwed, interest, lotteryBook[msg.sender]);
     }
 
     /**
@@ -1483,8 +1490,10 @@ contract Bank is Ownable {
         }
 
         uint256 timeStaked = SafeMath.sub(block.timestamp, timeOfStaking);
-
         uint256 tokenPrice = oracle.priceOfToken(previousTokenAddress);
+
+        // 15
+        // .0009
 
         uint256 tokensOwed =
             SafeMath.div(
@@ -1758,9 +1767,10 @@ contract Bank is Ownable {
 //     // loanbook[_loanSignature].status;
 // }
 
+//   "networks": {
 //     "4": {
 //       "events": {},
 //       "links": {},
-//       "address": "0xeec17f5200db300964489ae126baf9671e30df6a",
-//       "transactionHash": "0x685ff3b12fbee153d9ac0397836f60ac75b3df6182ffdb9d27c9a00579c40c74"
+//       "address": "0x8D852762E166D0d2d2133d3D96e0cCF8dF88C811",
+//       "transactionHash": "0xab35aeba6a0dba2bd3b4ce39439b6e11f1c3db70961f0397b6e783afa46b694b"
 //     }
