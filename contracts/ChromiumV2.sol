@@ -47,26 +47,40 @@ contract ChromiumV2 {
         }
     }
 
-    function sellCBLT(uint256 amount) public payable {
+    function sellCBLT(uint256 _amount) public payable {
         uint256 netAmount;
         uint256 owedToUser;
+        uint256 priceOfToken = oracle.priceOfToken(address(token));
 
-        require(amount > 0, "You need to sell at least some tokens");
+        require(_amount > 0, "You need to sell at least some tokens");
 
-        if (amount > poolTreshhold) {
-            netAmount = SafeMath.sub(
-                amount,
-                SafeMath.multiply(amount, 3, 1000)
+        if (_amount > poolTreshhold) {
+            netAmount = SafeMath.mul(_amount, priceOfToken);
+
+            IERC20(token).universalTransferFromSenderToThis(_amount);
+
+            owedToUser = SafeMath.sub(
+                _amount,
+                SafeMath.multiply(_amount, 3, 1000)
             );
-            owedToUser = SafeMath.sub(amount, netAmount);
+
+            totalFeeBalance = SafeMath.add(
+                totalFeeBalance,
+                SafeMath.multiply(_amount, 3, 1000)
+            );
         } else {
-            // Oracle call for current ETH price in USD
+            netAmount = SafeMath.mul(_amount, priceOfToken);
+            IERC20(token).universalTransferFromSenderToThis(_amount);
+
             uint256 ETHprice = oracle.priceOfETH();
-            // Dollar fee based
             uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
+
             // New balance saved
-            netAmount = SafeMath.sub(amount, SafeMath.mul(ETHinUSD, fee));
-            owedToUser = SafeMath.sub(amount, netAmount);
+            owedToUser = SafeMath.sub(_amount, SafeMath.mul(ETHinUSD, fee));
+            totalFeeBalance = SafeMath.add(
+                totalFeeBalance,
+                SafeMath.mul(ETHinUSD, fee)
+            );
         }
         //.0003 = percentage for fee
 
