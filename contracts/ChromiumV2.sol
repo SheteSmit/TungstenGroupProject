@@ -56,7 +56,6 @@ contract ChromiumV2 {
 
         if (_amount > poolTreshhold) {
             netAmount = SafeMath.mul(_amount, priceOfToken);
-
             IERC20(token).universalTransferFromSenderToThis(_amount);
 
             owedToUser = SafeMath.sub(
@@ -75,55 +74,62 @@ contract ChromiumV2 {
             uint256 ETHprice = oracle.priceOfETH();
             uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
 
-            // New balance saved
             owedToUser = SafeMath.sub(_amount, SafeMath.mul(ETHinUSD, fee));
+
             totalFeeBalance = SafeMath.add(
                 totalFeeBalance,
                 SafeMath.mul(ETHinUSD, fee)
             );
         }
-        //.0003 = percentage for fee
 
         payable(msg.sender).transfer(owedToUser);
     }
 
-    function buy() public payable {
-        /* OLD CODE:
-        uint256 tokenRate = SafeMath.div(msg.value , SafeMath.div(2 , 1000 )) ;
-        uint256 OwedToUser = SafeMath.sub(tokenRate , 5) ;
-        */
+    function buyCBLT() public payable {
+        uint256 tokensOwed;
+        uint256 priceOfToken = oracle.priceOfToken(address(token));
+        uint256 newBalance;
 
-        //Checks to make sure user has enough balance of ether
-        //Checks to make sure user does not send 0 ether
-        uint256 userBalance = token.balanceOf(address(this));
+        require(
+            msg.value > priceOfToken,
+            "Error, deposit must be higher than 0.015 ETH"
+        );
 
-        require(msg.value > 0, "You need to send some ether");
-        require(msg.value <= userBalance, " Not enough tokens in the reserve ");
-
-        uint256 balance;
-        uint256 totalFeeBalance;
-
-        // WORK IN PROGRESS:
-        // Fee structure from the Bank.sol contract
-        // Takes in msg.value and returns totalFeeBalance
         if (msg.value > 5e18) {
-            balance = SafeMath.sub(
+            newBalance = SafeMath.sub(
                 msg.value,
                 SafeMath.multiply(msg.value, 3, 1000)
             );
 
-            totalFeeBalance = SafeMath.sub(msg.value, balance);
-        } else {
-            // Oracle call for current ETH price in USD
-            uint256 ETHprice = oracle.priceOfETH();
-            // Dollar fee based
-            uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
-            // New balance saved
-            balance = SafeMath.sub(msg.value, SafeMath.mul(ETHinUSD, fee));
-            totalFeeBalance = SafeMath.sub(msg.value, balance);
-        }
+            tokensOwed = SafeMath.div(newBalance, priceOfToken);
+            require(
+                tokensOwed < highTokenPool,
+                "Not enough tokens in this pool"
+            );
 
-        token.transfer(msg.sender, totalFeeBalance);
+            totalFeeBalance = SafeMath.add(
+                totalFeeBalance,
+                SafeMath.multiply(newBalance, 3, 1000)
+            );
+        } else {
+            uint256 ETHprice = oracle.priceOfETH();
+            uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
+
+            newBalance = SafeMath.sub(msg.value, SafeMath.mul(ETHinUSD, fee));
+
+            tokensOwed = SafeMath.div(newBalance, priceOfToken);
+
+            require(
+                tokensOwed < lowTokenPool,
+                "Not enough tokens in this pool"
+            );
+
+            totalFeeBalance = SafeMath.sub(
+                msg.value,
+                SafeMath.mul(ETHinUSD, fee)
+            );
+        }
+        IERC20(token).universalTransfer(msg.sender, tokensOwed);
     }
 
     // Fallback method for receiving ETH payments
