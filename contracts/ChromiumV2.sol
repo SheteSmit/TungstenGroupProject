@@ -1,12 +1,135 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "./interfaces/UniversalERC20.sol";
-import "./interfaces/Ownable.sol";
-import "./interfaces/IUniswap.sol";
-import "./ExchangeOracle.sol";
+import "SafeMath.sol";
+import "IERC20.sol";
+import "ExchangeOracle.sol";
 
-contract ChromiumV2 is Ownable {
+contract ChromiumV2 {
+    
+    event Received(address, uint);
+    event Transfer(address indexed from, address indexed to, uint256 value);
+    
+    IERC20 token;
+    ExchangeOracle oracle;
+    
+    // WORK IN PROGRESS: 
+    // Need to figure out exact threshold # and updating methods
+    uint256 cbltTreshhold = 1;
+    
+    // Made this so it compiles correctly w/ the Bank.sol code
+    // Not sure if we will need this later on
+    uint256 fee = 3;
+    
+    
+    // Function that allows the user to sell CBLT for ETH
+    // Takes in an amount of CBLT that will be verified by front-end
+    // CBLT is then converted to correspoding amount in ETH (Prices come from oracle)
+    // ETH is delivered to user
+    function sellCBLT(uint256 amount) public payable {
+        
+        // Checks to make sure user does not send 0 ether
+        require(amount > 0, "You need to sell at least some tokens");
+            
+        /*OLD CODE: 
+        uint256 tokenRate = SafeMath.mul(amount, SafeMath.div(2, 1000));
+        uint256 netAmount = SafeMath.sub(tokenRate, 3); 
+        */
+            
+        uint256 netAmount;
+        uint256 owedToUser;
+        
+        // WORK IN PROGRESS:
+        // Fee structure from the Bank.sol contract
+        // Similar in use but will need to make sure conversion between CBLT and ETH works correctly
+        // Returns uint owedToUser, uint netAmount is the intermediary
+        if (amount > cbltTreshhold) {
+            netAmount = SafeMath.sub(
+                    amount,
+                SafeMath.multiply(amount, 3, 1000)
+            );
+            owedToUser = SafeMath.sub(amount, netAmount);
+        } else {
+            // Oracle call for current ETH price in USD
+            uint256 ETHprice = oracle.priceOfETH();
+            // Dollar fee based
+            uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
+            // New balance saved
+            netAmount = SafeMath.sub(amount, SafeMath.mul(ETHinUSD, fee));
+            owedToUser = SafeMath.sub(amount, netAmount);
+        }
+        //.0003 = percentage for fee
+        
+        payable(msg.sender).transfer(owedToUser);
+    }
+    
+    function buy() public payable {
+
+        /* OLD CODE:
+        uint256 tokenRate = SafeMath.div(msg.value , SafeMath.div(2 , 1000 )) ;
+        uint256 OwedToUser = SafeMath.sub(tokenRate , 5) ;
+        */
+        
+        //Checks to make sure user has enough balance of ether
+        //Checks to make sure user does not send 0 ether
+        uint256 userBalance = token.balanceOf(address(this));
+        
+        require(msg.value > 0 , "You need to send some ether" );
+        require(msg.value <= userBalance , " Not enough tokens in the reserve ");
+        
+        
+        uint256 balance;
+        uint256 totalFeeBalance;
+        
+        // WORK IN PROGRESS:
+        // Fee structure from the Bank.sol contract
+        // Takes in msg.value and returns totalFeeBalance
+        if (msg.value > 5e18) {
+            balance = SafeMath.sub(
+                msg.value,
+                SafeMath.multiply(msg.value, 3, 1000)
+            );
+            
+            totalFeeBalance = SafeMath.sub(msg.value, balance);
+        } else {
+            // Oracle call for current ETH price in USD
+            uint256 ETHprice = oracle.priceOfETH();
+            // Dollar fee based
+            uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
+            // New balance saved
+            balance = SafeMath.sub(msg.value, SafeMath.mul(ETHinUSD, fee));
+            totalFeeBalance = SafeMath.sub(msg.value, balance);
+        }
+        
+        token.transfer(msg.sender ,totalFeeBalance);
+
+
+    }
+
+    // Fallback method for receiving ETH payments
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+}
+
+// TO DO:
+// - Add in the Donate Functions
+// - Figure out threshold amount
+// - Make sure oracle connection goes through and price/amounts convert correctly
+
+
+// ===================================================== OLD CODE =====================================================
+
+
+// SPDX-License-Identifier: MIT
+//pragma solidity >=0.4.22 <0.9.0;
+//
+//import "./interfaces/UniversalERC20.sol";
+//import "./interfaces/Ownable.sol";
+//import "./interfaces/IUniswap.sol";
+//import "./ExchangeOracle.sol";
+//
+//contract ChromiumV2 is Ownable {
     // using UniversalERC20 for IERC20;
     // // used to keep track of tokens in contract
     // mapping(uint256 => uint256) public cbltLiquidity;
@@ -266,4 +389,5 @@ contract ChromiumV2 is Ownable {
     // }
     // // fallback function
     // receive() external payable {}
-}
+//}
+//
