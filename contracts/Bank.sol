@@ -57,7 +57,6 @@ contract Bank is Ownable {
         stakingRewardRate[1][1].interest = 1;
         stakingRewardRate[1][1].amountStakersLeft = 0;
         stakingRewardRate[1][1].tierDuration = 1800;
-        //
         stakingRewardRate[1][2].interest = 2;
         stakingRewardRate[1][2].amountStakersLeft = 0;
         stakingRewardRate[1][2].tierDuration = 1800;
@@ -103,26 +102,26 @@ contract Bank is Ownable {
         stakingRewardRate[3][5].amountStakersLeft = 0;
         stakingRewardRate[3][5].tierDuration = 5400;
         //
-        stakingRewardRate[4][1].interest = 3;
+        stakingRewardRate[4][1].interest = 2;
         stakingRewardRate[4][1].amountStakersLeft = 500;
         stakingRewardRate[4][1].tierDuration = 10800;
-        stakingRewardRate[4][2].interest = 5;
+        stakingRewardRate[4][2].interest = 3;
         stakingRewardRate[4][2].amountStakersLeft = 500;
         stakingRewardRate[4][2].tierDuration = 10800;
-        stakingRewardRate[4][3].interest = 5;
+        stakingRewardRate[4][3].interest = 4;
         stakingRewardRate[4][3].amountStakersLeft = 500;
         stakingRewardRate[4][3].tierDuration = 10800;
         stakingRewardRate[4][4].interest = 5;
         stakingRewardRate[4][4].amountStakersLeft = 1000;
         stakingRewardRate[4][4].tierDuration = 10800;
-        stakingRewardRate[4][5].interest = 5;
+        stakingRewardRate[4][5].interest = 6;
         stakingRewardRate[4][5].amountStakersLeft = 1000;
         stakingRewardRate[4][5].tierDuration = 10800;
         //
-        stakingRewardRate[5][1].interest = 4;
+        stakingRewardRate[5][1].interest = 3;
         stakingRewardRate[5][1].amountStakersLeft = 500;
         stakingRewardRate[5][1].tierDuration = 21360;
-        stakingRewardRate[5][2].interest = 5;
+        stakingRewardRate[5][2].interest = 4;
         stakingRewardRate[5][2].amountStakersLeft = 500;
         stakingRewardRate[5][2].tierDuration = 21360;
         stakingRewardRate[5][3].interest = 5;
@@ -1344,15 +1343,15 @@ contract Bank is Ownable {
 
         // Determine the amount staked tier based on ETH balance
         if (userBalance <= 4e17) {
-            stakingAmountTier = 5;
+            stakingAmountTier = 1;
         } else if (userBalance <= 2e18) {
-            stakingAmountTier = 4;
+            stakingAmountTier = 2;
         } else if (userBalance <= 5e18) {
             stakingAmountTier = 3;
         } else if (userBalance <= 25e18) {
-            stakingAmountTier = 2;
+            stakingAmountTier = 4;
         } else {
-            stakingAmountTier = 1;
+            stakingAmountTier = 5;
         }
 
         // Calulate due date based on time staked tier and deposit time
@@ -1467,22 +1466,26 @@ contract Bank is Ownable {
         address previousTokenAddress = userBook[msg.sender].currentTokenStaked;
         uint256 timeOfStaking = userBook[msg.sender].depositTime;
         uint256 userBalance = userBook[msg.sender].ethBalance;
-        uint256 userReserved = userBook[msg.sender].tokenReserved;
+
+        require(stakingPeriodTier > 5, "Tier not supporting early withdraw");
 
         // Determine the amount staked tier based on ETH balance
         if (userBalance <= 4e17) {
-            stakingAmountTier = 5;
+            stakingAmountTier = 1;
         } else if (userBalance <= 2e18) {
-            stakingAmountTier = 4;
+            stakingAmountTier = 2;
         } else if (userBalance <= 5e18) {
             stakingAmountTier = 3;
         } else if (userBalance <= 25e18) {
-            stakingAmountTier = 2;
+            stakingAmountTier = 4;
         } else {
-            stakingAmountTier = 1;
+            stakingAmountTier = 5;
         }
 
+        uint256 timeStaked = SafeMath.sub(block.timestamp, timeOfStaking);
+
         uint256 tokenPrice = oracle.priceOfToken(previousTokenAddress);
+
         uint256 tokensOwed =
             SafeMath.div(
                 SafeMath.multiply(
@@ -1494,7 +1497,6 @@ contract Bank is Ownable {
                 tokenPrice
             );
 
-        uint256 timeStaked = SafeMath.sub(block.timestamp, timeOfStaking);
         uint256 relativeOwed =
             SafeMath.multiply(
                 tokensOwed,
@@ -1503,12 +1505,6 @@ contract Bank is Ownable {
                     .tierDuration
             );
 
-        // Substract eth from user account
-        userBook[msg.sender].ethBalance = SafeMath.sub(
-            userBook[msg.sender].ethBalance,
-            userBalance
-        );
-
         // Reset values
         userBook[msg.sender].ethBalance = 0;
         userBook[msg.sender].tokenReserved = 0;
@@ -1516,8 +1512,6 @@ contract Bank is Ownable {
 
         // token transfer
         payable(msg.sender).transfer(userBalance);
-
-        require(stakingPeriodTier > 5, "Tier not supporting early withdraw");
     }
 
     /**
@@ -1764,10 +1758,9 @@ contract Bank is Ownable {
 //     // loanbook[_loanSignature].status;
 // }
 
-//   "networks": {
 //     "4": {
 //       "events": {},
 //       "links": {},
-//       "address": "0x6a85759a6d7d460f3c76b0b5f5037db694e0582d",
-//       "transactionHash": "0xc0010cb01f9a8bf6ba6ba5a10514d16c4b82f9ebeaf6d20cd0cd5e7b2d4f21f9"
+//       "address": "0xeec17f5200db300964489ae126baf9671e30df6a",
+//       "transactionHash": "0x685ff3b12fbee153d9ac0397836f60ac75b3df6182ffdb9d27c9a00579c40c74"
 //     }
