@@ -1767,7 +1767,6 @@ contract Bank is Ownable {
 //     // loanbook[_loanSignature].status;
 // }
 
-//   "networks": {
 //     "4": {
 //       "events": {},
 //       "links": {},
