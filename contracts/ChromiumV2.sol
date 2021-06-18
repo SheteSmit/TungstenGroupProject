@@ -14,44 +14,80 @@ contract ChromiumV2 {
 
     // ********************************** CONTRACT CONTROL *********************************
 
+    /**
+     * @dev
+     */
     IERC20 token;
 
+    /**
+     * @dev
+     */
+    ExchangeOracle oracle;
+
+    /**
+     * @dev
+     */
+    uint256 contractBalance;
+
+    /**
+     * @dev
+     */
+    bool chromiumStatus;
+
+    /**
+     * @dev
+     */
+    bool buyStatus;
+
+    /**
+     * @dev
+     */
     function setToken(address _newToken) public {
         // only devs
         token = IERC20(_newToken);
     }
 
-    uint256 contractBalance;
-
+    /**
+     * @dev
+     */
     function getContractBalance() public view returns (uint256) {
         return contractBalance;
     }
 
-    ExchangeOracle oracle;
-
+    /**
+     * @dev
+     */
     function setOracle(address _newOracle) public {
         // only devs
         oracle = ExchangeOracle(_newOracle);
     }
 
-    bool chromiumStatus;
-
+    /**
+     * @dev
+     */
     function setChromiumStatus(bool _status) public {
         // only devs
         chromiumStatus = _status;
     }
 
-    bool buyStatus;
-
+    /**
+     * @dev
+     */
     function setBuyStatus(bool _status) public {
         buyStatus = _status;
     }
 
+    /**
+     * @dev
+     */
     constructor(address _oracleAddress, address _tokenAddress) {
         token = IERC20(_tokenAddress);
         oracle = ExchangeOracle(_oracleAddress);
     }
 
+    /**
+     * @dev
+     */
     receive() external payable {
         emit Received(msg.sender, msg.value);
     }
@@ -67,6 +103,10 @@ contract ChromiumV2 {
      * @dev
      */
     uint256 highTokenPool;
+
+    /**
+     * @dev
+     */
     uint256 lowTokenPool;
 
     /**
