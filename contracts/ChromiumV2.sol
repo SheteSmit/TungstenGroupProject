@@ -12,11 +12,19 @@ contract ChromiumV2 {
     event Received(address, uint256);
     event Transfer(address indexed from, address indexed to, uint256 value);
 
+    // ********************************** CONTRACT CONTROL *********************************
+
     IERC20 token;
 
     function setToken(address _newToken) public {
         // only devs
         token = IERC20(_newToken);
+    }
+
+    uint256 contractBalance;
+
+    function getContractBalance() public view returns (uint256) {
+        return contractBalance;
     }
 
     ExchangeOracle oracle;
@@ -26,15 +34,48 @@ contract ChromiumV2 {
         oracle = ExchangeOracle(_newOracle);
     }
 
-    uint256 poolTreshhold = 1;
+    bool chromiumStatus;
 
+    function setChromiumStatus(bool _status) public {
+        // only devs
+        chromiumStatus = _status;
+    }
+
+    bool buyStatus;
+
+    function setBuyStatus(bool _status) public {
+        buyStatus = _status;
+    }
+
+    constructor(address _oracleAddress, address _tokenAddress) {
+        token = IERC20(_tokenAddress);
+        oracle = ExchangeOracle(_oracleAddress);
+    }
+
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+
+    // ************************************ EXCHANGE ******************************************
+
+    /**
+     * @dev
+     */
+    uint256 poolTreshhold = 10000;
+
+    /**
+     * @dev
+     */
+    uint256 highTokenPool;
+    uint256 lowTokenPool;
+
+    /**
+     * @dev
+     */
     function setThreshHold(uint256 _newLimit) public {
         // only devs
         poolTreshhold = _newLimit;
     }
-
-    uint256 highTokenPool;
-    uint256 lowTokenPool;
 
     function fundTokenPool(uint256 _poolType, uint256 _amount) public {
         // only devs
@@ -47,97 +88,106 @@ contract ChromiumV2 {
         }
     }
 
-    function sellCBLT(uint256 _amount) public payable {
-        uint256 netAmount;
-        uint256 owedToUser;
+    /**
+     * @dev
+     */
+    modifier validBuy() {
+        require(
+            msg.value > 15e16,
+            "Error, deposit must be higher than 0.015 ETH"
+        );
+        require(
+            chromiumStatus == true,
+            "Exchange is currently offline, please try again later."
+        );
+        _;
+    }
+
+    /**
+     * @dev
+     */
+    modifier validSell() {
+        require(
+            chromiumStatus == true,
+            "Exchange is currently offline, please try again later."
+        );
+        require(buyStatus == true, "Buying feature is currently offline");
+
+        _;
+    }
+
+    /**
+     * @dev
+     */
+    function expectedBuyReturn(uint256 _amount)
+        public
+        view
+        returns (uint256, uint256)
+    {
         uint256 priceOfToken = oracle.priceOfToken(address(token));
+        uint256 balance;
+        uint256 tokenExpectedReturn;
 
-        require(_amount > 0, "You need to sell at least some tokens");
+        balance = calculateFee(_amount);
+        tokenExpectedReturn = SafeMath.div(balance, priceOfToken);
+        return (tokenExpectedReturn, balance);
+    }
 
-        if (_amount > poolTreshhold) {
-            netAmount = SafeMath.mul(_amount, priceOfToken);
-            IERC20(token).universalTransferFromSenderToThis(_amount);
-
-            owedToUser = SafeMath.sub(
+    /**
+     * @dev
+     */
+    function calculateFee(uint256 _amount) public view returns (uint256) {
+        uint256 newBalance;
+        if (_amount > feeTier) {
+            newBalance = SafeMath.sub(
                 _amount,
                 SafeMath.multiply(_amount, 3, 1000)
             );
-
-            totalFeeBalance = SafeMath.add(
-                totalFeeBalance,
-                SafeMath.multiply(_amount, 3, 1000)
-            );
         } else {
-            netAmount = SafeMath.mul(_amount, priceOfToken);
-            IERC20(token).universalTransferFromSenderToThis(_amount);
-
             uint256 ETHprice = oracle.priceOfETH();
             uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
-
-            owedToUser = SafeMath.sub(_amount, SafeMath.mul(ETHinUSD, fee));
-
-            totalFeeBalance = SafeMath.add(
-                totalFeeBalance,
-                SafeMath.mul(ETHinUSD, fee)
-            );
+            newBalance = SafeMath.sub(_amount, SafeMath.mul(ETHinUSD, fee));
         }
-
-        payable(msg.sender).transfer(owedToUser);
+        return newBalance;
     }
 
-    function buyCBLT() public payable {
+    /**
+     * @dev
+     */
+    function expectedSellReturn(uint256 _amount) public view returns (uint256) {
+        uint256 priceOfToken;
+        uint256 balance;
+
+        priceOfToken = oracle.priceOfToken(address(token));
+        balance = calculateFee(SafeMath.mul(_amount, priceOfToken));
+        return balance;
+    }
+
+    /**
+     * @dev
+     */
+    function buyCBLT() public payable validBuy {
         uint256 tokensOwed;
-        uint256 priceOfToken = oracle.priceOfToken(address(token));
         uint256 newBalance;
 
-        require(
-            msg.value > priceOfToken,
-            "Error, deposit must be higher than 0.015 ETH"
-        );
-
-        if (msg.value > 5e18) {
-            newBalance = SafeMath.sub(
-                msg.value,
-                SafeMath.multiply(msg.value, 3, 1000)
-            );
-
-            tokensOwed = SafeMath.div(newBalance, priceOfToken);
-            require(
-                tokensOwed < highTokenPool,
-                "Not enough tokens in this pool"
-            );
-
-            totalFeeBalance = SafeMath.add(
-                totalFeeBalance,
-                SafeMath.multiply(newBalance, 3, 1000)
-            );
-        } else {
-            uint256 ETHprice = oracle.priceOfETH();
-            uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
-
-            newBalance = SafeMath.sub(msg.value, SafeMath.mul(ETHinUSD, fee));
-
-            tokensOwed = SafeMath.div(newBalance, priceOfToken);
-
-            require(
-                tokensOwed < lowTokenPool,
-                "Not enough tokens in this pool"
-            );
-
-            totalFeeBalance = SafeMath.sub(
-                msg.value,
-                SafeMath.mul(ETHinUSD, fee)
-            );
-        }
+        (tokensOwed, newBalance) = expectedBuyReturn(msg.value);
+        totalFeeBalance = SafeMath.sub(msg.value, newBalance);
         IERC20(token).universalTransfer(msg.sender, tokensOwed);
     }
 
-    // Fallback method for receiving ETH payments
-    receive() external payable {
-        emit Received(msg.sender, msg.value);
+    /**
+     * @dev
+     */
+    function sellCBLT(uint256 _amount) public payable {
+        uint256 newBalance;
+
+        IERC20(token).universalTransferFromSenderToThis(_amount);
+        newBalance = expectedSellReturn(_amount);
+        totalFeeBalance = SafeMath.sub(msg.value, newBalance);
+        payable(msg.sender).transfer(newBalance);
     }
 
-    //*********************************** FEE *************************************
+    //**************************************** FEE *****************************************
 
     /**
      * @dev
@@ -147,14 +197,24 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    function setContract(address _treasuryAddress) public {
-        WithdrawContract = _treasuryAddress;
-    }
+    uint256 feeTier;
+
+    /**
+     * @dev Variable for staking flat fee.
+     */
+    uint256 fee;
 
     /**
      * @dev Saving running fee total
      */
-    uint256 public totalFeeBalance;
+    uint256 totalFeeBalance;
+
+    /**
+     * @dev
+     */
+    function setContract(address _treasuryAddress) public {
+        WithdrawContract = _treasuryAddress;
+    }
 
     /**
      * @dev
@@ -176,11 +236,6 @@ contract ChromiumV2 {
     }
 
     /**
-     * @dev Variable for staking flat fee.
-     */
-    uint256 fee;
-
-    /**
      * @dev Setter for staking flat fee.
      * @param _newFee new uint fee value.
      * @notice This action can only be perform under dev vote.
@@ -196,281 +251,30 @@ contract ChromiumV2 {
         );
         _;
     }
+
+    //*********************************** Exchange Migration *************************************
+
+    /**
+     * @dev
+     */
+    address migrationExchange;
+
+    /**
+     * @dev
+     */
+    function setExchangeAddress(address _newExchange) public {
+        // Only devs
+        migrationExchange = _newExchange;
+    }
+
+    /**
+     * @dev
+     */
+    function assetsMigration() public payable {
+        uint256 totalTokenBalance = token.balanceOf(address(this));
+        uint256 totalETHBalance = address(this).balance;
+
+        IERC20(token).universalTransfer(migrationExchange, totalTokenBalance);
+        payable(msg.sender).transfer(totalETHBalance);
+    }
 }
-
-// TO DO:
-// - Add in the Donate Functions
-// - Figure out threshold amount
-// - Make sure oracle connection goes through and price/amounts convert correctly
-
-// ===================================================== OLD CODE =====================================================
-
-//pragma solidity >=0.4.22 <0.9.0;
-//
-//import "./interfaces/UniversalERC20.sol";
-//import "./interfaces/Ownable.sol";
-//import "./interfaces/IUniswap.sol";
-//import "./ExchangeOracle.sol";
-//
-//contract ChromiumV2 is Ownable {
-// using UniversalERC20 for IERC20;
-// // used to keep track of tokens in contract
-// mapping(uint256 => uint256) public cbltLiquidity;
-// uint256 cbltLiquidityMaxAmount;
-// // eth contract address
-// IERC20 private constant ETH_ADDRESS =
-//     IERC20(0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE);
-// IUniswap private constant uniswap =
-//     IUniswap(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
-// // initializing objects
-// IERC20 cbltToken;
-// ExchangeOracle oracle;
-// // emits when chromium is used
-// event ChromiumTrade(
-//     address indexed _from,
-//     address _fromToken,
-//     address _destToken,
-//     uint256 _fromAmount,
-//     uint256 _cbltAmount
-// );
-// /**
-//  * pass in the oracle contract so that it can pull info from it
-//  */
-// constructor(
-//     address _cbltToken,
-//     address _oracle,
-//     uint256 _liquidityCbltPoolAmount
-// ) {
-//     cbltToken = IERC20(_cbltToken);
-//     oracle = ExchangeOracle(_oracle);
-//     cbltLiquidityMaxAmount = _liquidityCbltPoolAmount;
-// }
-// // sets CBLT token  // only devs
-// function setCbltToken(address _cblt) external {
-//     cbltToken = IERC20(_cblt);
-// }
-// // only devs
-// function setOracle(address _oracle) external {
-//     oracle = ExchangeOracle(_oracle);
-// }
-// // only devs
-// function changeCbltLiquidityLimit(uint256 _liquidityLimit) external {
-//     cbltLiquidityMaxAmount = _liquidityLimit;
-// }
-// /************ chromium functions ************/
-// function getExchangeRate() public view returns (uint256) {
-//     (uint256 sellTokenValue, uint256 buyTokenValue, bool success) =
-//         oracle.priceOfPair(path[0], path[1]);
-//     if (success) {
-//         amounts = new uint256[](path.length);
-//         amounts[0] = amountIn;
-//         amountIn = SafeMath.sub(
-//             amountIn,
-//             SafeMath.mul(amountIn, SafeMath.div(3, 1000))
-//         );
-//         uint256 returnAmount =
-//             SafeMath.mul(
-//                 amountIn,
-//                 SafeMath.findRate(sellTokenValue, buyTokenValue)
-//             );
-//         amounts[1] = returnAmount;
-//     } else {
-//         amountIn = SafeMath.sub(
-//             amountIn,
-//             SafeMath.mul(amountIn, SafeMath.div(3, 1000))
-//         );
-//         amounts = uniswap.getAmountsOut(amountIn, path);
-//     }
-// }
-// /**
-//  * @dev this function will swap cblt tokens for tokens that are allowed
-//  */
-// function swapTokens(address[] calldata path, uint256 amount)
-//     external
-//     payable
-//     returns (uint256)
-// {
-//     require(
-//         path[0] != address(cbltToken) && path[1] != address(cbltToken),
-//         "Cblt can't be traded with this function"
-//     );
-//     uint256[] memory amounts = getExchangeRate(amount, path);
-//     if (IERC20(path[0]) == ETH_ADDRESS) {
-//         require(msg.value != 0, "Chromium:: msg.value can not equal 0");
-//         require(
-//             tokenLiquidity[path[1]] >= amounts[1],
-//             "Not enough tokens in Treasury."
-//         );
-//         IERC20(path[0]).universalTransferFromSenderToThis(amount);
-//         tokenLiquidity[path[0]] = SafeMath.add(
-//             tokenLiquidity[path[0]],
-//             amount
-//         );
-//         IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);
-//         tokenLiquidity[path[1]] = SafeMath.sub(
-//             tokenLiquidity[path[1]],
-//             amounts[1]
-//         );
-//         emit ChromiumTrade(
-//             msg.sender,
-//             path[0],
-//             path[1],
-//             amount,
-//             amounts[1]
-//         );
-//         return amounts[1];
-//     } else {
-//         require(
-//             tokenLiquidity[path[1]] >= amounts[1],
-//             "Chromium:: Not enough tokens in Treasury."
-//         );
-//         IERC20(path[0]).universalTransferFromSenderToThis(amount);
-//         tokenLiquidity[path[0]] = SafeMath.add(
-//             tokenLiquidity[path[0]],
-//             amount
-//         );
-//         IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);
-//         emit ChromiumTrade(
-//             msg.sender,
-//             path[0],
-//             path[1],
-//             amount,
-//             amounts[1]
-//         );
-//         return amounts[1];
-//     }
-// }
-// function swapCblt(address[] calldata path, uint256 amount)
-//     external
-//     payable
-//     returns (uint256)
-// {
-//     require(
-//         path[0] == address(cbltToken),
-//         "Chromium:: fromToken needs to be cbltToken."
-//     );
-//     uint256[] memory amounts = getExchangeRate(amount, path);
-//     require(
-//         tokenLiquidity[path[1]] >= amounts[1],
-//         "Not enough tokens in treasury."
-//     );
-//     cbltToken.universalTransferFromSenderToThis(amount);
-//     uint256 temp = getCbltPool(amount);
-//     cbltLiquidity[temp] = SafeMath.add(cbltLiquidity[temp], amount);
-//     IERC20(path[1]).universalTransfer(msg.sender, amounts[1]);
-//     tokenLiquidity[path[1]] = SafeMath.sub(
-//         tokenLiquidity[path[1]],
-//         amounts[1]
-//     );
-//     emit ChromiumTrade(msg.sender, path[0], path[1], amount, amounts[1]);
-//     return amounts[1];
-// }
-// function swapForCblt(address[] calldata path, uint256 amount)
-//     external
-//     payable
-//     returns (uint256)
-// {
-//     require(
-//         path[1] == address(cbltToken),
-//         "Chromium:: destToken needs to be cbltToken."
-//     );
-//     uint256[] memory amounts = getExchangeRate(amount, path);
-//     uint256 temp = getCbltPool(amounts[1]);
-//     if (IERC20(path[0]) == ETH_ADDRESS) {
-//         require(msg.value != 0, "Chromium:: msg.value can not equal 0");
-//         require(
-//             cbltLiquidity[temp] >= amounts[1],
-//             "Not enough cblt tokens in pool for 1000 and up in Treasury."
-//         );
-//         IERC20(path[0]).universalTransferFromSenderToThis(amount);
-//         tokenLiquidity[path[0]] = SafeMath.add(
-//             tokenLiquidity[path[0]],
-//             amount
-//         );
-//         cbltLiquidity[temp] = SafeMath.sub(cbltLiquidity[temp], amounts[1]);
-//         cbltToken.universalTransfer(msg.sender, amounts[1]);
-//         emit ChromiumTrade(
-//             msg.sender,
-//             path[0],
-//             path[1],
-//             amount,
-//             amounts[1]
-//         );
-//         return amounts[1];
-//     } else {
-//         require(
-//             cbltLiquidity[temp] >= amounts[1],
-//             "Not enough cblt tokens in pool for 1000 and down in Treasury."
-//         );
-//         IERC20(path[0]).universalTransferFromSenderToThis(amount);
-//         tokenLiquidity[path[0]] = SafeMath.add(
-//             tokenLiquidity[path[0]],
-//             amount
-//         );
-//         cbltLiquidity[temp] = SafeMath.sub(cbltLiquidity[temp], amounts[1]);
-//         cbltToken.universalTransfer(msg.sender, amounts[1]);
-//         emit ChromiumTrade(
-//             msg.sender,
-//             path[0],
-//             path[1],
-//             amount,
-//             amounts[1]
-//         );
-//         return amounts[1];
-//     }
-// }
-// function addCbltToPool(uint256 _poolNumber, uint256 _amount)
-//     external
-//     onlyOwner
-// {
-//     cbltToken.universalTransferFromSenderToThis(_amount);
-//     cbltLiquidity[_poolNumber] = SafeMath.add(
-//         cbltLiquidity[_poolNumber],
-//         _amount
-//     );
-// }
-// function addNewTokenToPool(address _token, uint256 _amount) external {
-//     IERC20(_token).universalTransferFromSenderToThis(_amount);
-//     tokenLiquidity[_token] = SafeMath.add(tokenLiquidity[_token], _amount);
-//     tokenApproval[_token] = TokenInfo(false, false);
-// }
-// function retrieveTokens(IERC20 _token, uint256 amount) external onlyOwner {
-//     require(
-//         cbltToken != _token,
-//         "Chromium:: can't withdraw CBLT with this function."
-//     );
-//     require(
-//         amount <= tokenLiquidity[address(_token)],
-//         "Chromium:: not enough tokens in exchange."
-//     );
-//     _token.universalTransfer(msg.sender, amount);
-//     tokenLiquidity[address(_token)] = SafeMath.sub(
-//         tokenLiquidity[address(_token)],
-//         amount
-//     );
-// }
-// function retrieveCBLT(uint256 liquidityPool, uint256 amount)
-//     external
-//     onlyOwner
-// {
-//     require(
-//         amount <= cbltLiquidity[liquidityPool],
-//         "Chromium:: not enough CBLT in this liquidity pool."
-//     );
-//     cbltToken.universalTransfer(msg.sender, amount);
-//     cbltLiquidity[liquidityPool] = SafeMath.sub(
-//         cbltLiquidity[liquidityPool],
-//         amount
-//     );
-// }
-// function getCbltPool(uint256 amount) internal view returns (uint256) {
-//     if (amount >= cbltLiquidityMaxAmount) {
-//         return 1;
-//     } else {
-//         return 2;
-//     }
-// }
-// // fallback function
-// receive() external payable {}
-//}
-//
