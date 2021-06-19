@@ -84,7 +84,7 @@ contract ChromiumV2 {
         token = IERC20(address(0x433C6E3D2def6E1fb414cf9448724EFB0399b698));
         oracle = ExchangeOracle(_oracleAddress);
         chromiumStatus = true;
-        buyStatus = true;
+        buyStatus = false;
         feeThreshold = 5e18;
         poolThreshold = 10000;
         flatFee = 3;
