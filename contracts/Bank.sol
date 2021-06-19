@@ -795,48 +795,61 @@ contract Bank is Ownable {
     function getTokenReturn(
         uint256 _amount,
         uint256 _timeStakedTier,
-        address _tokenAddress,
-        address _user
-    ) public view returns (uint256, uint256) {
-        uint256 tokenPrice = oracle.priceOfToken(address(_tokenAddress));
-        uint256 lotteryTicket = userBook[_user].lotteryTicket;
-        uint256 interest;
-        uint256 newBalance;
+        address _tokenAddress
+    ) public returns (uint256, uint256) {
         uint256 fee;
-        uint256 amountStakedTier;
+        uint256 tokensOwed;
         uint256 paidAdvanced;
+        uint256 amountStakedTier;
+        uint256 newBalance =
+            SafeMath.add(userBook[msg.sender].ethBalance, _amount);
 
         (amountStakedTier, paidAdvanced) = calculateAmountTier(
             _amount,
             _timeStakedTier
         );
 
-        (newBalance, fee) = calculateFee(_amount);
+        (newBalance, fee) = calculateFee(newBalance);
 
-        if (lotteryTicket > 0) {
-            if (userBook[_user].withdrawReady == false) {
-                interest = SafeMath.mul(
-                    stakingRewardRate[_timeStakedTier][amountStakedTier]
-                        .interest,
-                    2
-                );
-            }
-            userBook[_user].withdrawReady == true;
-        } else {
-            interest = stakingRewardRate[_timeStakedTier][amountStakedTier]
-                .interest;
+        tokensOwed = calculateRewardReturn(
+            _timeStakedTier,
+            amountStakedTier,
+            newBalance,
+            _tokenAddress
+        );
+
+        return (tokensOwed, paidAdvanced);
+    }
+
+    function calculateRewardReturn(
+        uint256 _timeStakedTier,
+        uint256 _amountStakedTier,
+        uint256 _balance,
+        address _tokenAddress
+    ) internal returns (uint256) {
+        uint256 dueDate;
+        uint256 tokensReserved;
+
+        if (userBook[msg.sender].ethBalance > 0) {
+            dueDate = SafeMath.add(
+                stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                    .tierDuration,
+                userBook[msg.sender].depositTime
+            );
+
+            require(
+                block.timestamp > dueDate,
+                "Current staking period is not over yet"
+            );
         }
 
-        return (
-            SafeMath.mul(
-                SafeMath.div(
-                    SafeMath.multiply(_amount, interest, 100),
-                    tokenPrice
-                ),
-                1e18
-            ),
-            paidAdvanced
+        tokensReserved = calculateRewardDeposit(
+            _balance,
+            _timeStakedTier,
+            _amountStakedTier,
+            _tokenAddress
         );
+        return tokensReserved;
     }
 
     /**
@@ -855,7 +868,6 @@ contract Bank is Ownable {
     {
         uint256 amountStakedTier;
         uint256 paidAdvanced = 0;
-        uint256 dueDate;
         uint256 tokensReserved;
         uint256 balance;
         uint256 fee;
@@ -865,33 +877,6 @@ contract Bank is Ownable {
             _timeStakedTier
         );
         (balance, fee) = calculateFee(msg.value);
-
-        if (userBook[msg.sender].ethBalance > 0) {
-            dueDate = SafeMath.add(
-                stakingRewardRate[_timeStakedTier][amountStakedTier]
-                    .tierDuration,
-                userBook[msg.sender].depositTime
-            );
-
-            require(
-                block.timestamp > dueDate,
-                "Current staking period is not over yet"
-            );
-
-            tokensReserved = calculateRewardDeposit(
-                SafeMath.add(balance, userBook[msg.sender].ethBalance),
-                _timeStakedTier,
-                amountStakedTier,
-                _tokenAddress
-            );
-        } else {
-            tokensReserved = calculateRewardDeposit(
-                balance,
-                _timeStakedTier,
-                amountStakedTier,
-                _tokenAddress
-            );
-        }
 
         require(
             tokensReserved <= tokenReserve[_tokenAddress],
