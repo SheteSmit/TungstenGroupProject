@@ -130,7 +130,7 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    function setThreshHold(uint256 _newLimit) public {
+    function setThreshold(uint256 _newLimit) public {
         // only devs
         poolThreshold = _newLimit;
     }
@@ -212,7 +212,9 @@ contract ChromiumV2 {
         uint256 fee;
 
         priceOfToken = oracle.priceOfToken(address(token));
-        (balance, fee) = calculateFee(SafeMath.mul(_amount, priceOfToken));
+        (balance, fee) = calculateFee(
+            SafeMath.div(SafeMath.mul(_amount, priceOfToken), 1e18)
+        );
         return (balance, fee);
     }
 
