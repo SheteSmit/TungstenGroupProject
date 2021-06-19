@@ -27,6 +27,109 @@ contract Bank is Ownable {
      */
     address oracleAddress;
 
+    /**
+     * @dev Bool switch turns support for other tokens as reward outside of CBLT.
+     */
+    bool multipleTokenSupport;
+
+    /**
+     * @dev Variable to turn staking off and on.
+     */
+    bool public stakingStatus;
+
+    /**
+     * @dev Bool switch for all staking instance terminations
+     */
+    bool public terminateStaking;
+
+    /**
+     * @dev Mapping with key value address (token address) leads the current reserves avaliable for tokens
+     * being currently offered to stake on.
+     */
+    mapping(address => uint256) public tokenReserve;
+
+    /**
+     * @dev Checks if all current staking instances are to be terminated
+     */
+    modifier stakingTermination(bool _functionSpecific) {
+        if (_functionSpecific) {
+            require(terminateStaking == true, "Staking is currently disabled.");
+        } else {
+            require(
+                terminateStaking == false,
+                "Staking is currently functioning as expected"
+            );
+        }
+        _;
+    }
+
+    /**
+     * @dev Getter function to pull info on support for other tokens.
+     */
+    function getTokenSupport() public view returns (bool) {
+        return multipleTokenSupport;
+    }
+
+    /**
+     * @dev Getter function to pull information for avaliable token amount in reserves
+     * @param _tokenAddress token address of queried token
+     */
+    function getTokenReserve(address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return tokenReserve[_tokenAddress];
+    }
+
+    /**
+     * @dev Getter function to pull staking status on and off.
+     */
+    function getStakingStatus() public view returns (bool) {
+        return stakingStatus;
+    }
+
+    /**
+     * @dev Function terminates all staking instances and allows early balance withdrewal
+     * @param _bool true terminates all contract instances and allows users to withdraw
+     * @notice This action can only be perform under dev vote.
+     */
+    function setStakingTermination(bool _bool) public {
+        terminateStaking = _bool;
+    }
+
+    /**
+     * @dev Setter function to turn support for other tokens.
+     * @notice This action can only be perform under dev vote.
+     * @param _bool true turns on other token support for staking reward, false off
+     */
+    function setTokenSupport(bool _bool) public {
+        multipleTokenSupport = _bool;
+    }
+
+    /**
+     * @dev Setter function to turn staking status on and off.
+     * @notice This action can only be perform under dev vote.
+     * @param _bool value true - on, false - off.
+     */
+    function setStakingStatus(bool _bool) public {
+        stakingStatus = _bool;
+    }
+
+    /**
+     * @dev Function handles token deposit for treasury to track
+     */
+    function tokenReserveDeposit(uint256 _amount, address _tokenAddress)
+        public
+        payable
+    {
+        IERC20(_tokenAddress).universalTransferFromSenderToThis(_amount);
+        tokenReserve[_tokenAddress] = SafeMath.add(
+            tokenReserve[_tokenAddress],
+            _amount
+        );
+    }
+
     constructor(address _CBLT, address _oracle) {
         oracle = ExchangeOracle(_oracle);
         token = IERC20(_CBLT);
@@ -42,15 +145,10 @@ contract Bank is Ownable {
             0xc778417E063141139Fce010982780140Aa0cD5Ab
         ] = 6000000000000000000000000000;
 
-        // Time tier at launch is 5
         tierMax = 5;
-        // Assing value to other token support
         multipleTokenSupport = false;
-        // Assign value to staking status
         stakingStatus = true;
-        // Assign value to fee
         flatFee = 3;
-        // Assign value to terminateStaking
         terminateStaking = false;
 
         // Staking percentages based on deposit time and amount
@@ -136,6 +234,87 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev
+     */
+    receive() external payable {
+        emit Received(msg.sender, msg.value);
+    }
+
+    // ******************************** Fee mechanism ***********************************
+
+    /**
+     * @dev
+     */
+    uint256 public feeThreshold;
+
+    /**
+     * @dev Variable for staking flat fee.
+     */
+    uint256 public flatFee;
+
+    /**
+     * @dev Variable for staking flat fee.
+     */
+    uint256 public percentFee;
+
+    /**
+     * @dev
+     */
+    address WithdrawContract;
+
+    /**
+     * @dev Saving running fee total
+     */
+    uint256 public totalFeeBalance;
+
+    modifier onlyTreasury {
+        require(
+            msg.sender == WithdrawContract,
+            "This address can't withdraw funds from treasury"
+        );
+        _;
+    }
+
+    /**
+     * @dev
+     */
+    function setContract(address _treasuryAddress) public {
+        WithdrawContract = _treasuryAddress;
+    }
+
+    /**
+     * @dev
+     */
+    function getTotalBalance() public view returns (uint256) {
+        return totalFeeBalance;
+    }
+
+    /**
+     * @dev transfers funds to an approved contract
+     */
+    function withdrawFees(uint256 _amount) public payable onlyTreasury {
+        require(
+            _amount <= totalFeeBalance,
+            "Treasury doesn't have sufficient funds."
+        );
+        totalFeeBalance = SafeMath.sub(totalFeeBalance, _amount);
+        payable(msg.sender).transfer(_amount);
+    }
+
+    /**
+     * @dev Setter for staking flat fee.
+     * @param _newFee new uint fee value.
+     * @notice This action can only be perform under dev vote.
+     */
+    function newFee(uint256 _newFee) public {
+        flatFee = _newFee;
+    }
+
+    // **************************************** DEV VOTE ************************************************
+
+    event Received(address, uint256);
+
+    /**
      * @dev Events emitted
      */
     event onReceived(address indexed _from, uint256 _amount);
@@ -145,8 +324,6 @@ contract Bank is Ownable {
         uint256 _amount
     );
     event depositToken(address indexed _from, uint256 _amount);
-
-    // **************************************** DEV VOTE ************************************************
 
     mapping(address => bool) devBook;
     address[] devArray;
@@ -211,6 +388,65 @@ contract Bank is Ownable {
     // {
     //     uint256 interest = intProposed;
     // }
+
+    // ************************************ Lottery ***************************************
+    /**
+     * @dev Address of lottery contract in charge of executing LotteryWinner function
+     */
+    address Lottery;
+
+    /**
+     * @dev Mapping with key value uint (lottery ticket) leads to the information on ticket
+     * amount and time tier for the user to redeem his reward staking.
+     */
+    mapping(address => bool) lotteryBook;
+
+    /**
+     * @dev Modifier ensures only the lottery is allowed to pick new winners
+     */
+    modifier isLotteryContract {
+        require(msg.sender == Lottery);
+        _;
+    }
+
+    /**
+     * @dev Getter function to pull current lottery address
+     * @return address of contract
+     */
+    function getLotteryContract() public view returns (address) {
+        return Lottery;
+    }
+
+    /**
+     * @dev Getter function to pull information on lottery winner
+     * @param _userAddress address of user queried
+     * @return if user has a multiplier ready to be reedemed
+     */
+    function lotteryWinner(address _userAddress) public view returns (bool) {
+        return (lotteryBook[_userAddress]);
+    }
+
+    /**
+     * @dev Setter function to change the contract address for the lottery connected to
+     * staking.
+     * @notice This action can only be perform under dev vote.
+     * @param _lotteryAddress address of lottery contract picking winners.
+     */
+    function setLotteryContract(address _lotteryAddress) public {
+        Lottery = _lotteryAddress;
+    }
+
+    /**
+     * @dev Passes an array of winners
+     * @param _winners array of all  winners
+     * @notice Only an allowed address will be able to execute this function
+     */
+    function lottery(address[] memory _winners) public isLotteryContract {
+        // needs modifier
+        for (uint256 i = 0; i < _winners.length; i++) {
+            lotteryBook[_winners[i]] = true;
+        }
+    }
 
     // ****************************** Lending **********************************
 
@@ -404,111 +640,6 @@ contract Bank is Ownable {
     // ********************************* Staking ***********************************
 
     /**
-     * @dev Function handles token deposit for treasury to track
-     */
-    function tokenReserveDeposit(uint256 _amount, address _tokenAddress)
-        public
-        payable
-    {
-        IERC20(_tokenAddress).universalTransferFromSenderToThis(_amount);
-        tokenReserve[_tokenAddress] = SafeMath.add(
-            tokenReserve[_tokenAddress],
-            _amount
-        );
-    }
-
-    /**
-     * @dev Mapping with key value address (token address) leads the current reserves avaliable for tokens
-     * being currently offered to stake on.
-     */
-    mapping(address => uint256) public tokenReserve;
-
-    /**
-     * @dev Getter function to pull information for avaliable token amount in reserves
-     * @param _tokenAddress token address of queried token
-     */
-    function getTokenReserve(address _tokenAddress)
-        public
-        view
-        returns (uint256)
-    {
-        return tokenReserve[_tokenAddress];
-    }
-
-    /**
-     * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
-     */
-    uint256 public borrowingPool;
-
-    /**
-     * @dev Getter function to pull total amount of ETH saved in fees
-     */
-    function getFees() public view returns (uint256) {
-        return totalFeeBalance;
-    }
-
-    /**
-     * @dev Variable displaying the maximum time tier supported.
-     */
-    uint256 public tierMax;
-
-    /**
-     * @dev Bool switch for all staking instance terminations
-     */
-    bool public terminateStaking;
-
-    /**
-     * @dev Function terminates all staking instances and allows early balance withdrewal
-     * @param _bool true terminates all contract instances and allows users to withdraw
-     * @notice This action can only be perform under dev vote.
-     */
-    function setStakingTermination(bool _bool) public {
-        terminateStaking = _bool;
-    }
-
-    /**
-     * @dev Bool switch turns support for other tokens as reward outside of CBLT.
-     */
-    bool multipleTokenSupport;
-
-    /**
-     * @dev Setter function to turn support for other tokens.
-     * @notice This action can only be perform under dev vote.
-     * @param _bool true turns on other token support for staking reward, false off
-     */
-    function setTokenSupport(bool _bool) public {
-        multipleTokenSupport = _bool;
-    }
-
-    /**
-     * @dev Getter function to pull info on support for other tokens.
-     */
-    function getTokenSupport() public view returns (bool) {
-        return multipleTokenSupport;
-    }
-
-    /**
-     * @dev Variable to turn staking off and on.
-     */
-    bool public stakingStatus;
-
-    /**
-     * @dev Setter function to turn staking status on and off.
-     * @notice This action can only be perform under dev vote.
-     * @param _bool value true - on, false - off.
-     */
-    function setStakingStatus(bool _bool) public {
-        stakingStatus = _bool;
-    }
-
-    /**
-     * @dev Getter function to pull staking status on and off.
-     */
-    function getStakingStatus() public view returns (bool) {
-        return stakingStatus;
-    }
-
-    /**
      * @dev Struct saves tier interest, monitor amount of stakers allowed per tier and
      * tier duration used to calculate due dates.
      */
@@ -519,11 +650,88 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev Struct saves user data for ongoing staking and lottery results.
+     */
+    struct User {
+        uint256 ethBalance;
+        uint256 tokenReserved;
+        uint256 depositTime;
+        uint256 timeStakedTier;
+        uint256 amountStakedTier;
+        address currentTokenStaked;
+    }
+
+    /**
+     * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
+     */
+    uint256 public borrowingPool;
+
+    /**
+     * @dev Variable displaying the maximum time tier supported.
+     */
+    uint256 public tierMax;
+
+    /**
      * @dev Nested mappings with key value uint (time tier) leads to submapping with key value uint
      * (amount tier) that leads the crossTier combination to pull the combination's interest amount of stakers
      * avaliable and the tier duration used to calculate due date period.
      */
     mapping(uint256 => mapping(uint256 => crossTier)) public stakingRewardRate;
+
+    /**
+     * @dev Mapping with key value address(the user's address) leads to the struct with the user's
+     * staking and lottery information.
+     */
+    mapping(address => User) public userBook;
+
+    /**
+     * @dev Mapping with key value address (user address) leads to submapping with key value address
+     * (token address) to pull the current balance rewarded to that user in the tokens
+     */
+    mapping(address => mapping(address => uint256)) public rewardWallet;
+
+    /**
+     * @dev Modifier checks if staking is currently online, the deposit is higher
+     * than 0.015 ETH and tier value falls under the supported amount
+     */
+    modifier isValidStake(uint256 _timeStakedTier) {
+        // Checks if staking is currently online
+        require(stakingStatus == true, "Staking is currently offline");
+
+        // Minimum deposit of 0.015 ETH
+        require(
+            msg.value > 15e16,
+            "Error, deposit must be higher than 0.015 ETH"
+        );
+
+        // The tier input must be between 1 and tierMax
+        require(
+            _timeStakedTier >= 1 && _timeStakedTier <= tierMax,
+            "Tier number must be a number between 1 and maximum tier supported."
+        );
+        _;
+    }
+
+    /**
+     * @dev Modifier checks current support on other tokens as rewards for staking
+     */
+    modifier tokenIsCBLT(address _tokenAddress) {
+        if (multipleTokenSupport == false) {
+            require(
+                _tokenAddress ==
+                    address(0x433C6E3D2def6E1fb414cf9448724EFB0399b698),
+                "Token must be CBLT"
+            );
+        }
+        _;
+    }
+
+    /**
+     * @dev Getter function to pull total amount of ETH saved in fees
+     */
+    function getFees() public view returns (uint256) {
+        return totalFeeBalance;
+    }
 
     /**
      * @dev Getter function pulls current tier information.
@@ -582,6 +790,45 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev Getter function to pull information from the user.
+     * @param _userAddress address of the queried user.
+     */
+    function getUser(address _userAddress)
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            address
+        )
+    {
+        return (
+            userBook[_userAddress].ethBalance,
+            userBook[_userAddress].tokenReserved,
+            userBook[_userAddress].depositTime,
+            userBook[_userAddress].timeStakedTier,
+            userBook[_userAddress].amountStakedTier,
+            userBook[_userAddress].currentTokenStaked
+        );
+    }
+
+    /**
+     * @dev Getter function to pull avaliable tokens ready to withdraw from reserves
+     * @param _userAddress address of queried user
+     * @param _tokenAddress address of queried token
+     */
+    function getUserBalance(address _userAddress, address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        return rewardWallet[_userAddress][_tokenAddress];
+    }
+
+    /**
      * @dev Setter function to modify interests based on time and amount
      * @notice Function is used to modify existing tiers or create new tiers if new
      * tier key values are passed, creating new tier combinations.If time tier used
@@ -613,120 +860,6 @@ contract Bank is Ownable {
         }
     }
 
-    /**
-     * @dev Struct saves user data for ongoing staking and lottery results.
-     */
-    struct User {
-        uint256 ethBalance;
-        uint256 tokenReserved;
-        uint256 depositTime;
-        uint256 timeStakedTier;
-        uint256 amountStakedTier;
-        address currentTokenStaked;
-    }
-
-    /**
-     * @dev Mapping with key value address(the user's address) leads to the struct with the user's
-     * staking and lottery information.
-     */
-    mapping(address => User) public userBook;
-
-    /**
-     * @dev Getter function to pull information from the user.
-     * @param _userAddress address of the queried user.
-     */
-    function getUser(address _userAddress)
-        public
-        view
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            uint256,
-            address
-        )
-    {
-        return (
-            userBook[_userAddress].ethBalance,
-            userBook[_userAddress].tokenReserved,
-            userBook[_userAddress].depositTime,
-            userBook[_userAddress].timeStakedTier,
-            userBook[_userAddress].amountStakedTier,
-            userBook[_userAddress].currentTokenStaked
-        );
-    }
-
-    /**
-     * @dev Mapping with key value address (user address) leads to submapping with key value address
-     * (token address) to pull the current balance rewarded to that user in the tokens
-     */
-    mapping(address => mapping(address => uint256)) public rewardWallet;
-
-    /**
-     * @dev Getter function to pull avaliable tokens ready to withdraw from reserves
-     * @param _userAddress address of queried user
-     * @param _tokenAddress address of queried token
-     */
-    function getUserBalance(address _userAddress, address _tokenAddress)
-        public
-        view
-        returns (uint256)
-    {
-        return rewardWallet[_userAddress][_tokenAddress];
-    }
-
-    /**
-     * @dev Modifier checks if staking is currently online, the deposit is higher
-     * than 0.015 ETH and tier value falls under the supported amount
-     */
-    modifier isValidStake(uint256 _timeStakedTier) {
-        // Checks if staking is currently online
-        require(stakingStatus == true, "Staking is currently offline");
-
-        // Minimum deposit of 0.015 ETH
-        require(
-            msg.value > 15e16,
-            "Error, deposit must be higher than 0.015 ETH"
-        );
-
-        // The tier input must be between 1 and tierMax
-        require(
-            _timeStakedTier >= 1 && _timeStakedTier <= tierMax,
-            "Tier number must be a number between 1 and maximum tier supported."
-        );
-        _;
-    }
-
-    /**
-     * @dev Modifier checks current support on other tokens as rewards for staking
-     */
-    modifier tokenIsCBLT(address _tokenAddress) {
-        if (multipleTokenSupport == false) {
-            require(
-                _tokenAddress ==
-                    address(0x433C6E3D2def6E1fb414cf9448724EFB0399b698),
-                "Token must be CBLT"
-            );
-        }
-        _;
-    }
-
-    /**
-     * @dev Checks if all current staking instances are to be terminated
-     */
-    modifier stakingTermination(bool _functionSpecific) {
-        if (_functionSpecific) {
-            require(terminateStaking == true, "Staking is currently disabled.");
-        } else {
-            require(
-                terminateStaking == false,
-                "Staking is currently functioning as expected"
-            );
-        }
-        _;
-    }
-
     function calculateAmountTier(uint256 _amount, uint256 _timeStakedTier)
         internal
         pure
@@ -743,7 +876,7 @@ contract Bank is Ownable {
             amountStakedTier = 3;
         } else if (_amount <= 25e18) {
             amountStakedTier = 4;
-            // if user is staking for 180, pay tokens in advance
+
             if (_timeStakedTier == 4) {
                 paidAdvanced = 25;
             } else if (_timeStakedTier == 5) {
@@ -751,7 +884,7 @@ contract Bank is Ownable {
             }
         } else {
             amountStakedTier = 5;
-            // if user is staking for 180, pay tokens in advance
+
             if (_timeStakedTier == 4) {
                 paidAdvanced = 25;
             } else if (_timeStakedTier == 5) {
@@ -930,17 +1063,15 @@ contract Bank is Ownable {
         userBook[msg.sender].amountStakedTier = amountStakedTier;
         userBook[msg.sender].currentTokenStaked = _tokenAddress;
         userBook[msg.sender].depositTime = block.timestamp;
-
-        totalFeeBalance = SafeMath.add(totalFeeBalance, fee);
-
-        tokenReserve[_tokenAddress] = SafeMath.sub(
-            tokenReserve[_tokenAddress],
-            tokensReserved
-        );
-
         userBook[msg.sender].ethBalance = SafeMath.add(
             userBook[msg.sender].ethBalance,
             balance
+        );
+
+        totalFeeBalance = SafeMath.add(totalFeeBalance, fee);
+        tokenReserve[_tokenAddress] = SafeMath.sub(
+            tokenReserve[_tokenAddress],
+            tokensReserved
         );
     }
 
@@ -1468,136 +1599,6 @@ contract Bank is Ownable {
         userBook[msg.sender].ethBalance = 0;
 
         payable(msg.sender).transfer(userBalance);
-    }
-
-    // ************************************ Lottery ***************************************
-
-    /**
-     * @dev Mapping with key value uint (lottery ticket) leads to the information on ticket
-     * amount and time tier for the user to redeem his reward staking.
-     */
-    mapping(address => bool) lotteryBook;
-
-    /**
-     * @dev Getter function to pull information on lottery winner
-     * @param _userAddress address of user queried
-     * @return if user has a multiplier ready to be reedemed
-     */
-    function lotteryWinner(address _userAddress) public view returns (bool) {
-        return (lotteryBook[_userAddress]);
-    }
-
-    /**
-     * @dev Address of lottery contract in charge of executing LotteryWinner function
-     */
-    address Lottery;
-
-    /**
-     * @dev Setter function to change the contract address for the lottery connected to
-     * staking.
-     * @notice This action can only be perform under dev vote.
-     * @param _lotteryAddress address of lottery contract picking winners.
-     */
-    function setLottery(address _lotteryAddress) public {
-        Lottery = _lotteryAddress;
-    }
-
-    /**
-     * @dev Getter function to pull current lottery address
-     * @return address of contract
-     */
-    function getLottery() public view returns (address) {
-        return Lottery;
-    }
-
-    /**
-     * @dev Modifier ensures only the lottery is allowed to pick new winners
-     */
-    modifier isLotteryContract {
-        require(msg.sender == Lottery);
-        _;
-    }
-
-    /**
-     * @dev Passes an array of winners
-     * @param _winners array of all  winners
-     * @notice Only an allowed address will be able to execute this function
-     */
-    function lottery(address[] memory _winners) public isLotteryContract {
-        // needs modifier
-        for (uint256 i = 0; i < _winners.length; i++) {
-            lotteryBook[_winners[i]] = true;
-        }
-    }
-
-    // ******************************** Fee mechanism ***********************************
-
-    /**
-     * @dev
-     */
-    uint256 public feeThreshold;
-
-    /**
-     * @dev Variable for staking flat fee.
-     */
-    uint256 public flatFee;
-
-    /**
-     * @dev Variable for staking flat fee.
-     */
-    uint256 public percentFee;
-
-    /**
-     * @dev
-     */
-    address WithdrawContract;
-
-    /**
-     * @dev
-     */
-    function setContract(address _treasuryAddress) public {
-        WithdrawContract = _treasuryAddress;
-    }
-
-    /**
-     * @dev Saving running fee total
-     */
-    uint256 public totalFeeBalance;
-
-    /**
-     * @dev
-     */
-    function getTotalBalance() public view returns (uint256) {
-        return totalFeeBalance;
-    }
-
-    /**
-     * @dev transfers funds to an approved contract
-     */
-    function withdrawFees(uint256 _amount) public payable onlyTreasury {
-        require(
-            _amount <= totalFeeBalance,
-            "Treasury doesn't have sufficient funds."
-        );
-        totalFeeBalance = SafeMath.sub(totalFeeBalance, _amount);
-        payable(msg.sender).transfer(_amount);
-    }
-
-    /**
-     * @dev Setter for staking flat fee.
-     * @param _newFee new uint fee value.
-     * @notice This action can only be perform under dev vote.
-     */
-    function newFee(uint256 _newFee) public {
-        flatFee = _newFee;
-    }
-
-    modifier onlyTreasury {
-        require(
-            msg.sender == WithdrawContract,
-            "This address can't withdraw funds from treasury"
-        );
-        _;
     }
 }
 
