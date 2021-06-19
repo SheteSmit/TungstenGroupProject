@@ -85,9 +85,10 @@ contract ChromiumV2 {
         oracle = ExchangeOracle(_oracleAddress);
         chromiumStatus = true;
         buyStatus = true;
-        feeTier = 5e18;
-        poolTreshhold = 10000;
-        fee = 3;
+        feeThreshold = 5e18;
+        poolThreshold = 10000;
+        flatFee = 3;
+        percentFee = 3;
     }
 
     /**
@@ -103,7 +104,7 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    uint256 public poolTreshhold;
+    uint256 public poolThreshold;
 
     /**
      * @dev
@@ -131,7 +132,7 @@ contract ChromiumV2 {
      */
     function setThreshHold(uint256 _newLimit) public {
         // only devs
-        poolTreshhold = _newLimit;
+        poolThreshold = _newLimit;
     }
 
     function fundTokenPool(uint256 _poolType, uint256 _amount) public {
@@ -179,45 +180,64 @@ contract ChromiumV2 {
     function expectedBuyReturn(uint256 _amount)
         public
         view
-        returns (uint256, uint256)
+        returns (
+            uint256,
+            uint256,
+            uint256
+        )
     {
         uint256 priceOfToken = oracle.priceOfToken(address(token));
         uint256 balance;
         uint256 tokenExpectedReturn;
+        uint256 fee;
 
-        balance = calculateFee(_amount);
-        tokenExpectedReturn = SafeMath.div(balance, priceOfToken);
-        return (tokenExpectedReturn, balance);
+        (balance, fee) = calculateFee(_amount);
+        tokenExpectedReturn = SafeMath.mul(
+            1e18,
+            SafeMath.div(balance, priceOfToken)
+        );
+        return (tokenExpectedReturn, balance, fee);
     }
 
     /**
      * @dev
      */
-    function calculateFee(uint256 _amount) public view returns (uint256) {
+    function expectedSellReturn(uint256 _amount)
+        public
+        view
+        returns (uint256, uint256)
+    {
+        uint256 priceOfToken;
+        uint256 balance;
+        uint256 fee;
+
+        priceOfToken = oracle.priceOfToken(address(token));
+        (balance, fee) = calculateFee(SafeMath.mul(_amount, priceOfToken));
+        return (balance, fee);
+    }
+
+    /**
+     * @dev
+     */
+    function calculateFee(uint256 _amount)
+        public
+        view
+        returns (uint256, uint256)
+    {
         uint256 newBalance;
-        if (_amount > feeTier) {
-            newBalance = SafeMath.sub(
-                _amount,
-                SafeMath.multiply(_amount, 3, 1000)
-            );
+        uint256 fee;
+
+        if (_amount > feeThreshold) {
+            fee = SafeMath.multiply(_amount, percentFee, 1000);
+            newBalance = SafeMath.sub(_amount, fee);
         } else {
             uint256 ETHprice = oracle.priceOfETH();
             uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
-            newBalance = SafeMath.sub(_amount, SafeMath.mul(ETHinUSD, fee));
+            fee = SafeMath.mul(ETHinUSD, flatFee);
+            newBalance = SafeMath.sub(_amount, fee);
         }
-        return newBalance;
-    }
 
-    /**
-     * @dev
-     */
-    function expectedSellReturn(uint256 _amount) public view returns (uint256) {
-        uint256 priceOfToken;
-        uint256 balance;
-
-        priceOfToken = oracle.priceOfToken(address(token));
-        balance = calculateFee(SafeMath.mul(_amount, priceOfToken));
-        return balance;
+        return (newBalance, fee);
     }
 
     /**
@@ -226,10 +246,11 @@ contract ChromiumV2 {
     function buyCBLT() public payable validBuy {
         uint256 tokensOwed;
         uint256 newBalance;
+        uint256 fee;
 
-        (tokensOwed, newBalance) = expectedBuyReturn(msg.value);
+        (tokensOwed, newBalance, fee) = expectedBuyReturn(msg.value);
 
-        if (tokensOwed >= poolTreshhold) {
+        if (tokensOwed >= poolThreshold) {
             require(
                 tokensOwed < highTokenPool,
                 "Pool is currently depleted for this amount promised."
@@ -243,7 +264,7 @@ contract ChromiumV2 {
             lowTokenPool = SafeMath.sub(lowTokenPool, tokensOwed);
         }
 
-        totalFeeBalance = SafeMath.sub(msg.value, newBalance);
+        totalFeeBalance = SafeMath.add(totalFeeBalance, fee);
         contractBalance = SafeMath.add(contractBalance, newBalance);
         IERC20(token).universalTransfer(msg.sender, tokensOwed);
     }
@@ -253,16 +274,16 @@ contract ChromiumV2 {
      */
     function sellCBLT(uint256 _amount) public payable {
         uint256 newBalance;
+        uint256 fee;
 
-        IERC20(token).universalTransferFromSenderToThis(_amount);
-        newBalance = expectedSellReturn(_amount);
-
+        (newBalance, fee) = expectedSellReturn(_amount);
         require(
             newBalance < contractBalance,
             "Expected ETH return is higher than contract's balance."
         );
+        totalFeeBalance = SafeMath.add(totalFeeBalance, fee);
 
-        totalFeeBalance = SafeMath.sub(msg.value, newBalance);
+        IERC20(token).universalTransferFromSenderToThis(_amount);
         payable(msg.sender).transfer(newBalance);
     }
 
@@ -276,12 +297,17 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    uint256 public feeTier;
+    uint256 public feeThreshold;
 
     /**
      * @dev Variable for staking flat fee.
      */
-    uint256 public fee;
+    uint256 public flatFee;
+
+    /**
+     * @dev Variable for staking flat fee.
+     */
+    uint256 public percentFee;
 
     /**
      * @dev Saving running fee total
@@ -319,9 +345,14 @@ contract ChromiumV2 {
      * @param _newFee new uint fee value.
      * @notice This action can only be perform under dev vote.
      */
-    function newFee(uint256 _newFee) public {
-        fee = _newFee;
+    function newFlatFee(uint256 _newFee) public {
+        flatFee = _newFee;
     }
+
+    /**
+     * @dev
+     */
+    function newPercentFee() public {}
 
     modifier onlyTreasury {
         require(
