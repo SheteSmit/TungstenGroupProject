@@ -15,32 +15,32 @@ contract ChromiumV2 {
     // ********************************** CONTRACT CONTROL *********************************
 
     /**
-     * @dev
+     * @dev ERC20 type for CBLT token.
      */
-    IERC20 token;
+    IERC20 public token;
 
     /**
-     * @dev
+     * @dev Cobalt oracle contract.
      */
-    ExchangeOracle oracle;
+    ExchangeOracle public oracle;
 
     /**
-     * @dev
+     * @dev total contract balance in ETH.
      */
-    uint256 contractBalance;
+    uint256 public contractBalance;
 
     /**
-     * @dev
+     * @dev Exchange status. True - On / False - Off
      */
-    bool chromiumStatus;
+    bool public chromiumStatus;
 
     /**
-     * @dev
+     * @dev Bool enables the sellCBLT function. True - On / False - Off
      */
-    bool buyStatus;
+    bool public buyStatus;
 
     /**
-     * @dev
+     * @dev Setter function changes the address of CBLT token.
      */
     function setToken(address _newToken) public {
         // only devs
@@ -80,15 +80,21 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    constructor(address _oracleAddress, address _tokenAddress) {
-        token = IERC20(_tokenAddress);
+    constructor(address _oracleAddress) {
+        token = IERC20(address(0x433C6E3D2def6E1fb414cf9448724EFB0399b698));
         oracle = ExchangeOracle(_oracleAddress);
+        chromiumStatus = true;
+        buyStatus = true;
+        feeTier = 5e18;
+        poolTreshhold = 10000;
+        fee = 3;
     }
 
     /**
      * @dev
      */
     receive() external payable {
+        contractBalance = SafeMath.add(contractBalance, msg.value);
         emit Received(msg.sender, msg.value);
     }
 
@@ -97,17 +103,28 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    uint256 poolTreshhold = 10000;
+    uint256 public poolTreshhold;
 
     /**
      * @dev
      */
-    uint256 highTokenPool;
+    uint256 public highTokenPool;
 
     /**
      * @dev
      */
-    uint256 lowTokenPool;
+    uint256 public lowTokenPool;
+
+    /**
+     * @dev
+     */
+    function getPoolBalance(uint256 _poolNum) public view returns (uint256) {
+        if (_poolNum == 1) {
+            return highTokenPool;
+        } else {
+            return lowTokenPool;
+        }
+    }
 
     /**
      * @dev
@@ -211,7 +228,23 @@ contract ChromiumV2 {
         uint256 newBalance;
 
         (tokensOwed, newBalance) = expectedBuyReturn(msg.value);
+
+        if (tokensOwed >= poolTreshhold) {
+            require(
+                tokensOwed < highTokenPool,
+                "Pool is currently depleted for this amount promised."
+            );
+            highTokenPool = SafeMath.sub(highTokenPool, tokensOwed);
+        } else {
+            require(
+                tokensOwed < lowTokenPool,
+                "Pool is currently depleted for this amount promised."
+            );
+            lowTokenPool = SafeMath.sub(lowTokenPool, tokensOwed);
+        }
+
         totalFeeBalance = SafeMath.sub(msg.value, newBalance);
+        contractBalance = SafeMath.add(contractBalance, newBalance);
         IERC20(token).universalTransfer(msg.sender, tokensOwed);
     }
 
@@ -223,6 +256,12 @@ contract ChromiumV2 {
 
         IERC20(token).universalTransferFromSenderToThis(_amount);
         newBalance = expectedSellReturn(_amount);
+
+        require(
+            newBalance < contractBalance,
+            "Expected ETH return is higher than contract's balance."
+        );
+
         totalFeeBalance = SafeMath.sub(msg.value, newBalance);
         payable(msg.sender).transfer(newBalance);
     }
@@ -232,22 +271,22 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    address WithdrawContract;
+    address public WithdrawContract;
 
     /**
      * @dev
      */
-    uint256 feeTier;
+    uint256 public feeTier;
 
     /**
      * @dev Variable for staking flat fee.
      */
-    uint256 fee;
+    uint256 public fee;
 
     /**
      * @dev Saving running fee total
      */
-    uint256 totalFeeBalance;
+    uint256 public totalFeeBalance;
 
     /**
      * @dev
@@ -297,7 +336,7 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    address migrationExchange;
+    address public migrationExchange;
 
     /**
      * @dev
