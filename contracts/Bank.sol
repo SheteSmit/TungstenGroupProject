@@ -1516,10 +1516,9 @@ contract Bank is Ownable {
 //     // loanbook[_loanSignature].status;
 // }
 
-//   "networks": {
 //     "4": {
 //       "events": {},
 //       "links": {},
-//       "address": "0x8D852762E166D0d2d2133d3D96e0cCF8dF88C811",
-//       "transactionHash": "0xab35aeba6a0dba2bd3b4ce39439b6e11f1c3db70961f0397b6e783afa46b694b"
+//       "address": "0xb46dc6f708711a9887d6f4260e27e46cc77ac7a9",
+//       "transactionHash": "0xe4cd16d654f7c2b00579515b007587830bfb922e3bd3307850b15d953b9a49f4"
 //     }
