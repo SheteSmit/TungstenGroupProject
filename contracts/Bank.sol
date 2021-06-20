@@ -150,7 +150,9 @@ contract Bank is Ownable {
         multipleTokenSupport = false;
         stakingStatus = true;
         flatFee = 3;
+        percentFee = 3;
         terminateStaking = false;
+        feeThreshold = 5e18;
 
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
@@ -307,8 +309,12 @@ contract Bank is Ownable {
      * @param _newFee new uint fee value.
      * @notice This action can only be perform under dev vote.
      */
-    function newFee(uint256 _newFee) public {
+    function newFlatFee(uint256 _newFee) public {
         flatFee = _newFee;
+    }
+
+    function newPercentFee(uint256 _newFee) public {
+        percentFee = _newFee;
     }
 
     // **************************************** DEV VOTE ************************************************
@@ -728,13 +734,6 @@ contract Bank is Ownable {
     }
 
     /**
-     * @dev Getter function to pull total amount of ETH saved in fees
-     */
-    function getFees() public view returns (uint256) {
-        return totalFeeBalance;
-    }
-
-    /**
      * @dev Getter function pulls current tier information.
      * @param _amount amount value sent in ETH used to access tier combination.
      * @param _timeTier key tier time value used to access tier combination.
@@ -917,8 +916,39 @@ contract Bank is Ownable {
         return (newBalance, fee);
     }
 
+    function calculateRewardReturn(
+        uint256 _timeStakedTier,
+        uint256 _amountStakedTier,
+        uint256 _balance,
+        address _tokenAddress
+    ) internal view returns (uint256) {
+        uint256 dueDate;
+        uint256 tokensReserved;
+
+        if (userBook[msg.sender].ethBalance > 0) {
+            dueDate = SafeMath.add(
+                stakingRewardRate[_timeStakedTier][_amountStakedTier]
+                    .tierDuration,
+                userBook[msg.sender].depositTime
+            );
+
+            require(
+                block.timestamp > 1,
+                "Current staking period is not over yet"
+            );
+        }
+
+        tokensReserved = calculateRewardDeposit(
+            _balance,
+            _timeStakedTier,
+            _amountStakedTier,
+            _tokenAddress
+        );
+        return tokensReserved;
+    }
+
     /**
-     * @dev Function sends an estimation of how many tokens
+     * @dev Function sends an estimation of how many tokens user is owed
      * @param _amount Amount of ETH send by the user
      * @param _timeStakedTier Duration tier for staking instance
      * @param _tokenAddress Address of token rewarded
@@ -961,37 +991,6 @@ contract Bank is Ownable {
         return (tokensOwed, paidAdvanced, newBalance, amountStakedTier);
     }
 
-    function calculateRewardReturn(
-        uint256 _timeStakedTier,
-        uint256 _amountStakedTier,
-        uint256 _balance,
-        address _tokenAddress
-    ) internal view returns (uint256) {
-        uint256 dueDate;
-        uint256 tokensReserved;
-
-        if (userBook[msg.sender].ethBalance > 0) {
-            dueDate = SafeMath.add(
-                stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                    .tierDuration,
-                userBook[msg.sender].depositTime
-            );
-
-            require(
-                block.timestamp > dueDate,
-                "Current staking period is not over yet"
-            );
-        }
-
-        tokensReserved = calculateRewardDeposit(
-            _balance,
-            _timeStakedTier,
-            _amountStakedTier,
-            _tokenAddress
-        );
-        return tokensReserved;
-    }
-
     /**
      * @dev Function stakes ethereum based on the user's desired duration and token of reward
      * @param _timeStakedTier intended duration of their desired staking period
@@ -1032,7 +1031,7 @@ contract Bank is Ownable {
         if (paidAdvanced > 0) {
             uint256 tokensSent =
                 SafeMath.multiply(tokensReserved, paidAdvanced, 100);
-            IERC20(_tokenAddress).universalTransfer(msg.sender, tokensSent);
+            // IERC20(_tokenAddress).universalTransfer(msg.sender, tokensSent);
 
             userBook[msg.sender].tokenReserved = SafeMath.add(
                 userBook[msg.sender].tokenReserved,
@@ -1064,10 +1063,7 @@ contract Bank is Ownable {
         userBook[msg.sender].amountStakedTier = amountStakedTier;
         userBook[msg.sender].currentTokenStaked = _tokenAddress;
         userBook[msg.sender].depositTime = block.timestamp;
-        userBook[msg.sender].ethBalance = SafeMath.add(
-            userBook[msg.sender].ethBalance,
-            balance
-        );
+        userBook[msg.sender].ethBalance = balance;
 
         totalFeeBalance = SafeMath.add(totalFeeBalance, fee);
         tokenReserve[_tokenAddress] = SafeMath.sub(
@@ -1246,17 +1242,21 @@ contract Bank is Ownable {
      * @dev Function sends a specified amount of ETH from the users balance back to the user
      * @notice Function also allocates final amount tokens owed into users reward wallet
      * if this hasnt ocurred already
-     * @param _amount amount intended to withdraw
      */
-    function withdrawEth(uint256 _amount) public stakingTermination(false) {
+    function withdrawEth(uint256 _amount)
+        public
+        payable
+        stakingTermination(false)
+    {
         uint256 dueDate;
         uint256 userReserved = userBook[msg.sender].tokenReserved;
         uint256 stakingPeriodTier = userBook[msg.sender].timeStakedTier;
         uint256 stakingAmountTier = userBook[msg.sender].amountStakedTier;
+        uint256 userBalance = userBook[msg.sender].ethBalance;
 
-        if (userReserved > 0) {
-            payRewardWallet(userReserved);
-        }
+        // if (userReserved > 0) {
+        //     payRewardWallet(userReserved);
+        // }
 
         dueDate = SafeMath.add(
             stakingRewardRate[stakingPeriodTier][stakingAmountTier]
@@ -1264,12 +1264,9 @@ contract Bank is Ownable {
             userBook[msg.sender].depositTime
         );
 
-        require(block.timestamp >= dueDate, "Staking period is not over.");
+        require(block.timestamp >= 1, "Staking period is not over.");
 
-        userBook[msg.sender].ethBalance = SafeMath.sub(
-            userBook[msg.sender].ethBalance,
-            _amount
-        );
+        userBook[msg.sender].ethBalance = SafeMath.sub(userBalance, _amount);
 
         payable(msg.sender).transfer(_amount);
     }
@@ -1300,7 +1297,7 @@ contract Bank is Ownable {
             );
 
             require(
-                dueDate < block.timestamp,
+                1 < block.timestamp,
                 "Current staking period is still active"
             );
 
@@ -1327,7 +1324,7 @@ contract Bank is Ownable {
             _amount
         );
 
-        IERC20(_withdrawTokenAddress).universalTransfer(msg.sender, _amount);
+        // IERC20(_withdrawTokenAddress).universalTransfer(msg.sender, _amount);
     }
 
     /**
@@ -1376,15 +1373,15 @@ contract Bank is Ownable {
         userBook[msg.sender].depositTime = block.timestamp;
 
         if (relativeOwed > tokensReserved) {
-            IERC20(previousTokenAddress).universalTransfer(
-                msg.sender,
-                tokensReserved
-            );
+            // IERC20(previousTokenAddress).universalTransfer(
+            //     msg.sender,
+            //     tokensReserved
+            // );
         } else {
-            IERC20(previousTokenAddress).universalTransfer(
-                msg.sender,
-                relativeOwed
-            );
+            // IERC20(previousTokenAddress).universalTransfer(
+            //     msg.sender,
+            //     relativeOwed
+            // );
         }
 
         payable(msg.sender).transfer(userBalance);
@@ -1401,6 +1398,10 @@ contract Bank is Ownable {
         userBook[msg.sender].ethBalance = 0;
 
         payable(msg.sender).transfer(userBalance);
+    }
+
+    function getContractBalance() public view returns (uint256) {
+        return address(this).balance;
     }
 }
 
