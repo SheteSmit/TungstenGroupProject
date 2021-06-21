@@ -1269,9 +1269,9 @@ contract Bank is Ownable {
         uint256 stakingAmountTier = userBook[msg.sender].amountStakedTier;
         uint256 userBalance = userBook[msg.sender].ethBalance;
 
-        // if (userReserved > 0) {
-        //     payRewardWallet(userReserved);
-        // }
+        if (userReserved > 0) {
+            payRewardWallet(userReserved);
+        }
 
         dueDate = SafeMath.add(
             stakingRewardRate[stakingPeriodTier][stakingAmountTier]
