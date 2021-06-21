@@ -468,7 +468,6 @@ contract Bank is Ownable {
     //  * before being permanently deleted
     //  */
     // mapping(address => Loan[]) public loanRecords;
-
     // /**
     //  * @dev struct to access information on tier structure
     //  */
@@ -731,6 +730,22 @@ contract Bank is Ownable {
             );
         }
         _;
+    }
+
+    function getEstimateUSD(uint256 _tokenAmount, address _tokenAddress)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 tokenToETH;
+        uint256 ETHtoUSD;
+        uint256 ETHprice = oracle.priceOfETH();
+        uint256 tokenPrice = oracle.priceOfToken(address(_tokenAddress));
+        uint256 ETHinUSD = SafeMath.div(100000000000000000000, ETHprice);
+
+        tokenToETH = SafeMath.mul(_tokenAmount, tokenPrice);
+        ETHtoUSD = SafeMath.div(tokenToETH, ETHinUSD);
+        return ETHtoUSD;
     }
 
     /**
