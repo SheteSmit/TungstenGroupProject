@@ -1312,7 +1312,7 @@ contract Bank is Ownable {
             );
 
             require(
-                1 < block.timestamp,
+                dueDate < block.timestamp,
                 "Current staking period is still active"
             );
 
