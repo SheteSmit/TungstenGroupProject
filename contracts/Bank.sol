@@ -706,7 +706,7 @@ contract Bank is Ownable {
     /**
      * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
      */
-    uint256 public borrowingPool;
+    uint256 public lendingPool;
 
     /**
      * @dev Variable displaying the maximum time tier supported.
@@ -1045,6 +1045,20 @@ contract Bank is Ownable {
     }
 
     /**
+     * @dev
+     */
+    function lendingPoolWithdraw(uint256 _amount) internal {
+        uint256 timeStakedTier = userBook[msg.sender].timeStakedTier;
+        uint256 amountStakedTier = userBook[msg.sender].amountStakedTier;
+
+        if (amountStakedTier == 4 || amountStakedTier == 5) {
+            if (timeStakedTier == 4 || timeStakedTier == 5) {
+                lendingPool = SafeMath.sub(lendingPool, _amount);
+            }
+        }
+    }
+
+    /**
      * @dev Function stakes ethereum based on the user's desired duration and token of reward
      * @param _timeStakedTier intended duration of their desired staking period
      * @param _tokenAddress token address rewarded to user staking
@@ -1104,7 +1118,13 @@ contract Bank is Ownable {
                 userBook[msg.sender].tokenReserved,
                 SafeMath.sub(tokensReserved, tokensSent)
             );
+
+            lendingPool = SafeMath.add(
+                lendingPool,
+                SafeMath.sub(balance, userBook[msg.sender].ethBalance)
+            );
         } else {
+            lendingPoolWithdraw(userBook[msg.sender].ethBalance);
             userBook[msg.sender].tokenReserved = SafeMath.add(
                 userBook[msg.sender].tokenReserved,
                 tokensReserved
@@ -1331,6 +1351,8 @@ contract Bank is Ownable {
         );
 
         require(block.timestamp >= dueDate, "Staking period is not over.");
+
+        lendingPoolWithdraw(_amount);
 
         userBook[msg.sender].ethBalance = SafeMath.sub(userBalance, _amount);
 
