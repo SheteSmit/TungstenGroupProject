@@ -457,191 +457,184 @@ contract Bank is Ownable {
 
     // ****************************** Lending **********************************
 
-    // /**
-    //  * @dev Mapping with key to store all loan information with the key of borrower address
-    //  *  and value of Loan struct with all loan information
-    //  */
-    // mapping(address => Loan) public loanBook;
+    /**
+     * @dev Mapping with key to store all loan information with the key of borrower address
+     *  and value of Loan struct with all loan information
+     */
+    mapping(address => Loan) public loanBook;
 
-    // /**
-    //  * @dev Informstion from previously fullfilled loans are stored into the blockchain
-    //  * before being permanently deleted
-    //  */
-    // mapping(address => Loan[]) public loanRecords;
-    // /**
-    //  * @dev struct to access information on tier structure
-    //  */
-    // struct loanTier {
-    //     uint256 principalLimit;
-    //     uint256 maximumPaymentPeriod;
-    //     uint256 maxVoters;
-    // }
+    /**
+     * @dev Informstion from previously fullfilled loans are stored into the blockchain
+     * before being permanently deleted
+     */
+    mapping(address => Loan[]) public loanRecords;
+    /**
+     * @dev struct to access information on tier structure
+     */
+    struct loanTier {
+        uint256 principalLimit;
+        uint256 maximumPaymentPeriod;
+        uint256 maxVoters;
+    }
 
-    // mapping(uint256 => loanTier) loanTiers;
+    mapping(uint256 => loanTier) loanTiers;
 
-    // /**
-    //  * @dev Struct to store loan information
-    //  */
-    // struct Loan {
-    //     address borrower; // Address of wallet
-    //     uint256 amountBorrowed; // Initial loan balance
-    //     uint256 remainingBalance; // Remaining balance
-    //     uint256 minimumPayment; // MinimumPayment // Can be calculated off total amount
-    //     uint256 collateral; // Amount owed back to borrower after loan is paid in full
-    //     bool active; // Is the current loan active (Voted yes)
-    //     bool initialized; // Does the borrower have a current loan application
-    //     uint256 timeCreated; // Time of loan application also epoch in days
-    //     uint256 dueDate; // Time of contract ending
-    //     uint256 totalVote; // Total amount determined by tier
-    //     uint256 yes; // Amount of votes for yes
-    //     // address currentCoin; // Address of collateral coin
-    // }
+    /**
+     * @dev Struct to store loan information
+     */
+    struct Loan {
+        address borrower; // Address of wallet
+        uint256 amountBorrowed; // Initial loan balance
+        uint256 remainingBalance; // Remaining balance
+        uint256 minimumPayment; // MinimumPayment // Can be calculated off total amount
+        uint256 collateral; // Amount owed back to borrower after loan is paid in full
+        bool active; // Is the current loan active (Voted yes)
+        bool initialized; // Does the borrower have a current loan application
+        uint256 timeCreated; // Time of loan application also epoch in days
+        uint256 dueDate; // Time of contract ending
+        uint256 totalVote; // Total amount determined by tier
+        address currentCoin; // Address of collateral coin
+    }
 
-    // /**
-    //  * @dev Recalculates interest and also conducts check and balances
-    //  */
+    /**
+     * @dev Recalculates interest and also conducts check and balances
+     */
 
-    // function newLoan(uint256 _paymentPeriod, uint256 _principal)
-    //     public
-    //     payable
-    // {
-    //     require(loanBook[msg.sender].initialized == false);
+    function newLoan(uint256 _paymentPeriod, uint256 _principal)
+        public
+        payable
+    {
+        require(loanBook[msg.sender].initialized == false);
 
-    //     uint256 riskScore = 20; // NFT ENTRY!!!!
-    //     uint256 riskFactor = 15; // NFT ENTRY!!!!
-    //     uint256 interestRate = 2; // NFT ENTRY!!!!
-    //     uint256 userMaxTier = 5; // NFT ENTRY!!!!
-    //     // uint256 flatfee = 400; // NFT ENTRY!!!!
+        uint256 riskScore = 20; // NFT ENTRY!!!!
+        uint256 riskFactor = 15; // NFT ENTRY!!!!
+        uint256 interestRate = 2; // NFT ENTRY!!!!
+        uint256 userMaxTier = 5; // NFT ENTRY!!!!
+        uint256 flatfee = 400; // NFT ENTRY!!!!
 
-    //     require(
-    //         _paymentPeriod <= loanTiers[userMaxTier].maximumPaymentPeriod,
-    //         "Payment period exceeds that of the tier, pleas try again"
-    //     );
+        require(
+            _paymentPeriod <= loanTiers[userMaxTier].maximumPaymentPeriod,
+            "Payment period exceeds that of the tier, pleas try again"
+        );
 
-    //     // One dollar in ETH
-    //     uint256 oneUSDinETH =
-    //         SafeMath.div(100000000000000000000, oracle.priceOfETH());
+        // Calculate how much is being borrowed in USD - must be within limits of the tier
+        uint256 amountBorrowed = SafeMath.div(
+            _principal,
+            SafeMath.div(100000000000000000000, oracle.priceOfETH())
+        );
+        require(amountBorrowed <= loanTiers[userMaxTier].principalLimit);
 
-    //     // Calculate how much is being borrowed in USD - must be within limits of the tier
-    //     uint256 amountBorrowed = SafeMath.div(_principal, oneUSDinETH);
-    //     require(amountBorrowed <= loanTiers[userMaxTier].principalLimit);
+        // Pay loan application lee to cover for fees
+        require(msg.value >= flatfee); // Needs change based on current prices
 
-    //     // Pay loan application lee to cover for fees
-    //     // require(msg.value >= SafeMath.mul(oneUSDinETH,flatfee)); // Needs change based on current prices
+        uint256 tokenPrice = oracle.priceOfToken(address(token));
 
-    //     (uint256 CBLTprice, uint256 ETHprice, bool ready) =
-    //         oracle.priceOfPair(
-    //             address(token),
-    //             0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE
-    //         );
+        // Calculate collateral in CBLT based on principal, riskScore and riskFactor
+        uint256 collateralInCBLT = SafeMath.mul(
+            SafeMath.div(
+                SafeMath.multiply(
+                    _principal,
+                    SafeMath.mul(riskScore, riskFactor),
+                    100
+                ),
+                tokenPrice
+            ),
+            1e18
+        );
 
-    //     // Calculate collateral in CBLT based on principal, riskScore and riskFactor
-    //     uint256 collateralInCBLT =
-    //         SafeMath.div(
-    //             SafeMath.multiply(
-    //                 _principal,
-    //                 SafeMath.mul(riskScore, riskFactor),
-    //                 100
-    //             ),
-    //             CBLTprice
-    //         );
+        // Calculate new principal with the added interest
+        uint256 finalPrincipal = SafeMath.add(
+            _principal,
+            SafeMath.multiply(_principal, interestRate, 100)
+        );
 
-    //     // Calculate new principal with the added interest
-    //     uint256 finalPrincipal =
-    //         SafeMath.add(
-    //             _principal,
-    //             SafeMath.multiply(_principal, interestRate, 100)
-    //         );
+        uint256 monthlyPayment = SafeMath.div(
+            finalPrincipal,
+            SafeMath.add(SafeMath.div(_paymentPeriod, 2629743), 1)
+        );
 
-    //     uint256 monthlyPayment = SafeMath.div(finalPrincipal, _paymentPeriod);
+        IERC20(token).universalTransferFromSenderToThis(collateralInCBLT);
 
-    //     require(
-    //         token.transferFrom(msg.sender, address(this), collateralInCBLT) ==
-    //             true,
-    //         "Payment was not approved."
-    //     );
+        loanBook[msg.sender] = Loan(
+            msg.sender,
+            _principal,
+            finalPrincipal,
+            monthlyPayment,
+            collateralInCBLT,
+            false,
+            true,
+            block.timestamp,
+            SafeMath.add(block.timestamp, 2629743),
+            loanTiers[userMaxTier].maxVoters,
+            address(token)
+        );
+    }
 
-    //     loanBook[msg.sender] = Loan(
-    //         msg.sender,
-    //         _principal,
-    //         finalPrincipal,
-    //         monthlyPayment,
-    //         collateralInCBLT,
-    //         false,
-    //         true,
-    //         SafeMath.add(block.timestamp, 2629743),
-    //         block.timestamp,
-    //         loanTiers[userMaxTier].maxVoters,
-    //         0
-    //     );
-    // }
+    /**
+     * @dev
+     */
 
-    // /**
-    //  * @dev
-    //  */
+    function processPeriod(uint256 _payment, bool _missedPayment) internal {
+        loanBook[msg.sender].remainingBalance = SafeMath.sub(
+            loanBook[msg.sender].remainingBalance,
+            _payment
+        );
 
-    // function processPeriod(uint256 _payment, bool _missedPayment) internal {
-    //     loanBook[msg.sender].remainingBalance = SafeMath.sub(
-    //         loanBook[msg.sender].remainingBalance,
-    //         _payment
-    //     );
+        loanBook[msg.sender].dueDate = SafeMath.add(block.timestamp, 2629743);
 
-    //     loanBook[msg.sender].dueDate = SafeMath.add(block.timestamp, 2629743);
+        if (_missedPayment) {
+            // Needs to interact with the NFT
+            // Collateral is substracted
+            // Strike system // Connected to NFT
+            uint256 daysMissed = SafeMath.div(
+                SafeMath.sub(block.timestamp, loanBook[msg.sender].dueDate),
+                86400
+            );
+            if (daysMissed > 7) {
+                // Suspend loan
+            }
+        }
+    }
 
-    //     if (_missedPayment) {
-    //         // Needs to interact with the NFT
-    //         // Collateral is substracted
-    //         // Strike system // Connected to NFT
-    //         uint256 daysMissed =
-    //             SafeMath.div(
-    //                 SafeMath.sub(block.timestamp, loanBook[msg.sender].dueDate),
-    //                 86400
-    //             );
-    //         if (daysMissed > 7) {
-    //             // Suspend loan
-    //         }
-    //     }
-    // }
+    /**
+     * @dev
+     */
+    function validate() public {} // Only devs
 
-    // /**
-    //  * @dev
-    //  */
-    // function validate() public {} // Only devs
+    /**
+     * @dev Function for the user to make a payment with ETH
+     *
+     */
+    function makePayment() public payable {
+        require(msg.value >= loanBook[msg.sender].minimumPayment);
 
-    // /**
-    //  * @dev Function for the user to make a payment with ETH
-    //  *
-    //  */
-    // function makePayment() public payable {
-    //     require(msg.value >= loanBook[msg.sender].minimumPayment);
+        if (block.timestamp <= loanBook[msg.sender].dueDate) {
+            processPeriod(msg.value, false);
+        } else {
+            processPeriod(msg.value, true);
+        }
+    }
 
-    //     if (block.timestamp <= loanBook[msg.sender].dueDate) {
-    //         processPeriod(msg.value, false);
-    //     } else {
-    //         processPeriod(msg.value, true);
-    //     }
-    // }
+    /**
+     * @dev
+     */
+    function returnCollateral() public {
+        require(loanBook[msg.sender].remainingBalance == 0);
 
-    // /**
-    //  * @dev
-    //  */
-    // function returnCollateral() public {
-    //     require(loanBook[msg.sender].remainingBalance == 0);
+        uint256 amount = loanBook[msg.sender].collateral;
+        require(token.transfer(msg.sender, amount));
 
-    //     uint256 amount = loanBook[msg.sender].collateral;
-    //     require(token.transfer(msg.sender, amount));
+        loanBook[msg.sender].collateral = 0;
+    }
 
-    //     loanBook[msg.sender].collateral = 0;
-    // }
-
-    // /**
-    //  * @dev Deletes loan instance once the user has paid his active loan in full
-    //  */
-    // function cleanSlate() public {
-    //     require(loanBook[msg.sender].remainingBalance == 0);
-    //     loanRecords[msg.sender].push(loanBook[msg.sender]);
-    //     delete loanBook[msg.sender];
-    // }
+    /**
+     * @dev Deletes loan instance once the user has paid his active loan in full
+     */
+    function cleanSlate() public {
+        require(loanBook[msg.sender].remainingBalance == 0);
+        loanRecords[msg.sender].push(loanBook[msg.sender]);
+        delete loanBook[msg.sender];
+    }
 
     // ********************************* Staking ***********************************
 
@@ -867,7 +860,7 @@ contract Bank is Ownable {
 
         stakingRewardRate[_timeTier][_amountTier].interest = _interest;
         stakingRewardRate[_timeTier][_amountTier]
-            .amountStakersLeft = _amountStakersLeft;
+        .amountStakersLeft = _amountStakersLeft;
         stakingRewardRate[_timeTier][_amountTier].tierDuration = _tierDuration;
         // Check if time tier modified increases the tierMax cap
         if (_timeTier > tierMax) {
@@ -943,7 +936,7 @@ contract Bank is Ownable {
         if (userBook[msg.sender].ethBalance > 0) {
             dueDate = SafeMath.add(
                 stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                    .tierDuration,
+                .tierDuration,
                 userBook[msg.sender].depositTime
             );
 
@@ -986,8 +979,10 @@ contract Bank is Ownable {
         uint256 tokensOwed;
         uint256 paidAdvanced;
         uint256 amountStakedTier;
-        uint256 newBalance =
-            SafeMath.add(userBook[msg.sender].ethBalance, _amount);
+        uint256 newBalance = SafeMath.add(
+            userBook[msg.sender].ethBalance,
+            _amount
+        );
 
         (amountStakedTier, paidAdvanced) = calculateAmountTier(
             _amount,
@@ -1025,11 +1020,22 @@ contract Bank is Ownable {
         uint256 tokensReserved;
         uint256 balance;
         uint256 fee;
+        uint256 dueDate;
         uint256 userReserved = userBook[msg.sender].tokenReserved;
 
         if (userReserved > 0) {
             payRewardWallet(userReserved);
         }
+
+        dueDate = SafeMath.add(
+            stakingRewardRate[userBook[msg.sender].timeStakedTier][
+                userBook[msg.sender].amountStakedTier
+            ]
+            .tierDuration,
+            userBook[msg.sender].depositTime
+        );
+
+        require(block.timestamp >= dueDate, "Staking period is not over.");
 
         (
             tokensReserved,
@@ -1044,8 +1050,11 @@ contract Bank is Ownable {
         );
 
         if (paidAdvanced > 0) {
-            uint256 tokensSent =
-                SafeMath.multiply(tokensReserved, paidAdvanced, 100);
+            uint256 tokensSent = SafeMath.multiply(
+                tokensReserved,
+                paidAdvanced,
+                100
+            );
             // IERC20(_tokenAddress).universalTransfer(msg.sender, tokensSent);
 
             userBook[msg.sender].tokenReserved = SafeMath.add(
@@ -1062,14 +1071,14 @@ contract Bank is Ownable {
         if (!lotteryBook[msg.sender]) {
             require(
                 stakingRewardRate[_timeStakedTier][amountStakedTier]
-                    .amountStakersLeft > 0,
+                .amountStakersLeft > 0,
                 "Tier depleted, come back later"
             );
 
             stakingRewardRate[_timeStakedTier][amountStakedTier]
-                .amountStakersLeft = SafeMath.sub(
+            .amountStakersLeft = SafeMath.sub(
                 stakingRewardRate[_timeStakedTier][amountStakedTier]
-                    .amountStakersLeft,
+                .amountStakersLeft,
                 1
             );
         }
@@ -1115,7 +1124,7 @@ contract Bank is Ownable {
             );
         } else {
             interest = stakingRewardRate[_timeStakedTier][_amountStakedTier]
-                .interest;
+            .interest;
         }
 
         return
@@ -1164,32 +1173,31 @@ contract Bank is Ownable {
                 stakingRewardRate[userBook[msg.sender].timeStakedTier][
                     previousAmountTier
                 ]
-                    .interest,
+                .interest,
                 2
             );
         } else {
             interest = stakingRewardRate[userBook[msg.sender].timeStakedTier][
                 previousAmountTier
             ]
-                .interest;
+            .interest;
         }
 
-        uint256 tokensOwed =
-            SafeMath.mul(
-                SafeMath.div(
+        uint256 tokensOwed = SafeMath.mul(
+            SafeMath.div(
+                SafeMath.multiply(
                     SafeMath.multiply(
-                        SafeMath.multiply(
-                            amountStakedPreviously,
-                            percentBasedAmount,
-                            100
-                        ),
-                        interest,
+                        amountStakedPreviously,
+                        percentBasedAmount,
                         100
                     ),
-                    previousTokenPrice
+                    interest,
+                    100
                 ),
-                1e18
-            );
+                previousTokenPrice
+            ),
+            1e18
+        );
 
         if (tokensOwed >= _userReserved) {
             if (lotteryBook[msg.sender]) {
@@ -1199,7 +1207,7 @@ contract Bank is Ownable {
                         tokensOwed
                     );
                     rewardWallet[msg.sender][previousTokenAddress] = SafeMath
-                        .add(
+                    .add(
                         rewardWallet[msg.sender][previousTokenAddress],
                         tokensOwed
                     );
@@ -1207,7 +1215,7 @@ contract Bank is Ownable {
                     lotteryBook[msg.sender] = false;
                 } else {
                     rewardWallet[msg.sender][previousTokenAddress] = SafeMath
-                        .add(
+                    .add(
                         rewardWallet[msg.sender][previousTokenAddress],
                         _userReserved
                     );
@@ -1219,9 +1227,9 @@ contract Bank is Ownable {
                 );
 
                 stakingRewardRate[previousTimeTier][previousAmountTier]
-                    .amountStakersLeft = SafeMath.add(
+                .amountStakersLeft = SafeMath.add(
                     stakingRewardRate[previousTimeTier][previousAmountTier]
-                        .amountStakersLeft,
+                    .amountStakersLeft,
                     1
                 );
             }
@@ -1243,9 +1251,9 @@ contract Bank is Ownable {
 
             if (!lotteryBook[msg.sender]) {
                 stakingRewardRate[previousTimeTier][previousAmountTier]
-                    .amountStakersLeft = SafeMath.add(
+                .amountStakersLeft = SafeMath.add(
                     stakingRewardRate[previousTimeTier][previousAmountTier]
-                        .amountStakersLeft,
+                    .amountStakersLeft,
                     1
                 );
                 lotteryBook[msg.sender] = false;
@@ -1275,11 +1283,11 @@ contract Bank is Ownable {
 
         dueDate = SafeMath.add(
             stakingRewardRate[stakingPeriodTier][stakingAmountTier]
-                .tierDuration,
+            .tierDuration,
             userBook[msg.sender].depositTime
         );
 
-        require(block.timestamp >= 1, "Staking period is not over.");
+        require(block.timestamp >= dueDate, "Staking period is not over.");
 
         userBook[msg.sender].ethBalance = SafeMath.sub(userBalance, _amount);
 
@@ -1304,30 +1312,25 @@ contract Bank is Ownable {
         uint256 stakingPeriodTier = userBook[msg.sender].timeStakedTier;
         uint256 stakingAmountTier = userBook[msg.sender].amountStakedTier;
 
-        if (userReserved > 0) {
-            dueDate = SafeMath.add(
-                stakingRewardRate[stakingPeriodTier][stakingAmountTier]
-                    .tierDuration,
-                userBook[msg.sender].depositTime
-            );
+        dueDate = SafeMath.add(
+            stakingRewardRate[stakingPeriodTier][stakingAmountTier]
+            .tierDuration,
+            userBook[msg.sender].depositTime
+        );
 
-            require(
-                dueDate < block.timestamp,
-                "Current staking period is still active"
-            );
-
+        if (userReserved > 0 && (dueDate < block.timestamp)) {
             payRewardWallet(userReserved);
         }
 
-        (uint256 tokenPrice, uint256 ETHprice) =
-            oracle.priceOfETHandCBLT(_withdrawTokenAddress);
+        (uint256 tokenPrice, uint256 ETHprice) = oracle.priceOfETHandCBLT(
+            _withdrawTokenAddress
+        );
 
-        uint256 USDtoToken =
-            SafeMath.multiply(
-                SafeMath.div(1000000000000000000, tokenPrice),
-                SafeMath.div(100000000000000000000, ETHprice),
-                1000000000000000000
-            );
+        uint256 USDtoToken = SafeMath.multiply(
+            SafeMath.div(1000000000000000000, tokenPrice),
+            SafeMath.div(100000000000000000000, ETHprice),
+            1000000000000000000
+        );
 
         require(
             SafeMath.mul(USDtoToken, 5) > 50,
@@ -1360,27 +1363,24 @@ contract Bank is Ownable {
         uint256 timeStaked = SafeMath.sub(block.timestamp, timeOfStaking);
         uint256 tokenPrice = oracle.priceOfToken(previousTokenAddress);
 
-        uint256 tokensOwed =
-            SafeMath.mul(
-                SafeMath.div(
-                    SafeMath.multiply(
-                        userBalance,
-                        stakingRewardRate[stakingPeriodTier][stakingAmountTier]
-                            .interest,
-                        100
-                    ),
-                    tokenPrice
+        uint256 tokensOwed = SafeMath.mul(
+            SafeMath.div(
+                SafeMath.multiply(
+                    userBalance,
+                    stakingRewardRate[stakingPeriodTier][stakingAmountTier]
+                    .interest,
+                    100
                 ),
-                1e18
-            );
+                tokenPrice
+            ),
+            1e18
+        );
 
-        uint256 relativeOwed =
-            SafeMath.multiply(
-                tokensOwed,
-                timeStaked,
-                stakingRewardRate[stakingPeriodTier][stakingAmountTier]
-                    .tierDuration
-            );
+        uint256 relativeOwed = SafeMath.multiply(
+            tokensOwed,
+            timeStaked,
+            stakingRewardRate[stakingPeriodTier][stakingAmountTier].tierDuration
+        );
 
         // Reset values
         userBook[msg.sender].ethBalance = 0;
