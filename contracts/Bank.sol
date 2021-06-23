@@ -139,6 +139,10 @@ contract Bank is Ownable {
         // loanTiers[5].maximumPaymentPeriod = 60;
         // loanTiers[5].principalLimit = 500000;
 
+        // ************************ Lending Data ***************************
+
+        limitLending = 25;
+
         tokenReserve[
             0x433C6E3D2def6E1fb414cf9448724EFB0399b698
         ] = 6000000000000000000000000000;
@@ -456,7 +460,20 @@ contract Bank is Ownable {
     }
 
     // ****************************** Lending **********************************
+    /**
+     * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
+     */
+    uint256 public lendingPool;
 
+    /**
+     * @dev
+     */
+    uint256 public lent;
+
+    /**
+     * @dev
+     */
+    uint256 public limitLending;
     /**
      * @dev Mapping with key to store all loan information with the key of borrower address
      *  and value of Loan struct with all loan information
@@ -583,6 +600,11 @@ contract Bank is Ownable {
             SafeMath.multiply(_principal, interestRate, 100)
         );
 
+        require(
+            SafeMath.add(finalPrincipal, lent) <
+                SafeMath.multiply(lendingPool, limitLending, 100)
+        );
+
         monthlyPayment = SafeMath.div(
             finalPrincipal,
             SafeMath.add(SafeMath.div(_paymentPeriod, 2629743), 1)
@@ -702,11 +724,6 @@ contract Bank is Ownable {
         uint256 amountStakedTier;
         address currentTokenStaked;
     }
-
-    /**
-     * @dev Variable displays information on ETH staked in the treasury for time tiers 4 and 5.
-     */
-    uint256 public lendingPool;
 
     /**
      * @dev Variable displaying the maximum time tier supported.
