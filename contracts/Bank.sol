@@ -464,10 +464,16 @@ contract Bank is Ownable {
     mapping(address => Loan) public loanBook;
 
     /**
-     * @dev Informstion from previously fullfilled loans are stored into the blockchain
+     * @dev Information from previously fullfilled loans are stored into the blockchain
      * before being permanently deleted
      */
     mapping(address => Loan[]) public loanRecords;
+
+    /**
+     * @dev
+     */
+    address[] loanBorrowers;
+
     /**
      * @dev struct to access information on tier structure
      */
@@ -493,7 +499,39 @@ contract Bank is Ownable {
         uint256 timeCreated; // Time of loan application also epoch in days
         uint256 dueDate; // Time of contract ending
         uint256 totalVote; // Total amount determined by tier
-        address currentCoin; // Address of collateral coin
+        address currentToken; // Address of collateral token
+    }
+
+    function getLoan()
+        public
+        view
+        returns (
+            address,
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            bool,
+            bool,
+            uint256,
+            uint256,
+            uint256,
+            address
+        )
+    {
+        return (
+            loanBook[msg.sender].borrower,
+            loanBook[msg.sender].amountBorrowed,
+            loanBook[msg.sender].remainingBalance,
+            loanBook[msg.sender].minimumPayment,
+            loanBook[msg.sender].collateral,
+            loanBook[msg.sender].active,
+            loanBook[msg.sender].initialized,
+            loanBook[msg.sender].timeCreated,
+            loanBook[msg.sender].dueDate,
+            loanBook[msg.sender].totalVote,
+            loanBook[msg.sender].currentToken
+        );
     }
 
     /**
@@ -504,33 +542,31 @@ contract Bank is Ownable {
         public
         payable
     {
-        require(loanBook[msg.sender].initialized == false);
-
+        uint256 amountBorrowed;
+        uint256 collateralInCBLT;
+        uint256 finalPrincipal;
+        uint256 monthlyPayment;
+        uint256 tokenPrice = oracle.priceOfToken(address(token));
         uint256 riskScore = 20; // NFT ENTRY!!!!
         uint256 riskFactor = 15; // NFT ENTRY!!!!
         uint256 interestRate = 2; // NFT ENTRY!!!!
         uint256 userMaxTier = 5; // NFT ENTRY!!!!
-        uint256 flatfee = 400; // NFT ENTRY!!!!
+        uint256 flatfee = 4000000000000000000; // NFT ENTRY!!!!
 
+        require(loanBook[msg.sender].initialized == false);
+        require(msg.value >= flatfee);
         require(
             _paymentPeriod <= loanTiers[userMaxTier].maximumPaymentPeriod,
             "Payment period exceeds that of the tier, pleas try again"
         );
 
-        // Calculate how much is being borrowed in USD - must be within limits of the tier
-        uint256 amountBorrowed = SafeMath.div(
+        amountBorrowed = SafeMath.div(
             _principal,
             SafeMath.div(100000000000000000000, oracle.priceOfETH())
         );
         require(amountBorrowed <= loanTiers[userMaxTier].principalLimit);
 
-        // Pay loan application lee to cover for fees
-        require(msg.value >= flatfee); // Needs change based on current prices
-
-        uint256 tokenPrice = oracle.priceOfToken(address(token));
-
-        // Calculate collateral in CBLT based on principal, riskScore and riskFactor
-        uint256 collateralInCBLT = SafeMath.mul(
+        collateralInCBLT = SafeMath.mul(
             SafeMath.div(
                 SafeMath.multiply(
                     _principal,
@@ -542,13 +578,12 @@ contract Bank is Ownable {
             1e18
         );
 
-        // Calculate new principal with the added interest
-        uint256 finalPrincipal = SafeMath.add(
+        finalPrincipal = SafeMath.add(
             _principal,
             SafeMath.multiply(_principal, interestRate, 100)
         );
 
-        uint256 monthlyPayment = SafeMath.div(
+        monthlyPayment = SafeMath.div(
             finalPrincipal,
             SafeMath.add(SafeMath.div(_paymentPeriod, 2629743), 1)
         );
@@ -564,16 +599,16 @@ contract Bank is Ownable {
             false,
             true,
             block.timestamp,
-            SafeMath.add(block.timestamp, 2629743),
+            block.timestamp,
             loanTiers[userMaxTier].maxVoters,
             address(token)
         );
+        loanBorrowers.push(msg.sender);
     }
 
     /**
      * @dev
      */
-
     function processPeriod(uint256 _payment, bool _missedPayment) internal {
         loanBook[msg.sender].remainingBalance = SafeMath.sub(
             loanBook[msg.sender].remainingBalance,
@@ -583,8 +618,10 @@ contract Bank is Ownable {
         loanBook[msg.sender].dueDate = SafeMath.add(block.timestamp, 2629743);
 
         if (_missedPayment) {
-            // Needs to interact with the NFT
-            // Collateral is substracted
+            loanBook[msg.sender].collateral = SafeMath.sub(
+                loanBook[msg.sender].collateral,
+                SafeMath.div(loanBook[msg.sender].collateral, 2)
+            );
             // Strike system // Connected to NFT
             uint256 daysMissed = SafeMath.div(
                 SafeMath.sub(block.timestamp, loanBook[msg.sender].dueDate),
@@ -599,7 +636,10 @@ contract Bank is Ownable {
     /**
      * @dev
      */
-    function validate() public {} // Only devs
+    function validate(bool _status) public {
+        loanBook[msg.sender].active = _status;
+        loanBook[msg.sender].dueDate = SafeMath.add(block.timestamp, 2629743);
+    } // Only dev contract
 
     /**
      * @dev Function for the user to make a payment with ETH
@@ -607,6 +647,7 @@ contract Bank is Ownable {
      */
     function makePayment() public payable {
         require(msg.value >= loanBook[msg.sender].minimumPayment);
+        require(loanBook[msg.sender].active == true);
 
         if (block.timestamp <= loanBook[msg.sender].dueDate) {
             processPeriod(msg.value, false);
@@ -619,11 +660,13 @@ contract Bank is Ownable {
      * @dev
      */
     function returnCollateral() public {
+        uint256 amount = loanBook[msg.sender].collateral;
         require(loanBook[msg.sender].remainingBalance == 0);
 
-        uint256 amount = loanBook[msg.sender].collateral;
-        require(token.transfer(msg.sender, amount));
-
+        IERC20(loanBook[msg.sender].currentToken).universalTransfer(
+            msg.sender,
+            amount
+        );
         loanBook[msg.sender].collateral = 0;
     }
 
