@@ -6,6 +6,7 @@ import "./interfaces/IERC20.sol";
 import "./interfaces/SafeMath.sol";
 import "./interfaces/UniversalERC20.sol";
 import "./ExchangeOracle.sol";
+import "./NFTLoan.sol";
 
 // 0x433C6E3D2def6E1fb414cf9448724EFB0399b698
 
@@ -22,6 +23,11 @@ contract Bank is Ownable {
      * @dev Creating oracle instance
      */
     ExchangeOracle oracle;
+
+    /**
+     * @dev
+     */
+    NFTLoan NFT;
 
     /**
      * @dev CobaltLend oracle for scoring and CBLT price
@@ -131,9 +137,46 @@ contract Bank is Ownable {
         );
     }
 
-    constructor(address _CBLT, address _oracle) {
+    function setToken(address _newToken) public {
+        token = IERC20(_newToken);
+    }
+
+    function setOracle(address _newOracle) public {
+        oracle = ExchangeOracle(_newOracle);
+    }
+
+    function setNFT(address _newNFT) public {
+        NFT = NFTLoan(_newNFT);
+    }
+
+    function testNFTContract()
+        public
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        (
+            uint256 riskScore,
+            uint256 riskFactor,
+            uint256 interestRate,
+            uint256 userMaxTier,
+            uint256 flatfee
+        ) = NFT.getUser(msg.sender);
+    }
+
+    constructor(
+        address _CBLT,
+        address _oracle,
+        address _NFT
+    ) {
         oracle = ExchangeOracle(_oracle);
         token = IERC20(_CBLT);
+        NFT = NFTLoan(_NFT);
 
         // loanTiers[5].maxVoters = 100;
         // loanTiers[5].maximumPaymentPeriod = 60;
@@ -142,6 +185,8 @@ contract Bank is Ownable {
         // ************************ Lending Data ***************************
 
         limitLending = 25;
+
+        // ************************ Staking Data ***************************
 
         tokenReserve[
             0x433C6E3D2def6E1fb414cf9448724EFB0399b698
@@ -513,8 +558,9 @@ contract Bank is Ownable {
         uint256 collateral; // Amount owed back to borrower after loan is paid in full
         bool active; // Is the current loan active (Voted yes)
         bool initialized; // Does the borrower have a current loan application
+        bool funded;
         uint256 timeCreated; // Time of loan application also epoch in days
-        uint256 dueDate; // Time of contract ending
+        uint256 dueDate; // Limit date for next payment
         uint256 totalVote; // Total amount determined by tier
         address currentToken; // Address of collateral token
     }
@@ -554,21 +600,22 @@ contract Bank is Ownable {
     /**
      * @dev Recalculates interest and also conducts check and balances
      */
-
-    function newLoan(uint256 _paymentPeriod, uint256 _principal)
-        public
-        payable
-    {
-        uint256 amountBorrowed;
+    function newLoan(
+        uint256 _paymentPeriod,
+        uint256 _principal,
+        address _tokenAddress
+    ) public payable {
         uint256 collateralInCBLT;
         uint256 finalPrincipal;
         uint256 monthlyPayment;
-        uint256 tokenPrice = oracle.priceOfToken(address(token));
-        uint256 riskScore = 20; // NFT ENTRY!!!!
-        uint256 riskFactor = 15; // NFT ENTRY!!!!
-        uint256 interestRate = 2; // NFT ENTRY!!!!
-        uint256 userMaxTier = 5; // NFT ENTRY!!!!
-        uint256 flatfee = 4000000000000000000; // NFT ENTRY!!!!
+        uint256 tokenPrice = oracle.priceOfToken(address(_tokenAddress));
+        (
+            uint256 riskScore,
+            uint256 riskFactor,
+            uint256 interestRate,
+            uint256 userMaxTier,
+            uint256 flatfee
+        ) = NFT.getUser(msg.sender);
 
         require(loanBook[msg.sender].initialized == false);
         require(msg.value >= flatfee);
@@ -577,11 +624,12 @@ contract Bank is Ownable {
             "Payment period exceeds that of the tier, pleas try again"
         );
 
-        amountBorrowed = SafeMath.div(
-            _principal,
-            SafeMath.div(100000000000000000000, oracle.priceOfETH())
+        require(
+            SafeMath.div(
+                _principal,
+                SafeMath.div(100000000000000000000, oracle.priceOfETH())
+            ) <= loanTiers[userMaxTier].principalLimit
         );
-        require(amountBorrowed <= loanTiers[userMaxTier].principalLimit);
 
         collateralInCBLT = SafeMath.mul(
             SafeMath.div(
@@ -610,7 +658,9 @@ contract Bank is Ownable {
             SafeMath.add(SafeMath.div(_paymentPeriod, 2629743), 1)
         );
 
-        IERC20(token).universalTransferFromSenderToThis(collateralInCBLT);
+        IERC20(_tokenAddress).universalTransferFromSenderToThis(
+            collateralInCBLT
+        );
 
         loanBook[msg.sender] = Loan(
             msg.sender,
@@ -620,10 +670,11 @@ contract Bank is Ownable {
             collateralInCBLT,
             false,
             true,
+            false,
             block.timestamp,
             block.timestamp,
             loanTiers[userMaxTier].maxVoters,
-            address(token)
+            address(_tokenAddress)
         );
         loanBorrowers.push(msg.sender);
     }
@@ -661,7 +712,40 @@ contract Bank is Ownable {
     function validate(bool _status) public {
         loanBook[msg.sender].active = _status;
         loanBook[msg.sender].dueDate = SafeMath.add(block.timestamp, 2629743);
-    } // Only dev contract
+    } // Only API
+
+    /**
+     * @dev
+     */
+    function payVoters(address[] memory voterArr, address _load) public {
+        require(
+            loanBook[_load].funded == false,
+            "Loan rewards have already been distributed"
+        );
+
+        uint256 rewardTotal;
+        uint256 rewardPerVoter;
+
+        (
+            uint256 riskScore,
+            uint256 riskFactor,
+            uint256 interestRate,
+            uint256 userMaxTier,
+            uint256 flatfee
+        ) = NFT.getUser(_load);
+
+        rewardTotal = SafeMath.multiply(
+            loanBook[msg.sender].amountBorrowed,
+            interestRate,
+            100
+        );
+
+        rewardPerVoter = SafeMath.div(rewardTotal, voterArr.length);
+
+        for (uint256 i = 0; i < voterArr.length; i++) {
+            payable(voterArr[i]).transfer(rewardPerVoter);
+        }
+    } // Only API
 
     /**
      * @dev Function for the user to make a payment with ETH
