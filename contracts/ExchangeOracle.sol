@@ -122,6 +122,20 @@ contract ExchangeOracle is Ownable {
         proposedChange = _proposedChange;
     }
 
+    function addressChange(uint256 _percent, string memory _proposedChange)
+        public
+        validEntry
+        returns (address)
+    {
+        clearedAction(_percent, _proposedChange);
+
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
+
+        return addressProposed;
+    }
+
     function proposeTierChange(
         uint256 _amountTier,
         uint256 _timeTier,
@@ -142,9 +156,32 @@ contract ExchangeOracle is Ownable {
         proposedChange = _proposedChange;
     }
 
-    // ******************************** Token Data **********************************
+    function tierChange(uint256 _percent, string memory _proposedChange)
+        public
+        validEntry
+        returns (
+            uint256,
+            uint256,
+            uint256,
+            uint256,
+            uint256
+        )
+    {
+        clearedAction(_percent, _proposedChange);
 
-    // Struct saving token data
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
+        return (
+            intProposed,
+            intProposed2,
+            intProposed3,
+            intProposed4,
+            intProposed5
+        );
+    }
+
+    // ******************************** Token Data **********************************
     struct Token {
         uint256 value;
         bool active;
@@ -184,9 +221,7 @@ contract ExchangeOracle is Ownable {
         uint256 _value,
         bool _status
     ) public {
-        // Update token data
         tokenData[_tokenAddress] = Token(_value, _status);
-        // Emit event with new token information
         emit tokenUpdatedData(_value);
     }
 

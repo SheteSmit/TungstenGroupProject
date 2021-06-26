@@ -366,6 +366,21 @@ contract Bank is Ownable {
         percentFee = _newFee;
     }
 
+    // **************************************** Events ************************************************
+
+    event Received(address, uint256);
+
+    /**
+     * @dev Events emitted
+     */
+    event onReceived(address indexed _from, uint256 _amount);
+    event onTransfer(
+        address indexed _from,
+        address indexed _to,
+        uint256 _amount
+    );
+    event depositToken(address indexed _from, uint256 _amount);
+
     // ************************************ Lottery ***************************************
     /**
      * @dev Address of lottery contract in charge of executing LotteryWinner function
