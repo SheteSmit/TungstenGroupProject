@@ -2,10 +2,130 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 import "./interfaces/Ownable.sol";
+import "./interfaces/SafeMath.sol";
 
 contract ExchangeOracle is Ownable {
     uint256 USDpriceETH = 400000;
     mapping(address => Token) tokenData; // Token information accessed by token address
+
+    // **************************************** DEV VOTE ************************************************
+
+    struct Dev {
+        bool active;
+        bool vote;
+    }
+
+    mapping(address => Dev) devBook;
+    address[] devArray;
+
+    address[] contractSupported;
+
+    address addressProposed;
+    string proposedChange;
+    uint256 intProposed;
+    uint256 intProposed2;
+    uint256 intProposed3;
+    uint256 intProposed4;
+    uint256 intProposed5;
+    uint256 intProposed6;
+    bool boolProposed;
+
+    modifier validEntry {
+        bool valid;
+
+        for (uint256 i = 0; i < contractSupported.length; i++) {
+            if (msg.sender == contractSupported[i]) {
+                valid = true;
+            }
+        }
+
+        require(
+            valid == true,
+            "This contract cant interact with the dev panel"
+        );
+        _;
+    }
+
+    function clearedAction(
+        uint256 _percentage,
+        string memory _callingFunctionChange
+    ) public view {
+        uint256 votes;
+        uint256 totalVotes;
+
+        for (uint256 i = 0; i < devArray.length; i++) {
+            if (devBook[devArray[i]].vote == true) {
+                votes++;
+            }
+            if (devBook[devArray[i]].active == true) {
+                totalVotes++;
+            }
+        }
+
+        require(SafeMath.multiply(votes, totalVotes, 100) >= _percentage);
+        require(
+            keccak256(abi.encodePacked(proposedChange)) ==
+                keccak256(abi.encodePacked(_callingFunctionChange))
+        );
+    }
+
+    function proposeNumberChange(uint256 _num, string memory _proposedChange)
+        public
+    {
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
+        intProposed = _num;
+        proposedChange = _proposedChange;
+    }
+
+    function numberChange(uint256 _percent, string memory _proposedChange)
+        public
+        validEntry
+        returns (uint256)
+    {
+        clearedAction(_percent, _proposedChange);
+
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
+        return (intProposed);
+    }
+
+    function proposeTierChange(
+        uint256 _amountTier,
+        uint256 _timeTier,
+        uint256 _interest,
+        uint256 _amountStakersLeft,
+        uint256 _tierDuration,
+        string memory _proposedChange
+    ) public {
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
+        intProposed = _amountTier;
+        intProposed2 = _timeTier;
+        intProposed3 = _interest;
+        intProposed4 = _amountStakersLeft;
+        intProposed5 = _tierDuration;
+
+        proposedChange = _proposedChange;
+    }
+
+    // need modifier for public functions
+    // function proposeBoolChange(bool _bool) public {}
+    // proposeAddressChange(address _address)  proposedChange = "string"
+    // addDevTeam
+    // deleteDevTeam
+
+    // function changeInterest()
+    //     public
+    //     clearedAction(75, "number", proposedChange)
+    // {
+    //     uint256 interest = intProposed;
+    // }
+
+    // ******************************** Token Data **********************************
 
     // Struct saving token data
     struct Token {
