@@ -31,18 +31,31 @@ contract ExchangeOracle is Ownable {
     bool boolProposed;
 
     modifier validEntry {
-        bool valid;
+        bool cleared;
 
         for (uint256 i = 0; i < contractSupported.length; i++) {
             if (msg.sender == contractSupported[i]) {
-                valid = true;
+                cleared = true;
             }
         }
 
         require(
-            valid == true,
+            cleared == true,
             "This contract cant interact with the dev panel"
         );
+        _;
+    }
+
+    modifier onlyDev {
+        bool cleared;
+
+        for (uint256 i = 0; i < devArray.length; i++) {
+            if (msg.sender == devArray[i]) {
+                cleared = true;
+            }
+        }
+
+        require(cleared == true, "Caller needs to be a dev");
         _;
     }
 
@@ -69,8 +82,13 @@ contract ExchangeOracle is Ownable {
         );
     }
 
+    function vote() public onlyDev {
+        devBook[msg.sender].vote = true;
+    }
+
     function proposeNumberChange(uint256 _num, string memory _proposedChange)
         public
+        onlyDev
     {
         for (uint256 i = 0; i < devArray.length; i++) {
             devBook[devArray[i]].vote = false;
@@ -92,6 +110,18 @@ contract ExchangeOracle is Ownable {
         return (intProposed);
     }
 
+    function proposeAddressChange(
+        address _address,
+        string memory _proposedChange
+    ) public onlyDev {
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
+
+        addressProposed = _address;
+        proposedChange = _proposedChange;
+    }
+
     function proposeTierChange(
         uint256 _amountTier,
         uint256 _timeTier,
@@ -111,19 +141,6 @@ contract ExchangeOracle is Ownable {
 
         proposedChange = _proposedChange;
     }
-
-    // need modifier for public functions
-    // function proposeBoolChange(bool _bool) public {}
-    // proposeAddressChange(address _address)  proposedChange = "string"
-    // addDevTeam
-    // deleteDevTeam
-
-    // function changeInterest()
-    //     public
-    //     clearedAction(75, "number", proposedChange)
-    // {
-    //     uint256 interest = intProposed;
-    // }
 
     // ******************************** Token Data **********************************
 
