@@ -1405,10 +1405,9 @@ contract Bank is Ownable {
      * token reward wallet.
      * @notice Function also calculates any running token balance reserved and deposits it
      * on the user's reward wallet
-     * @param _amount amount of token rewarded sent to the user's wallet
      * @param _withdrawTokenAddress token address of token being withdrawn
      */
-    function withdrawStaking(uint256 _amount, address _withdrawTokenAddress)
+    function withdrawStaking(address _withdrawTokenAddress)
         public
         payable
         stakingTermination(false)
@@ -1417,6 +1416,7 @@ contract Bank is Ownable {
         uint256 userReserved = userBook[msg.sender].tokenReserved;
         uint256 stakingPeriodTier = userBook[msg.sender].timeStakedTier;
         uint256 stakingAmountTier = userBook[msg.sender].amountStakedTier;
+        uint256 totalBalance = rewardWallet[msg.sender][_withdrawTokenAddress];
 
         dueDate = SafeMath.add(
             stakingRewardRate[stakingPeriodTier][stakingAmountTier]
@@ -1426,29 +1426,25 @@ contract Bank is Ownable {
 
         if (userReserved > 0 && (dueDate < block.timestamp)) {
             payRewardWallet(userReserved);
+            totalBalance = rewardWallet[msg.sender][_withdrawTokenAddress];
         }
 
-        (uint256 tokenPrice, uint256 ETHprice) = oracle.priceOfETHandCBLT(
+        uint256 aproxUSD = getEstimateUSD(
+            SafeMath.div(totalBalance, 1e18),
             _withdrawTokenAddress
         );
 
-        uint256 USDtoToken = SafeMath.multiply(
-            SafeMath.div(1000000000000000000, tokenPrice),
-            SafeMath.div(100000000000000000000, ETHprice),
-            1000000000000000000
-        );
-
         require(
-            SafeMath.mul(USDtoToken, 5) > 50,
+            aproxUSD > 50,
             "Amount in CBLT must be higher than 50 total worth in value."
         );
 
-        rewardWallet[msg.sender][_withdrawTokenAddress] = SafeMath.sub(
-            rewardWallet[msg.sender][_withdrawTokenAddress],
-            _amount
-        );
+        rewardWallet[msg.sender][_withdrawTokenAddress] = 0;
 
-        IERC20(_withdrawTokenAddress).universalTransfer(msg.sender, _amount);
+        IERC20(_withdrawTokenAddress).universalTransfer(
+            msg.sender,
+            totalBalance
+        );
     }
 
     /**
