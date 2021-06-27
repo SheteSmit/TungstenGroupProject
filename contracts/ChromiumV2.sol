@@ -84,7 +84,7 @@ contract ChromiumV2 {
         token = IERC20(address(0x433C6E3D2def6E1fb414cf9448724EFB0399b698));
         oracle = ExchangeOracle(_oracleAddress);
         chromiumStatus = true;
-        buyStatus = false;
+        buyStatus = true;
         feeThreshold = 5e18;
         poolThreshold = 10000;
         flatFee = 3;
@@ -151,7 +151,7 @@ contract ChromiumV2 {
      */
     modifier validBuy() {
         require(
-            msg.value > 15e16,
+            msg.value >= 15e15,
             "Error, deposit must be higher than 0.015 ETH"
         );
         require(
@@ -212,9 +212,7 @@ contract ChromiumV2 {
         uint256 fee;
 
         priceOfToken = oracle.priceOfToken(address(token));
-        (balance, fee) = calculateFee(
-            SafeMath.div(SafeMath.mul(_amount, priceOfToken), 1e18)
-        );
+        (balance, fee) = calculateFee(SafeMath.mul(_amount, priceOfToken));
         return (balance, fee);
     }
 
@@ -285,7 +283,9 @@ contract ChromiumV2 {
         );
         totalFeeBalance = SafeMath.add(totalFeeBalance, fee);
 
-        IERC20(token).universalTransferFromSenderToThis(_amount);
+        IERC20(token).universalTransferFromSenderToThis(
+            SafeMath.mul(_amount, 1e18)
+        );
         payable(msg.sender).transfer(newBalance);
     }
 
