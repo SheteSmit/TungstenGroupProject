@@ -67,7 +67,10 @@ contract ExchangeOracle is Ownable {
         uint256 totalVotes;
 
         for (uint256 i = 0; i < devArray.length; i++) {
-            if (devBook[devArray[i]].vote == true) {
+            if (
+                devBook[devArray[i]].vote == true &&
+                devBook[devArray[i]].active == true
+            ) {
                 votes++;
             }
             if (devBook[devArray[i]].active == true) {
@@ -82,8 +85,43 @@ contract ExchangeOracle is Ownable {
         );
     }
 
+    function acceptDev() public onlyDev {
+        address newDev = addressChange(80, "acceptDev");
+        devArray.push(newDev);
+        devBook[newDev].active = true;
+    }
+
+    function deleteDev() public onlyDev {
+        address status = addressChange(80, "deleteDev");
+        devBook[status].active = false;
+    }
+
     function vote() public onlyDev {
         devBook[msg.sender].vote = true;
+    }
+
+    function proposeBoolChange(bool _bool, string memory _proposedChange)
+        public
+        onlyDev
+    {
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
+        boolProposed = _bool;
+        proposedChange = _proposedChange;
+    }
+
+    function boolChange(uint256 _percent, string memory _proposedChange)
+        public
+        onlyDev
+        returns (bool)
+    {
+        clearedAction(_percent, _proposedChange);
+
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
+        return (boolProposed);
     }
 
     function proposeNumberChange(uint256 _num, string memory _proposedChange)
