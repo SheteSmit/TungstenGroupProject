@@ -5,7 +5,7 @@ import "./interfaces/Ownable.sol";
 import "./interfaces/SafeMath.sol";
 
 contract ExchangeOracle is Ownable {
-    uint256 USDpriceETH = 400000;
+    uint256 USDpriceETH = 200000;
     mapping(address => Token) tokenData; // Token information accessed by token address
 
     // **************************************** DEV VOTE ************************************************
@@ -245,11 +245,11 @@ contract ExchangeOracle is Ownable {
         );
         // rinkeby weth address to work with uniswap
         tokenData[0xc778417E063141139Fce010982780140Aa0cD5Ab] = Token(
-            1000000000000000000,
+            53000000000000,
             true
         );
         tokenData[0x433C6E3D2def6E1fb414cf9448724EFB0399b698] = Token(
-            2000000000000,
+            53000000000000,
             true
         );
     }
