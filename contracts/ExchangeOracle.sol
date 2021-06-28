@@ -55,7 +55,7 @@ contract ExchangeOracle is Ownable {
     function clearedAction(
         uint256 _percentage,
         string memory _callingFunctionChange
-    ) public view {
+    ) public {
         uint256 votes;
         uint256 totalVotes;
         uint256 votePercentage;
@@ -78,6 +78,10 @@ contract ExchangeOracle is Ownable {
             keccak256(abi.encodePacked(proposedChange)) ==
                 keccak256(abi.encodePacked(_callingFunctionChange))
         );
+
+        for (uint256 i = 0; i < devArray.length; i++) {
+            devBook[devArray[i]].vote = false;
+        }
     }
 
     function acceptDev() public onlyDev {
@@ -92,13 +96,13 @@ contract ExchangeOracle is Ownable {
     }
 
     function acceptContract() public onlyDev {
-        address newEntry = addressChange(80, "acceptContract");
-        contractSupported[newEntry] = true;
+        clearedAction(80, "acceptContract");
+        contractSupported[addressProposed] = true;
     }
 
     function deleteContract() public onlyDev {
-        address newEntry = addressChange(80, "deleteContract");
-        contractSupported[newEntry] = false;
+        clearedAction(80, "deleteContract");
+        contractSupported[addressProposed] = false;
     }
 
     function vote() public onlyDev {
@@ -123,9 +127,6 @@ contract ExchangeOracle is Ownable {
     {
         clearedAction(_percent, _proposedChange);
 
-        for (uint256 i = 0; i < devArray.length; i++) {
-            devBook[devArray[i]].vote = false;
-        }
         return (boolProposed);
     }
 
@@ -147,9 +148,6 @@ contract ExchangeOracle is Ownable {
     {
         clearedAction(_percent, _proposedChange);
 
-        for (uint256 i = 0; i < devArray.length; i++) {
-            devBook[devArray[i]].vote = false;
-        }
         return (intProposed);
     }
 
@@ -171,10 +169,6 @@ contract ExchangeOracle is Ownable {
         returns (address)
     {
         clearedAction(_percent, _proposedChange);
-
-        for (uint256 i = 0; i < devArray.length; i++) {
-            devBook[devArray[i]].vote = false;
-        }
 
         return addressProposed;
     }
@@ -212,9 +206,6 @@ contract ExchangeOracle is Ownable {
     {
         clearedAction(_percent, _proposedChange);
 
-        for (uint256 i = 0; i < devArray.length; i++) {
-            devBook[devArray[i]].vote = false;
-        }
         return (
             intProposed,
             intProposed2,

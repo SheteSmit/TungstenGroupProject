@@ -42,9 +42,10 @@ contract ChromiumV2 {
     /**
      * @dev Setter function changes the address of CBLT token.
      */
-    function setToken(address _newToken) public {
+    function setToken() public {
         // only devs
-        token = IERC20(_newToken);
+        address newToken = oracle.addressChange(50, "setToken");
+        token = IERC20(newToken);
     }
 
     /**
@@ -57,24 +58,28 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    function setOracle(address _newOracle) public {
+    function setOracle() public {
         // only devs
-        oracle = ExchangeOracle(_newOracle);
+        address newOracle = oracle.addressChange(50, "setOracle");
+        oracle = ExchangeOracle(newOracle);
     }
 
     /**
      * @dev
      */
-    function setChromiumStatus(bool _status) public {
+    function setChromiumStatus() public {
         // only devs
-        chromiumStatus = _status;
+        bool status = oracle.boolChange(50, "setChromiumStatus");
+        chromiumStatus = status;
     }
 
     /**
      * @dev
      */
-    function setBuyStatus(bool _status) public {
-        buyStatus = _status;
+    function setBuyStatus() public {
+        // only devs
+        bool status = oracle.boolChange(50, "setBuyStatus");
+        buyStatus = status;
     }
 
     /**
@@ -130,9 +135,10 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    function setThreshold(uint256 _newLimit) public {
+    function setThreshold() public {
         // only devs
-        poolThreshold = _newLimit;
+        uint256 newLimit = oracle.numberChange(50, "setThreshold");
+        poolThreshold = newLimit;
     }
 
     function fundTokenPool(uint256 _poolType, uint256 _amount) public {
@@ -319,8 +325,9 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    function setContract(address _treasuryAddress) public {
-        WithdrawContract = _treasuryAddress;
+    function setContract() public {
+        address treasuryAddress = oracle.addressChange(50, "setContract");
+        WithdrawContract = treasuryAddress;
     }
 
     /**
@@ -344,17 +351,20 @@ contract ChromiumV2 {
 
     /**
      * @dev Setter for staking flat fee.
-     * @param _newFee new uint fee value.
      * @notice This action can only be perform under dev vote.
      */
-    function newFlatFee(uint256 _newFee) public {
-        flatFee = _newFee;
+    function newFlatFee() public {
+        uint256 newFee = oracle.numberChange(50, "newFlatFee");
+        flatFee = newFee;
     }
 
     /**
      * @dev
      */
-    function newPercentFee() public {}
+    function newPercentFee() public {
+        uint256 newFee = oracle.numberChange(50, "newPercentFee");
+        percentFee = newFee;
+    }
 
     modifier onlyTreasury {
         require(
@@ -376,7 +386,8 @@ contract ChromiumV2 {
      */
     function setExchangeAddress(address _newExchange) public {
         // Only devs
-        migrationExchange = _newExchange;
+        address newExchange = oracle.addressChange(50, "setExchangeAddress");
+        migrationExchange = newExchange;
     }
 
     /**
