@@ -15,10 +15,10 @@ contract ExchangeOracle is Ownable {
         bool vote;
     }
 
-    mapping(address => Dev) devBook;
-    address[] devArray;
+    mapping(address => Dev) public devBook;
+    address[] public devArray;
 
-    address[] contractSupported;
+    mapping(address => bool) contractSupported;
 
     address addressProposed;
     string proposedChange;
@@ -32,15 +32,8 @@ contract ExchangeOracle is Ownable {
 
     modifier validEntry {
         bool cleared;
-
-        for (uint256 i = 0; i < contractSupported.length; i++) {
-            if (msg.sender == contractSupported[i]) {
-                cleared = true;
-            }
-        }
-
         require(
-            cleared == true,
+            contractSupported[msg.sender] == true,
             "This contract cant interact with the dev panel"
         );
         _;
@@ -65,6 +58,7 @@ contract ExchangeOracle is Ownable {
     ) public view {
         uint256 votes;
         uint256 totalVotes;
+        uint256 votePercentage;
 
         for (uint256 i = 0; i < devArray.length; i++) {
             if (
@@ -78,7 +72,8 @@ contract ExchangeOracle is Ownable {
             }
         }
 
-        require(SafeMath.multiply(votes, totalVotes, 100) >= _percentage);
+        votePercentage = SafeMath.multiply(votes, 100, totalVotes);
+        require(votePercentage >= _percentage);
         require(
             keccak256(abi.encodePacked(proposedChange)) ==
                 keccak256(abi.encodePacked(_callingFunctionChange))
@@ -94,6 +89,16 @@ contract ExchangeOracle is Ownable {
     function deleteDev() public onlyDev {
         address status = addressChange(80, "deleteDev");
         devBook[status].active = false;
+    }
+
+    function acceptContract() public onlyDev {
+        address newEntry = addressChange(80, "acceptContract");
+        contractSupported[newEntry] = true;
+    }
+
+    function deleteContract() public onlyDev {
+        address newEntry = addressChange(80, "deleteContract");
+        contractSupported[newEntry] = false;
     }
 
     function vote() public onlyDev {
@@ -113,7 +118,7 @@ contract ExchangeOracle is Ownable {
 
     function boolChange(uint256 _percent, string memory _proposedChange)
         public
-        onlyDev
+        validEntry
         returns (bool)
     {
         clearedAction(_percent, _proposedChange);
@@ -252,6 +257,12 @@ contract ExchangeOracle is Ownable {
             53000000000000,
             true
         );
+        devArray = [
+            0x5B38Da6a701c568545dCfcB03FcB875f56beddC4,
+            0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+        ];
+        devBook[0x5B38Da6a701c568545dCfcB03FcB875f56beddC4].active = true;
+        devBook[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].active = true;
     }
 
     function updateToken(
