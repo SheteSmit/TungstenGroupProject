@@ -273,12 +273,6 @@ contract ExchangeOracle is Ownable {
      * @dev Resets all the dev contract votes to false and takes multiple params as
      * the new tier proposed. The string of the function accepting this change must also
      * be parsed in.
-     * @param _bool proposed change for function output
-     * @param _bool proposed change for function output
-     * @param _bool proposed change for function output
-     * @param _bool proposed change for function output
-     * @param _proposedChange string cointaining information on permitted function accessing
-     * the boolChange function.
      */
     function proposeTierChange(
         uint256 _amountTier,
@@ -301,12 +295,9 @@ contract ExchangeOracle is Ownable {
     }
 
     /**
-     * @dev Function outputs the current bool proposed as function output to a valid
+     * @dev Function outputs the current selection proposed as function output to a valid
      * entry contract. The contract will also specify its own name to limit changes
      * on other functions and increase security.
-     * @param _percent percent needed for change to be approved.
-     * @param _proposeChange string of the calling function.
-     * @return bool proposed as change
      */
     function tierChange(uint256 _percent, string memory _proposedChange)
         public
@@ -331,10 +322,12 @@ contract ExchangeOracle is Ownable {
     }
 
     /**
-     * @dev Resets all the dev contract votes to false and takes a parameter bool as
-     * the new proposed change. The string of the function accepting this change must also
+     * @dev Resets all the dev contract votes to false and takes a parameter value, status and
+     * address of the token. The string of the function accepting this change must also
      * be parsed in.
-     * @param _bool proposed change for function output
+     * @param  _value new proposed value for token
+     * @param  _status new status of token support
+     * @param  _tokenAddress address of token being updated
      * @param _proposedChange string cointaining information on permitted function accessing
      * the boolChange function.
      */
@@ -353,69 +346,30 @@ contract ExchangeOracle is Ownable {
         proposedChange = _proposedChange;
     }
 
+    /**
+     * @dev Function takes proposed variable values to update token information.
+     */
     function tokenChange() public onlyDev {
         clearedAction(50, "updateToken");
         tokenData[addressProposed] = Token(intProposed, boolProposed);
     }
 
+    /**
+     * @dev Function takes a proposed uint value to update ethereum current price in USD.
+     */
     function priceChangeETH() public onlyDev {
         clearedAction(50, "updateETH");
         USDpriceETH = intProposed;
     }
 
+    /**
+     * @dev Function takes a proposed address value to update the external oracle.
+     */
     function externalOracleChange() public onlyDev {
         clearedAction(50, "updateETH");
         oracle = ExternalOracle(addressProposed);
     }
 
-    // ******************************** Token Data **********************************
-    /**
-     * @dev
-     */
-    struct Token {
-        uint256 value;
-        bool active;
-    }
-
-    /**
-     * @dev
-     */
-    ExternalOracle oracle;
-
-    /**
-     * @dev
-     */
-    uint256 USDpriceETH = 200000;
-
-    /**
-     * @dev
-     */
-    mapping(address => Token) tokenData; // Token information accessed by token address
-
-    /**
-     * @dev
-     */
-    modifier activeToken(address _tokenAddress) {
-        require(
-            tokenData[_tokenAddress].active == true,
-            "Token not currently supported."
-        );
-        _;
-    }
-
-    /**
-     * @dev
-     */
-    event deletedToken(address token);
-
-    /**
-     * @dev
-     */
-    event tokenUpdatedData(uint256 _value, bool _status);
-
-    /**
-     * @dev
-     */
     constructor() {
         tokenData[0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE] = Token(
             1000000000000000000,
@@ -436,10 +390,49 @@ contract ExchangeOracle is Ownable {
         ];
         devBook[0x5B38Da6a701c568545dCfcB03FcB875f56beddC4].active = true;
         devBook[0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2].active = true;
+        USDpriceETH = 200000;
+    }
+
+    // ******************************** Token Data **********************************
+    /**
+     * @dev Struct saves information token data. Value field contains data on token
+     * value relative to ethereum. Active field displays current support for token.
+     * @notice Unsupported tokens use an external oracle to output relative value of eth
+     * from other sources.
+     */
+    struct Token {
+        uint256 value;
+        bool active;
     }
 
     /**
-     * @dev
+     * @dev External oracle instance to provides information on token relative value using
+     * other platforms.
+     */
+    ExternalOracle oracle;
+
+    /**
+     * @dev uint saves the value of Ethereum in USD.
+     * @notice Decimals were shifted to the right for more accurate readings on current
+     * prices of Ethereum in USD.
+     */
+    uint256 USDpriceETH;
+
+    /**
+     * @dev Mapping key value of address (token address) returns the struct with pertaining information
+     * on token support and value.
+     */
+    mapping(address => Token) tokenData; // Token information accessed by token address
+
+    /**
+     * @dev Function returns relative price of two tokens.
+     * @notice Fuction checks for token support, if token is not supported,
+     * the contract will delegate the task to the outer oracle to pull
+     * prices from other sources.
+     * @param _sellTokenAddress address of queried selling token
+     * @param _buyTokenAddress address of queried token being bought
+     * @return relative value of token being sold, relative value of token
+     * being bought.
      */
     function priceOfPair(address _sellTokenAddress, address _buyTokenAddress)
         public
@@ -465,14 +458,19 @@ contract ExchangeOracle is Ownable {
     }
 
     /**
-     * @dev
+     * @dev Function returns the price of Ethereum in USD
+     * @return price of ETH in USD
      */
     function priceOfETH() public view returns (uint256) {
         return (USDpriceETH);
     }
 
     /**
-     * @dev
+     * @dev Function returns the value of the queried token.
+     * @param _tokenAddress of token query
+     * @notice Fuction checks for token support, if token is not supported,
+     * the contract will delegate the task to the outer oracle to pull
+     * prices from other sources.
      */
     function priceOfToken(address _tokenAddress)
         public
@@ -485,16 +483,5 @@ contract ExchangeOracle is Ownable {
         } else {
             return oracle.getRelativePrice(_tokenAddress);
         }
-    }
-
-    /**
-     * @dev
-     */
-    function testConnection()
-        public
-        pure
-        returns (uint256 sellTokenPrice, uint256 buyTokenPrice)
-    {
-        return (1, 1);
     }
 }
