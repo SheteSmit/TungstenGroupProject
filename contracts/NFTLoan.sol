@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.6.0 <0.8.0;
 import "./interfaces/SafeMath.sol";
+import "./ExchangeOracle.sol";
 
 contract NFTLoan {
     string internal nftName;
@@ -11,17 +12,18 @@ contract NFTLoan {
 
     mapping(address => uint256) private ownerToNFTokenCount;
 
-    mapping(uint256 => string) public idToUri;
+    mapping(uint256 => string) private idToUri;
 
-    address Oracle;
+    ExchangeOracle oracle;
     address Treasury;
 
     struct Data {
+        uint256 riskScore;
+        uint256 riskFactor;
+        uint256 interestRate;
+        uint256 userMaxTier;
         uint256 flatfee;
-        uint64 riskScore;
-        uint64 riskFactor;
-        uint64 interestRate;
-        uint64 userMaxTier;
+        uint256 strikes;
     }
 
     modifier canTransfer(uint256 _tokenId) {
@@ -36,7 +38,7 @@ contract NFTLoan {
     }
 
     modifier validEntry() {
-        require(msg.sender == Oracle || msg.sender == Treasury);
+        require(msg.sender == address(oracle) || msg.sender == Treasury);
         _;
     }
 
@@ -46,10 +48,10 @@ contract NFTLoan {
         uint256 indexed _tokenId
     );
 
-    constructor() {
+    constructor(address _oracle, address _treasury) {
         nftName = "CNFT";
-        Oracle = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
-        Treasury = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
+        oracle = ExchangeOracle(0x7fB9B032CDd38D3945B03aa0d62AB471E4b2E890);
+        Treasury = _treasury;
     }
 
     function balanceOf(address _owner) external view returns (uint256) {
@@ -67,19 +69,11 @@ contract NFTLoan {
         address _to,
         uint256 _tokenId
     ) private canTransfer(_tokenId) validNFToken(_tokenId) {
-        address tokenOwner = ownerId[_tokenId];
-        require(tokenOwner == _from);
-        require(_to != address(0));
-
-        _transfer(_to, _tokenId);
+        require(false == true); // Turned off - No transfer
     }
 
     function _transfer(address _to, uint256 _tokenId) internal {
-        address from = ownerId[_tokenId];
-        _removeNFToken(from, _tokenId);
-        _addNFToken(_to, _tokenId);
-
-        emit Transfer(from, _to, _tokenId);
+        require(false == true); // Turned off - No transfer
     }
 
     function name() external view returns (string memory _name) {
@@ -112,15 +106,34 @@ contract NFTLoan {
         uint64 _userMaxTier,
         uint256 _flatfee,
         string memory _uri
-    ) public {
+    ) public validEntry {
         _mint(_to, _tokenId);
         _setTokenUri(_tokenId, _uri);
         userData[_to] = Data(
-            _flatfee,
             _riskScore,
             _riskFactor,
             _interestRate,
-            _userMaxTier
+            _userMaxTier,
+            _flatfee,
+            0
+        );
+    }
+
+    function updateBorrower(
+        address _to,
+        uint64 _riskScore,
+        uint64 _riskFactor,
+        uint64 _interestRate,
+        uint64 _userMaxTier,
+        uint256 _flatfee
+    ) public validEntry {
+        userData[_to] = Data(
+            _riskScore,
+            _riskFactor,
+            _interestRate,
+            _userMaxTier,
+            _flatfee,
+            0
         );
     }
 
@@ -141,6 +154,10 @@ contract NFTLoan {
         return ownerToNFTokenCount[_owner];
     }
 
+    function strikeBorrower(address _from) public validEntry {
+        userData[_from].riskScore = SafeMath.add(userData[_from].riskScore, 1);
+    }
+
     function getUser(address _from)
         public
         view
@@ -155,18 +172,20 @@ contract NFTLoan {
     {
         return (
             userData[_from].riskScore,
-            userData[_from].riskScore,
-            userData[_from].riskScore,
-            userData[_from].riskScore,
-            userData[_from].riskScore
+            userData[_from].riskFactor,
+            userData[_from].interestRate,
+            userData[_from].userMaxTier,
+            userData[_from].flatfee
         );
     }
 
-    function setOracle(address _newOracle) public validEntry {
-        Oracle = _newOracle;
+    function setOracleNFT() public validEntry {
+        address newOracle = oracle.addressChange(50, "setOracleNFT");
+        oracle = ExchangeOracle(newOracle);
     }
 
-    function setTreasury(address _newTreasury) public validEntry {
-        Treasury = _newTreasury;
+    function setTreasury() public validEntry {
+        address newTreasury = oracle.addressChange(50, "setTreasury");
+        Treasury = newTreasury;
     }
 }

@@ -384,7 +384,7 @@ contract ChromiumV2 {
     /**
      * @dev
      */
-    function setExchangeAddress(address _newExchange) public {
+    function setExchangeAddress() public {
         // Only devs
         address newExchange = oracle.addressChange(50, "setExchangeAddress");
         migrationExchange = newExchange;
