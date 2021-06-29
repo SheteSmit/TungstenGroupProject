@@ -4,14 +4,30 @@ import "./interfaces/SafeMath.sol";
 import "./ExchangeOracle.sol";
 
 contract NFTLoan {
+
+    /**
+     * @dev Variable gives the NFTs name
+     */
     string internal nftName;
-
+    
+    /**
+     * @dev Creates a mapping of IDs of owner
+     */
     mapping(uint256 => address) internal ownerId;
-
+    
+    /**
+     * @dev Creates mapping of User Data
+     */
     mapping(address => Data) private userData;
-
+    
+    /**
+     * @dev Creates mapping of owner address to gives an a count
+     */
     mapping(address => uint256) private ownerToNFTokenCount;
-
+    
+    /**
+     * @dev Creates a
+     */
     mapping(uint256 => string) private idToUri;
 
     ExchangeOracle oracle;
