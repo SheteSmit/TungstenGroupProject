@@ -50,7 +50,7 @@ contract NFTLoan {
 
     constructor(address _oracle, address _treasury) {
         nftName = "CNFT";
-        oracle = ExchangeOracle(0x7fB9B032CDd38D3945B03aa0d62AB471E4b2E890);
+        oracle = ExchangeOracle(_oracle);
         Treasury = _treasury;
     }
 
