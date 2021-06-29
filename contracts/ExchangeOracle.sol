@@ -78,8 +78,8 @@ contract ExchangeOracle is Ownable {
      * with information on percentage needed for change to occur and string of the calling
      * function. Reverts if percentage is not met or calling function was does not coincide
      * with the one agreed for the change.
-     * @param _percentage
-     * @param _callingFunctionChange
+     * @param _percentage percent needed for change to be approved.
+     * @param _callingFunctionChange string of asking for clearance
      * @notice On successful run, function also resets all dev votes to false
      */
     function clearedAction(
@@ -181,7 +181,7 @@ contract ExchangeOracle is Ownable {
      * entry contract. The contract will also specify its own name to limit changes
      * on other functions and increase security.
      * @param _percent percent needed for change to be approved.
-     * @param _proposeChange string of the calling function.
+     * @param _proposedChange string of the calling function.
      * @return new bool value proposed
      */
     function boolChange(uint256 _percent, string memory _proposedChange)
@@ -218,7 +218,7 @@ contract ExchangeOracle is Ownable {
      * entry contract. The contract will also specify its own name to limit changes
      * on other functions and increase security.
      * @param _percent percent needed for change to be approved.
-     * @param _proposeChange string of the calling function.
+     * @param _proposedChange string of the calling function.
      * @return new uint value proposed
      */
     function numberChange(uint256 _percent, string memory _proposedChange)
@@ -256,7 +256,7 @@ contract ExchangeOracle is Ownable {
      * entry contract. The contract will also specify its own name to limit changes
      * on other functions and increase security.
      * @param _percent percent needed for change to be approved.
-     * @param _proposeChange string of the calling function.
+     * @param _proposedChange string of the calling function.
      * @return new address value proposed
      */
     function addressChange(uint256 _percent, string memory _proposedChange)
@@ -416,7 +416,7 @@ contract ExchangeOracle is Ownable {
      * @notice Decimals were shifted to the right for more accurate readings on current
      * prices of Ethereum in USD.
      */
-    uint256 USDpriceETH;
+    uint256 public USDpriceETH;
 
     /**
      * @dev Mapping key value of address (token address) returns the struct with pertaining information
@@ -472,12 +472,7 @@ contract ExchangeOracle is Ownable {
      * the contract will delegate the task to the outer oracle to pull
      * prices from other sources.
      */
-    function priceOfToken(address _tokenAddress)
-        public
-        view
-        activeToken(_tokenAddress)
-        returns (uint256)
-    {
+    function priceOfToken(address _tokenAddress) public view returns (uint256) {
         if (tokenData[_tokenAddress].active) {
             return tokenData[_tokenAddress].value;
         } else {

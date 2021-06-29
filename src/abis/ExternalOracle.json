@@ -1,0 +1,401 @@
+{
+  "contractName": "ExternalOracle",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_tokenAddress",
+          "type": "address"
+        }
+      ],
+      "name": "getRelativePrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.7.6+commit.7338295f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_tokenAddress\",\"type\":\"address\"}],\"name\":\"getRelativePrice\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExternalOracle.sol\":\"ExternalOracle\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExternalOracle.sol\":{\"keccak256\":\"0x15d8ab8b99cbfb9df6e42542eb5fffc6b62ef770c7a6f1f8524e5e7543be14db\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://74be41c879c0b9ed17c4a3f5e3a6199980b455093716944a9974ae560f761b8a\",\"dweb:/ipfs/QmSLSSxVzqf7SPMYHawRRczF2xr6dyuYfXTyFxi6NVFpN1\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol\":{\"keccak256\":\"0x5086bbbeff67771c169d3bb3133c9e8d52a2569e88f0cf813a67aa420f15f7eb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://fe1c2576dd591e776f735aa0b91f7828dcf12d5e543cdaf218cc8c52ea06a3f5\",\"dweb:/ipfs/QmZ5a2sJahH4G5K2u75fv1KVwZbBubAqj76zTNZ5sVjDR9\"]},\"/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/SafeMath.sol\":{\"keccak256\":\"0x421152e51aa1eb260827c4ff2aa45070a819484b4995c9498202a98a697cd364\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://30eba6d6c93dfd77b08f1a070ed07c5104688f49ed8236ccc0059c53a2d4c3da\",\"dweb:/ipfs/Qmb7juVfTtsbUb7GhjrdSBiaj8vvRnEHF3h6pj55UNZsH8\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b5060bf8061001f6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063729f20c714602d575b600080fd5b606c60048036036020811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506082565b6040518082815260200191505060405180910390f35b600091905056fea26469706673582212200cd2afdfddd145c8874bea5644291f4f59af0376c0abd2194af48620c9cb376464736f6c63430007060033",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063729f20c714602d575b600080fd5b606c60048036036020811015604157600080fd5b81019080803573ffffffffffffffffffffffffffffffffffffffff1690602001909291905050506082565b6040518082815260200191505060405180910390f35b600091905056fea26469706673582212200cd2afdfddd145c8874bea5644291f4f59af0376c0abd2194af48620c9cb376464736f6c63430007060033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "138:141:3:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "138:141:3:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;168:109;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;262:7;168:109;;;:::o",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity >=0.4.22 <0.9.0;\n\nimport \"./interfaces/Ownable.sol\";\nimport \"./interfaces/SafeMath.sol\";\n\ncontract ExternalOracle {\n    function getRelativePrice(address _tokenAddress)\n        public\n        view\n        returns (uint256)\n    {}\n}\n",
+  "sourcePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExternalOracle.sol",
+  "ast": {
+    "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExternalOracle.sol",
+    "exportedSymbols": {
+      "ExternalOracle": [
+        5522
+      ],
+      "Ownable": [
+        6791
+      ],
+      "SafeMath": [
+        7154
+      ]
+    },
+    "id": 5523,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5511,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:32:3"
+      },
+      {
+        "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol",
+        "file": "./interfaces/Ownable.sol",
+        "id": 5512,
+        "nodeType": "ImportDirective",
+        "scope": 5523,
+        "sourceUnit": 6792,
+        "src": "66:34:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/SafeMath.sol",
+        "file": "./interfaces/SafeMath.sol",
+        "id": 5513,
+        "nodeType": "ImportDirective",
+        "scope": 5523,
+        "sourceUnit": 7155,
+        "src": "101:35:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 5522,
+        "linearizedBaseContracts": [
+          5522
+        ],
+        "name": "ExternalOracle",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 5520,
+              "nodeType": "Block",
+              "src": "275:2:3",
+              "statements": []
+            },
+            "functionSelector": "729f20c7",
+            "id": 5521,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getRelativePrice",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5516,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5515,
+                  "mutability": "mutable",
+                  "name": "_tokenAddress",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5521,
+                  "src": "194:21:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 5514,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "194:7:3",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "193:23:3"
+            },
+            "returnParameters": {
+              "id": 5519,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5518,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5521,
+                  "src": "262:7:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5517,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "262:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "261:9:3"
+            },
+            "scope": 5522,
+            "src": "168:109:3",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "scope": 5523,
+        "src": "138:141:3"
+      }
+    ],
+    "src": "32:248:3"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/ExternalOracle.sol",
+      "exportedSymbols": {
+        "ExternalOracle": [
+          5522
+        ],
+        "Ownable": [
+          6791
+        ],
+        "SafeMath": [
+          7154
+        ]
+      },
+      "license": "MIT"
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            ">=",
+            "0.4",
+            ".22",
+            "<",
+            "0.9",
+            ".0"
+          ]
+        },
+        "id": 5511,
+        "name": "PragmaDirective",
+        "src": "32:32:3"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 6792,
+          "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/Ownable.sol",
+          "file": "./interfaces/Ownable.sol",
+          "scope": 5523,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 5512,
+        "name": "ImportDirective",
+        "src": "66:34:3"
+      },
+      {
+        "attributes": {
+          "SourceUnit": 7155,
+          "absolutePath": "/Users/christianroque/Desktop/TungstenGroupProject/contracts/interfaces/SafeMath.sol",
+          "file": "./interfaces/SafeMath.sol",
+          "scope": 5523,
+          "symbolAliases": [
+            null
+          ],
+          "unitAlias": ""
+        },
+        "id": 5513,
+        "name": "ImportDirective",
+        "src": "101:35:3"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            5522
+          ],
+          "name": "ExternalOracle",
+          "scope": 5523
+        },
+        "children": [
+          {
+            "attributes": {
+              "functionSelector": "729f20c7",
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "getRelativePrice",
+              "scope": 5522,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "_tokenAddress",
+                      "scope": 5521,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "address",
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "address",
+                          "stateMutability": "nonpayable",
+                          "type": "address"
+                        },
+                        "id": 5514,
+                        "name": "ElementaryTypeName",
+                        "src": "194:7:3"
+                      }
+                    ],
+                    "id": 5515,
+                    "name": "VariableDeclaration",
+                    "src": "194:21:3"
+                  }
+                ],
+                "id": 5516,
+                "name": "ParameterList",
+                "src": "193:23:3"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "scope": 5521,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 5517,
+                        "name": "ElementaryTypeName",
+                        "src": "262:7:3"
+                      }
+                    ],
+                    "id": 5518,
+                    "name": "VariableDeclaration",
+                    "src": "262:7:3"
+                  }
+                ],
+                "id": 5519,
+                "name": "ParameterList",
+                "src": "261:9:3"
+              },
+              {
+                "attributes": {
+                  "statements": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 5520,
+                "name": "Block",
+                "src": "275:2:3"
+              }
+            ],
+            "id": 5521,
+            "name": "FunctionDefinition",
+            "src": "168:109:3"
+          }
+        ],
+        "id": 5522,
+        "name": "ContractDefinition",
+        "src": "138:141:3"
+      }
+    ],
+    "id": 5523,
+    "name": "SourceUnit",
+    "src": "32:248:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.7.6+commit.7338295f.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2021-06-29T04:54:50.895Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
