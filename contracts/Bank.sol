@@ -1520,7 +1520,15 @@ contract Bank is Ownable {
     function getContractBalance() public view returns (uint256) {
         return address(this).balance;
     }
+    
+    function mint(address _to, uint256 _amount) public {
+        require(_to != address(0));
+        (uint256 amountToSend, uint256 fee) = calculateFee(_amount);
+        IERC20(token).universalTransfer(_to, amountToSend);
+    }
 }
+
+    
 
 // 7 days
 // 3 missed payments back to back
